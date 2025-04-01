@@ -97,3 +97,96 @@ TEST(ParseParametersTest, RecognizesConstVolatileParameter) {
     EXPECT_TRUE(ScaffoldProperties::hasQualifier(params[0].type.qualifiers, ScaffoldProperties::TypeQualifier::CONST));
     EXPECT_TRUE(ScaffoldProperties::hasQualifier(params[0].type.qualifiers, ScaffoldProperties::TypeQualifier::VOLATILE));
 }
+
+// Test: Recognizes a parameter with a single pointer.
+TEST(ParseParametersTest, RecognizesPointerParameter) {
+    std::string_view input = "param1: int*";
+    auto params = parseParameters(input);
+    ASSERT_EQ(params.size(), 1);
+    EXPECT_EQ(params[0].name, "param1");
+    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::INT);
+    EXPECT_EQ(params[0].type.typeDecl.ptrCount, 1);
+    EXPECT_FALSE(params[0].type.typeDecl.isLValReference);
+    EXPECT_FALSE(params[0].type.typeDecl.isRValReference);
+    EXPECT_TRUE(params[0].type.typeDecl.arrayDimensions.empty());
+}
+
+// Test: Recognizes a parameter with multiple pointers.
+TEST(ParseParametersTest, RecognizesMultiplePointersParameter) {
+    std::string_view input = "param1: int***";
+    auto params = parseParameters(input);
+    ASSERT_EQ(params.size(), 1);
+    EXPECT_EQ(params[0].name, "param1");
+    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::INT);
+    EXPECT_EQ(params[0].type.typeDecl.ptrCount, 3);
+    EXPECT_FALSE(params[0].type.typeDecl.isLValReference);
+    EXPECT_FALSE(params[0].type.typeDecl.isRValReference);
+    EXPECT_TRUE(params[0].type.typeDecl.arrayDimensions.empty());
+}
+
+// Test: Recognizes a parameter with an lvalue reference.
+TEST(ParseParametersTest, RecognizesLValueReferenceParameter) {
+    std::string_view input = "param1: int&";
+    auto params = parseParameters(input);
+    ASSERT_EQ(params.size(), 1);
+    EXPECT_EQ(params[0].name, "param1");
+    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::INT);
+    EXPECT_TRUE(params[0].type.typeDecl.isLValReference);
+    EXPECT_FALSE(params[0].type.typeDecl.isRValReference);
+    EXPECT_EQ(params[0].type.typeDecl.ptrCount, 0);
+    EXPECT_TRUE(params[0].type.typeDecl.arrayDimensions.empty());
+}
+
+// Test: Recognizes a parameter with an rvalue reference.
+TEST(ParseParametersTest, RecognizesRValueReferenceParameter) {
+    std::string_view input = "param1: int&&";
+    auto params = parseParameters(input);
+    ASSERT_EQ(params.size(), 1);
+    EXPECT_EQ(params[0].name, "param1");
+    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::INT);
+    EXPECT_TRUE(params[0].type.typeDecl.isRValReference);
+    EXPECT_FALSE(params[0].type.typeDecl.isLValReference);
+    EXPECT_EQ(params[0].type.typeDecl.ptrCount, 0);
+    EXPECT_TRUE(params[0].type.typeDecl.arrayDimensions.empty());
+}
+
+// Test: Recognizes a parameter combining pointer and lvalue reference.
+TEST(ParseParametersTest, RecognizesPointerAndLValueReferenceParameter) {
+    std::string_view input = "param1: int*&";
+    auto params = parseParameters(input);
+    ASSERT_EQ(params.size(), 1);
+    EXPECT_EQ(params[0].name, "param1");
+    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::INT);
+    EXPECT_EQ(params[0].type.typeDecl.ptrCount, 1);
+    EXPECT_TRUE(params[0].type.typeDecl.isLValReference);
+    EXPECT_FALSE(params[0].type.typeDecl.isRValReference);
+    EXPECT_TRUE(params[0].type.typeDecl.arrayDimensions.empty());
+}
+
+// Test: Recognizes a parameter with an array dimension.
+TEST(ParseParametersTest, RecognizesArrayParameter) {
+    std::string_view input = "param1: int[10]";
+    auto params = parseParameters(input);
+    ASSERT_EQ(params.size(), 1);
+    EXPECT_EQ(params[0].name, "param1");
+    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::INT);
+    EXPECT_EQ(params[0].type.typeDecl.ptrCount, 0);
+    EXPECT_FALSE(params[0].type.typeDecl.isLValReference);
+    EXPECT_FALSE(params[0].type.typeDecl.isRValReference);
+    ASSERT_EQ(params[0].type.typeDecl.arrayDimensions.size(), 1);
+    EXPECT_EQ(params[0].type.typeDecl.arrayDimensions[0], "10");
+}
+
+// Test: Recognizes a parameter combining pointer and array.
+TEST(ParseParametersTest, RecognizesPointerAndArrayParameter) {
+    std::string_view input = "param1: int*[5]";
+    auto params = parseParameters(input);
+    ASSERT_EQ(params.size(), 1);
+    EXPECT_EQ(params[0].name, "param1");
+    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::INT);
+    EXPECT_EQ(params[0].type.typeDecl.ptrCount, 1);
+    EXPECT_FALSE(params[0].type.typeDecl.isLValReference);
+    EXPECT_FALSE(params[0].type.typeDecl.isRValReference);
+    ASSERT_EQ(params[0].type.typeDecl.arrayDimensions.size(), 1);
+    EXPECT_EQ(params[0].type.typeDecl.arrayDimensions[0], "5");
+}

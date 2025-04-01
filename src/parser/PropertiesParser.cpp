@@ -14,36 +14,39 @@ namespace PropertiesParser
         // Parse qualifiers if any
         auto quals = parseTypeQualifier(typeStr);
 
+        // Parse declarators if any
+        auto decl = parseTypeDeclarator(typeStr);
+
         // Compare the trimmed string against known types.
         if (typeStr == "void")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::VOID, quals);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::VOID, quals, decl);  
         else if (typeStr == "int")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::INT, quals);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::INT, quals, decl);  
         else if (typeStr == "uint")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::UINT, quals);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::UINT, quals, decl);  
         else if (typeStr == "long")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::LONG, quals);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::LONG, quals, decl);  
         else if (typeStr == "ulong")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::ULONG, quals);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::ULONG, quals, decl);  
         else if (typeStr == "longlong")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::LONGLONG, quals);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::LONGLONG, quals, decl);  
         else if (typeStr == "ulonglong")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::ULONGLONG, quals);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::ULONGLONG, quals, decl);  
         else if (typeStr == "float")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::FLOAT, quals);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::FLOAT, quals, decl);  
         else if (typeStr == "double")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::DOUBLE, quals);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::DOUBLE, quals, decl);  
         else if (typeStr == "bool")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::BOOL, quals);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::BOOL, quals, decl);  
         else if (typeStr == "string")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::STRING, quals);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::STRING, quals, decl);  
         else if (typeStr == "char")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::CHAR, quals);        
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::CHAR, quals, decl);        
         else if (typeStr == "auto")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::AUTO, quals);
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::AUTO, quals, decl); 
         else
             // If the type isn't recognized, treat it as a custom type.
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::CUSTOM, std::string(typeStr), quals);
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::CUSTOM, std::string(typeStr), quals, decl); 
     }
 
     // Checks for type qualifiers in the provided string view and parses if found. 
@@ -84,6 +87,85 @@ namespace PropertiesParser
         }
 
         return quals;
+    }
+
+    ScaffoldProperties::TypeDeclarator parseTypeDeclarator(std::string_view& typeStr)
+    {
+        using namespace ScaffoldProperties;
+        // By default there are no declarators
+        TypeDeclarator tD;
+
+        // Loop until no more declartors are available
+        while(!typeStr.empty())
+        {
+            // Check for raw ptr in data type
+            if(typeStr.back() == '*')
+            {
+                // Increment ptr count
+                tD.ptrCount++;
+                // Remove from view
+                typeStr.remove_suffix(1);
+            }
+            // Check for references
+            else if(typeStr.back() == '&')
+            {
+                // If already set to L value refernce, then this is the second ampersand 
+                // which indicates rvalue ref
+                if(tD.isLValReference)
+                {
+                    // Set to rval reference and unset lval ref
+                    tD.isRValReference = true;
+                    tD.isLValReference = false;
+                    // Remove from view
+                    typeStr.remove_suffix(1);
+                }
+                // If R value reference already set, then scaff is malformed (&&& is not a 
+                // valid declarator)
+                else if(tD.isRValReference)
+                {
+                    throw std::runtime_error("Invalid Reference configuration!");
+                }
+                // Else, first ampersand which equals a L val reference
+                else
+                {
+                    // Set as L val reference
+                    tD.isLValReference = true;
+                    // Remove from view
+                    typeStr.remove_suffix(1);
+                }
+            }
+            // Check for array dimensions
+            else if (typeStr.back() == ']') {
+                // Find the matching '['.
+                size_t openBracketPos = typeStr.find_last_of('[');
+                if (openBracketPos == std::string_view::npos) {
+                    throw std::runtime_error("Mismatched array brackets in declarator!");
+                }
+                // Extract the dimension between '[' and ']'
+                std::string_view dim = typeStr.substr(openBracketPos + 1, typeStr.size() - openBracketPos - 2);
+                
+                // Validate the dimension: if non-empty, it must consist only of digits.
+                if (!dim.empty()) {
+                    for (char c : dim) {
+                        if (!std::isdigit(c)) {
+                            throw std::runtime_error("Array dimension must be a number.");
+                        }
+                    }
+                }
+                
+                // Store the dimension (empty string for unsized arrays)
+                tD.arrayDimensions.push_back(std::string(dim));
+                // Remove the entire "[...]" from the view.
+                typeStr.remove_suffix(typeStr.size() - openBracketPos);
+            }
+            else
+            {
+                // No more declarators found
+                break;
+            }
+        }
+
+        return tD;
     }
 
     // Parse a comma-separated list of parameters from the provided string view.

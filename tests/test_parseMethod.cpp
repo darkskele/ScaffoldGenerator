@@ -134,3 +134,92 @@ TEST(MethodParserTest, ParameterWithMultipleQualifiers) {
     EXPECT_TRUE(ScaffoldProperties::hasQualifier(methodModel.parameters[1].type.qualifiers,
                                                    ScaffoldProperties::TypeQualifier::VOLATILE));
 }
+
+// Test: Return type with a single pointer.
+TEST(MethodParserTest, ReturnTypeWithPointer) {
+    std::string methodName = "doPointerCalc";
+    std::vector<std::string_view> propertyLines = {
+        " | return = int*",
+        " | parameters = param1:int, param2:float",
+        " | description = \"Returns a pointer to int\""
+    };
+
+    auto methodModel = parseMethodProperties(methodName, propertyLines);
+    
+    EXPECT_EQ(methodModel.returnType.type, ScaffoldProperties::Types::INT);
+    EXPECT_EQ(methodModel.returnType.typeDecl.ptrCount, 1);
+    EXPECT_FALSE(methodModel.returnType.typeDecl.isLValReference);
+    EXPECT_FALSE(methodModel.returnType.typeDecl.isRValReference);
+    EXPECT_TRUE(methodModel.returnType.typeDecl.arrayDimensions.empty());
+}
+
+// Test: Return type with an lvalue reference.
+TEST(MethodParserTest, ReturnTypeWithLValueReference) {
+    std::string methodName = "doReferenceCalc";
+    std::vector<std::string_view> propertyLines = {
+        " | return = int&",
+        " | parameters = param1:int, param2:float",
+        " | description = \"Returns an lvalue reference to int\""
+    };
+
+    auto methodModel = parseMethodProperties(methodName, propertyLines);
+    
+    EXPECT_EQ(methodModel.returnType.type, ScaffoldProperties::Types::INT);
+    EXPECT_TRUE(methodModel.returnType.typeDecl.isLValReference);
+    EXPECT_FALSE(methodModel.returnType.typeDecl.isRValReference);
+    EXPECT_EQ(methodModel.returnType.typeDecl.ptrCount, 0);
+    EXPECT_TRUE(methodModel.returnType.typeDecl.arrayDimensions.empty());
+}
+
+// Test: Return type with an rvalue reference.
+TEST(MethodParserTest, ReturnTypeWithRValueReference) {
+    std::string methodName = "doRValueCalc";
+    std::vector<std::string_view> propertyLines = {
+        " | return = int&&",
+        " | parameters = param1:int, param2:float",
+        " | description = \"Returns an rvalue reference to int\""
+    };
+
+    auto methodModel = parseMethodProperties(methodName, propertyLines);
+    
+    EXPECT_EQ(methodModel.returnType.type, ScaffoldProperties::Types::INT);
+    EXPECT_TRUE(methodModel.returnType.typeDecl.isRValReference);
+    EXPECT_FALSE(methodModel.returnType.typeDecl.isLValReference);
+    EXPECT_EQ(methodModel.returnType.typeDecl.ptrCount, 0);
+    EXPECT_TRUE(methodModel.returnType.typeDecl.arrayDimensions.empty());
+}
+
+// Test: Return type with an array dimension.
+TEST(MethodParserTest, ReturnTypeWithArray) {
+    std::string methodName = "doArrayCalc";
+    std::vector<std::string_view> propertyLines = {
+        " | return = int[10]",
+        " | parameters = param1:int, param2:float",
+        " | description = \"Returns an array of 10 ints\""
+    };
+
+    auto methodModel = parseMethodProperties(methodName, propertyLines);
+    
+    EXPECT_EQ(methodModel.returnType.type, ScaffoldProperties::Types::INT);
+    ASSERT_EQ(methodModel.returnType.typeDecl.arrayDimensions.size(), 1);
+    EXPECT_EQ(methodModel.returnType.typeDecl.arrayDimensions[0], "10");
+}
+
+// Test: Parameter with a combination of pointer and array dimension.
+TEST(MethodParserTest, ParameterWithPointerAndArray) {
+    std::string methodName = "doParamTest";
+    std::vector<std::string_view> propertyLines = {
+        " | return = void",
+        " | parameters = param1: int*[5]",
+        " | description = \"Parameter with pointer and array dimension\""
+    };
+
+    auto methodModel = parseMethodProperties(methodName, propertyLines);
+    ASSERT_EQ(methodModel.parameters.size(), 1);
+    
+    EXPECT_EQ(methodModel.parameters[0].name, "param1");
+    EXPECT_EQ(methodModel.parameters[0].type.type, ScaffoldProperties::Types::INT);
+    EXPECT_EQ(methodModel.parameters[0].type.typeDecl.ptrCount, 1);
+    ASSERT_EQ(methodModel.parameters[0].type.typeDecl.arrayDimensions.size(), 1);
+    EXPECT_EQ(methodModel.parameters[0].type.typeDecl.arrayDimensions[0], "5");
+}

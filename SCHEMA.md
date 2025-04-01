@@ -163,8 +163,8 @@ In our DSL, both parameter and return types can be enhanced with qualifiers and 
   | return = const int*
   ```
 
-- **References:**  
-  References are expressed using the ampersand (`&`). This signals that the function returns a reference. For instance:  
+- **Lvalue References:**  
+  Lvalue references are expressed using the ampersand (`&`). This signals that the function returns or accepts a reference to an object. For instance:  
   ```
   | return = int&
   | parameters = ref:double&
@@ -173,6 +173,14 @@ In our DSL, both parameter and return types can be enhanced with qualifiers and 
   ```
   | return = const int&
   ```
+
+- **Rvalue References:**  
+  Rvalue references are denoted using a double ampersand (`&&`). These allow functions to return or accept objects that can be moved from. Examples include:  
+  ```
+  | return = int&&
+  | parameters = temp:int&&
+  ```
+  Rvalue references are especially useful for move semantics, such as in constructors or factory methods, where resources are transferred rather than copied.
 
 - **Arrays:**  
   Arrays are specified by appending square brackets after the type. They can be either of unspecified size (`[]`) or fixed size (e.g., `[10]`). Examples include:  
@@ -225,6 +233,8 @@ Our DSL supports a range of built-in data types, as well as user-defined types. 
   | return = int[10]          // An array of 10 ints
   | parameters = data:const MyType&  // A reference to a constant user-defined type
   | return = auto             // Let the compiler deduce the return type
+  | return = int&&            // An rvalue reference to an int
+  | parameters = temp:int&&   // An rvalue reference parameter
   ```
 
 ## Next Steps

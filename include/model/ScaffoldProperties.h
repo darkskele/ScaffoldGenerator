@@ -12,6 +12,7 @@
 #include <optional>
 #include <string>
 #include <cstdint>
+#include <vector>
 
 /**
  * @namespace ScaffoldProperties
@@ -93,6 +94,23 @@ namespace ScaffoldProperties
     }
 
     /**
+     * @brief Represents pointer declartion for data types
+     */
+    struct TypeDeclarator
+    {
+    public:
+        int ptrCount;                               /**< Pointer direction level */
+        bool isLValReference;                       /**< & reference */
+        bool isRValReference;                       /**< && reference */
+        std::vector<std::string> arrayDimensions;   /**< Empty for [] declarator */
+
+        TypeDeclarator() : ptrCount(0), isLValReference(false), isRValReference(false), 
+            arrayDimensions()
+        {
+        }
+    };
+
+    /**
      * @brief Represents a data type, which can be either a built-in type or a custom type.
      */
     struct DataType
@@ -100,13 +118,15 @@ namespace ScaffoldProperties
         Types type;                            /**< The type enumeration */
         std::optional<std::string> customType; /**< Custom type name when type is CUSTOM */
         TypeQualifier qualifiers;              /**< Type qualifiers */
+        TypeDeclarator typeDecl;               /**< Type declarator */
 
         /**
          * @brief Constructor for DataType with only the type.
          * @param t The built-in type or CUSTOM.
          */
-        constexpr DataType(const Types t)
-            : type(t), customType(std::nullopt), qualifiers(TypeQualifier::NONE)
+        constexpr DataType(const Types t, const TypeDeclarator& tD = TypeDeclarator())
+            : type(t), customType(std::nullopt), qualifiers(TypeQualifier::NONE), 
+            typeDecl(std::move(tD))
         {
         }
 
@@ -116,8 +136,8 @@ namespace ScaffoldProperties
          * @param custom Custom type name, used if t == Types::CUSTOM.
          */
         constexpr DataType(const Types t, const std::optional<std::string> &cT,
-                           const TypeQualifier tQ)
-            : type(t), customType(cT), qualifiers(tQ)
+                           const TypeQualifier tQ, const TypeDeclarator& tD = TypeDeclarator())
+            : type(t), customType(cT), qualifiers(tQ), typeDecl(std::move(tD))
         {
         }
 
@@ -126,8 +146,9 @@ namespace ScaffoldProperties
          * @param t The built-in type or CUSTOM.
          * @param tQ Type qualifiers
          */
-        constexpr DataType(const Types t, const TypeQualifier tQ)
-            : type(t), customType(std::nullopt), qualifiers(tQ)
+        constexpr DataType(const Types t, const TypeQualifier tQ, 
+                            const TypeDeclarator& tD = TypeDeclarator())
+            : type(t), customType(std::nullopt), qualifiers(tQ), typeDecl(std::move(tD))
         {
         }
     };

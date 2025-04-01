@@ -106,4 +106,163 @@ TEST(GenerateMethodDefinitionTest, ParameterWithConstVolatileQualifiers) {
     EXPECT_EQ(generated, expected);
 }
 
+// Test: Return type with a pointer declarator.
+TEST(GenerateMethodDefinitionTest, ReturnTypeWithPointer) {
+    // Create a MethodModel with return type "int*" (pointer to int).
+    DataType returnType(Types::INT);
+    returnType.typeDecl.ptrCount = 1;
+    std::vector<Parameter> params;  // No parameters.
+    MethodModel method(returnType, "doPointer", params, "Returns a pointer to int");
+    
+    std::string className = "MyClass";
+    std::string generated = MethodGenerator::generateMethodDefinition(className, method);
+    
+    std::string expected =
+        "int* MyClass::doPointer() {\n"
+        "    throw std::runtime_error(\"Not implemented\");\n"
+        "}\n";
+    
+    EXPECT_EQ(generated, expected);
+}
 
+// Test: Return type with an lvalue reference declarator.
+TEST(GenerateMethodDefinitionTest, ReturnTypeWithLValueReference) {
+    // Create a MethodModel with return type "int&".
+    DataType returnType(Types::INT);
+    returnType.typeDecl.isLValReference = true;
+    std::vector<Parameter> params;
+    MethodModel method(returnType, "doLValueRef", params, "Returns an lvalue reference to int");
+    
+    std::string className = "MyClass";
+    std::string generated = MethodGenerator::generateMethodDefinition(className, method);
+    
+    std::string expected =
+        "int& MyClass::doLValueRef() {\n"
+        "    throw std::runtime_error(\"Not implemented\");\n"
+        "}\n";
+    
+    EXPECT_EQ(generated, expected);
+}
+
+// Test: Return type with an rvalue reference declarator.
+TEST(GenerateMethodDefinitionTest, ReturnTypeWithRValueReference) {
+    // Create a MethodModel with return type "int&&".
+    DataType returnType(Types::INT);
+    returnType.typeDecl.isRValReference = true;
+    std::vector<Parameter> params;
+    MethodModel method(returnType, "doRValueRef", params, "Returns an rvalue reference to int");
+    
+    std::string className = "MyClass";
+    std::string generated = MethodGenerator::generateMethodDefinition(className, method);
+    
+    std::string expected =
+        "int&& MyClass::doRValueRef() {\n"
+        "    throw std::runtime_error(\"Not implemented\");\n"
+        "}\n";
+    
+    EXPECT_EQ(generated, expected);
+}
+
+// Test: Return type with an array declarator.
+TEST(GenerateMethodDefinitionTest, ReturnTypeWithArray) {
+    // Create a MethodModel with return type "int[10]".
+    DataType returnType(Types::INT);
+    returnType.typeDecl.arrayDimensions.push_back("10");
+    std::vector<Parameter> params;
+    MethodModel method(returnType, "doArray", params, "Returns an array of 10 ints");
+    
+    std::string className = "MyClass";
+    std::string generated = MethodGenerator::generateMethodDefinition(className, method);
+    
+    std::string expected =
+        "int[10] MyClass::doArray() {\n"
+        "    throw std::runtime_error(\"Not implemented\");\n"
+        "}\n";
+    
+    EXPECT_EQ(generated, expected);
+}
+
+// Test: Parameter with a pointer declarator.
+TEST(GenerateMethodDefinitionTest, ParameterWithPointer) {
+    // Create a MethodModel with a parameter "ptr" of type "int*".
+    DataType returnType(Types::VOID);
+    std::vector<Parameter> params;
+    DataType paramType(Types::INT);
+    paramType.typeDecl.ptrCount = 1;
+    params.emplace_back(Parameter(paramType, "ptr"));
+    MethodModel method(returnType, "doParamPointer", params, "Takes a pointer parameter");
+    
+    std::string className = "MyClass";
+    std::string generated = MethodGenerator::generateMethodDefinition(className, method);
+    
+    std::string expected =
+        "void MyClass::doParamPointer(int* ptr) {\n"
+        "    throw std::runtime_error(\"Not implemented\");\n"
+        "}\n";
+    
+    EXPECT_EQ(generated, expected);
+}
+
+// Test: Parameter with an lvalue reference declarator.
+TEST(GenerateMethodDefinitionTest, ParameterWithLValueReference) {
+    // Create a MethodModel with a parameter "ref" of type "int&".
+    DataType returnType(Types::VOID);
+    std::vector<Parameter> params;
+    DataType paramType(Types::INT);
+    paramType.typeDecl.isLValReference = true;
+    params.emplace_back(Parameter(paramType, "ref"));
+    MethodModel method(returnType, "doParamLValueRef", params, "Takes an lvalue reference parameter");
+    
+    std::string className = "MyClass";
+    std::string generated = MethodGenerator::generateMethodDefinition(className, method);
+    
+    std::string expected =
+        "void MyClass::doParamLValueRef(int& ref) {\n"
+        "    throw std::runtime_error(\"Not implemented\");\n"
+        "}\n";
+    
+    EXPECT_EQ(generated, expected);
+}
+
+// Test: Parameter with an rvalue reference declarator.
+TEST(GenerateMethodDefinitionTest, ParameterWithRValueReference) {
+    // Create a MethodModel with a parameter "temp" of type "int&&".
+    DataType returnType(Types::VOID);
+    std::vector<Parameter> params;
+    DataType paramType(Types::INT);
+    paramType.typeDecl.isRValReference = true;
+    params.emplace_back(Parameter(paramType, "temp"));
+    MethodModel method(returnType, "doParamRValueRef", params, "Takes an rvalue reference parameter");
+    
+    std::string className = "MyClass";
+    std::string generated = MethodGenerator::generateMethodDefinition(className, method);
+    
+    std::string expected =
+        "void MyClass::doParamRValueRef(int&& temp) {\n"
+        "    throw std::runtime_error(\"Not implemented\");\n"
+        "}\n";
+    
+    EXPECT_EQ(generated, expected);
+}
+
+// Test: Parameter with a combination of pointer and array declarators.
+TEST(GenerateMethodDefinitionTest, ParameterWithPointerAndArray) {
+    // Create a MethodModel with a parameter "data" of type "int*[5]".
+    DataType returnType(Types::VOID);
+    std::vector<Parameter> params;
+    DataType paramType(Types::INT);
+    paramType.typeDecl.ptrCount = 1;
+    paramType.typeDecl.arrayDimensions.push_back("5");
+    params.emplace_back(Parameter(paramType, "data"));
+    MethodModel method(returnType, "doParamPtrArray", params, "Takes a pointer and array parameter");
+    
+    std::string className = "MyClass";
+    std::string generated = MethodGenerator::generateMethodDefinition(className, method);
+    
+    std::string expected =
+        "void MyClass::doParamPtrArray(int*[5] data) {\n"
+        "    throw std::runtime_error(\"Not implemented\");\n"
+        "}\n";
+    
+    EXPECT_EQ(generated, expected);
+}

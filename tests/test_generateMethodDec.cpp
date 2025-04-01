@@ -127,3 +127,164 @@ TEST(GenerateMethodDeclarationTest, ParameterWithConstVolatileQualifiers) {
     
     EXPECT_EQ(generated, expected);
 }
+
+// Test: Return type with a pointer declarator.
+TEST(GenerateMethodDeclarationTest, ReturnTypeWithPointer) {
+    // Create a MethodModel with return type "int*" (pointer to int) and no parameters.
+    DataType returnType(Types::INT);
+    returnType.typeDecl.ptrCount = 1;
+    std::vector<Parameter> params; // No parameters.
+    MethodModel method(returnType, "doPointer", params, "Returns a pointer to int");
+    
+    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    
+    std::string expected =
+        "    /**\n"
+        "     * @brief Returns a pointer to int\n"
+        "     */\n"
+        "    int* doPointer();\n";
+    
+    EXPECT_EQ(generated, expected);
+}
+
+// Test: Return type with an lvalue reference declarator.
+TEST(GenerateMethodDeclarationTest, ReturnTypeWithLValueReference) {
+    // Create a MethodModel with return type "int&" and no parameters.
+    DataType returnType(Types::INT);
+    returnType.typeDecl.isLValReference = true;
+    std::vector<Parameter> params;
+    MethodModel method(returnType, "doLValueRef", params, "Returns an lvalue reference to int");
+    
+    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    
+    std::string expected =
+        "    /**\n"
+        "     * @brief Returns an lvalue reference to int\n"
+        "     */\n"
+        "    int& doLValueRef();\n";
+    
+    EXPECT_EQ(generated, expected);
+}
+
+// Test: Return type with an rvalue reference declarator.
+TEST(GenerateMethodDeclarationTest, ReturnTypeWithRValueReference) {
+    // Create a MethodModel with return type "int&&" and no parameters.
+    DataType returnType(Types::INT);
+    returnType.typeDecl.isRValReference = true;
+    std::vector<Parameter> params;
+    MethodModel method(returnType, "doRValueRef", params, "Returns an rvalue reference to int");
+    
+    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    
+    std::string expected =
+        "    /**\n"
+        "     * @brief Returns an rvalue reference to int\n"
+        "     */\n"
+        "    int&& doRValueRef();\n";
+    
+    EXPECT_EQ(generated, expected);
+}
+
+// Test: Return type with an array declarator.
+TEST(GenerateMethodDeclarationTest, ReturnTypeWithArray) {
+    // Create a MethodModel with return type "int[10]".
+    DataType returnType(Types::INT);
+    returnType.typeDecl.arrayDimensions.push_back("10");
+    std::vector<Parameter> params;
+    MethodModel method(returnType, "doArray", params, "Returns an array of 10 ints");
+    
+    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    
+    std::string expected =
+        "    /**\n"
+        "     * @brief Returns an array of 10 ints\n"
+        "     */\n"
+        "    int[10] doArray();\n";
+    
+    EXPECT_EQ(generated, expected);
+}
+
+// Test: Parameter with a pointer declarator.
+TEST(GenerateMethodDeclarationTest, ParameterWithPointer) {
+    // Create a MethodModel with a parameter "ptr" of type "int*".
+    DataType returnType(Types::VOID);
+    std::vector<Parameter> params;
+    DataType paramType(Types::INT);
+    paramType.typeDecl.ptrCount = 1;
+    params.emplace_back(Parameter(paramType, "ptr"));
+    MethodModel method(returnType, "doParamPointer", params, "Takes a pointer parameter");
+    
+    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    
+    std::string expected =
+        "    /**\n"
+        "     * @brief Takes a pointer parameter\n"
+        "     */\n"
+        "    void doParamPointer(int* ptr);\n";
+    
+    EXPECT_EQ(generated, expected);
+}
+
+// Test: Parameter with an lvalue reference declarator.
+TEST(GenerateMethodDeclarationTest, ParameterWithLValueReference) {
+    // Create a MethodModel with a parameter "ref" of type "int&".
+    DataType returnType(Types::VOID);
+    std::vector<Parameter> params;
+    DataType paramType(Types::INT);
+    paramType.typeDecl.isLValReference = true;
+    params.emplace_back(Parameter(paramType, "ref"));
+    MethodModel method(returnType, "doParamLValueRef", params, "Takes an lvalue reference parameter");
+    
+    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    
+    std::string expected =
+        "    /**\n"
+        "     * @brief Takes an lvalue reference parameter\n"
+        "     */\n"
+        "    void doParamLValueRef(int& ref);\n";
+    
+    EXPECT_EQ(generated, expected);
+}
+
+// Test: Parameter with an rvalue reference declarator.
+TEST(GenerateMethodDeclarationTest, ParameterWithRValueReference) {
+    // Create a MethodModel with a parameter "temp" of type "int&&".
+    DataType returnType(Types::VOID);
+    std::vector<Parameter> params;
+    DataType paramType(Types::INT);
+    paramType.typeDecl.isRValReference = true;
+    params.emplace_back(Parameter(paramType, "temp"));
+    MethodModel method(returnType, "doParamRValueRef", params, "Takes an rvalue reference parameter");
+    
+    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    
+    std::string expected =
+        "    /**\n"
+        "     * @brief Takes an rvalue reference parameter\n"
+        "     */\n"
+        "    void doParamRValueRef(int&& temp);\n";
+    
+    EXPECT_EQ(generated, expected);
+}
+
+// Test: Parameter with a combination of pointer and array declarators.
+TEST(GenerateMethodDeclarationTest, ParameterWithPointerAndArray) {
+    // Create a MethodModel with a parameter "data" of type "int*[5]".
+    DataType returnType(Types::VOID);
+    std::vector<Parameter> params;
+    DataType paramType(Types::INT);
+    paramType.typeDecl.ptrCount = 1;
+    paramType.typeDecl.arrayDimensions.push_back("5");
+    params.emplace_back(Parameter(paramType, "data"));
+    MethodModel method(returnType, "doParamPtrArray", params, "Takes a pointer and array parameter");
+    
+    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    
+    std::string expected =
+        "    /**\n"
+        "     * @brief Takes a pointer and array parameter\n"
+        "     */\n"
+        "    void doParamPtrArray(int*[5] data);\n";
+    
+    EXPECT_EQ(generated, expected);
+}

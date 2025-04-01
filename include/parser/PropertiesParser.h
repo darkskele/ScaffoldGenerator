@@ -44,6 +44,18 @@ namespace PropertiesParser
     ScaffoldProperties::TypeQualifier parseTypeQualifier(std::string_view& qualStr);
 
     /**
+     * @brief Parses type declartors for data type.
+     * 
+     * Type declarators appear appened to data type, where as qualifiers are appeneded.parseDataType
+     * 
+     * @param typeStr String view to scaff segment to parse
+     * @return Parsed declarator
+     * 
+     * @throws std::runtime_error if a parameter token is malformed.
+     */
+    ScaffoldProperties::TypeDeclarator parseTypeDeclarator(std::string_view& typeStr);
+
+    /**
      * @brief Parses parameters from the provided string view
      *
      * Expected format: "param1:int, param2:float"
