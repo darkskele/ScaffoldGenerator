@@ -12,6 +12,7 @@ namespace MethodParser
         ScaffoldProperties::DataType returnType = PropertiesParser::parseDataType("void");
         std::vector<ScaffoldProperties::Parameter> params;
         std::string description;
+        ScaffoldProperties::DeclartionSpecifier declSpec;
 
         // Parse method block
         for (auto line : propertyLines)
@@ -49,12 +50,16 @@ namespace MethodParser
                 // Trim the description after removing quotes.
                 description = std::string(ParserUtilities::trim(value));
             }
+            else if(key == "declaration")
+            {
+                declSpec = PropertiesParser::parseDeclarationSpecifier(value);
+            }
             else
             {
                 throw std::runtime_error("Unrecognised property in Method block!");
             }
         }
 
-        return ScaffoldModels::MethodModel(returnType, methodName, params, description);
+        return ScaffoldModels::MethodModel(returnType, methodName, params, declSpec, description);
     }
 } // namespace MethodParser

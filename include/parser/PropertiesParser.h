@@ -67,4 +67,11 @@ namespace PropertiesParser
      */
     std::vector<ScaffoldProperties::Parameter> parseParameters(std::string_view paramStr);
 
+    /**
+     * @brief Parses declaration specifiers for methods.
+     * @param declStr String view to scaff segment to parse
+     * @return Parsed declartion specifier
+     */
+    ScaffoldProperties::DeclartionSpecifier parseDeclarationSpecifier(std::string_view declStr);
+
 } // namespace PropertiesParser

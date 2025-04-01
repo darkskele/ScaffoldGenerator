@@ -2,11 +2,13 @@
 #include "MethodParser.h"
 #include "ScaffoldModels.h"
 #include "ScaffoldProperties.h"
+#include "PropertiesGenerator.h"
 #include <vector>
 #include <string_view>
 #include <stdexcept>
 
 using namespace MethodParser;  // Bring MethodParser functions into scope.
+using namespace ScaffoldProperties;
 
 TEST(MethodParserTest, ValidMethodProperties) {
     // Test a full method block with return type, parameters, and description.
@@ -222,4 +224,22 @@ TEST(MethodParserTest, ParameterWithPointerAndArray) {
     EXPECT_EQ(methodModel.parameters[0].type.typeDecl.ptrCount, 1);
     ASSERT_EQ(methodModel.parameters[0].type.typeDecl.arrayDimensions.size(), 1);
     EXPECT_EQ(methodModel.parameters[0].type.typeDecl.arrayDimensions[0], "5");
+}
+
+// Test: Declaration specifiers are parsed from the DSL method block.
+TEST(MethodParserTest, DeclarationSpecifiersParsed) {
+    std::string methodName = "doSomething";
+    std::vector<std::string_view> propertyLines = {
+        " | declaration = static inline constexpr",
+        " | return = int",
+        " | parameters = param1:int, param2:float",
+        " | description = \"Does something\""
+    };
+
+    auto methodModel = parseMethodProperties(methodName, propertyLines);
+    
+    // Verify that all specifiers are set.
+    EXPECT_TRUE(methodModel.declSpec.isStatic);
+    EXPECT_TRUE(methodModel.declSpec.isInline);
+    EXPECT_TRUE(methodModel.declSpec.isConstexpr);
 }

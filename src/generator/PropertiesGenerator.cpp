@@ -24,4 +24,28 @@ namespace PropertiesGenerator
 
         return result;
     }
+
+    std::string generateDeclarationSpecifier(const ScaffoldProperties::DeclartionSpecifier &dS)
+    {
+        std::vector<std::string> specifiers;
+
+        if(dS.isStatic)
+            specifiers.push_back("static");
+
+        if(dS.isInline)
+            specifiers.push_back("inline");
+
+        if(dS.isConstexpr)
+            specifiers.push_back("constexpr");
+
+        std::string result = "";
+
+        for(const auto& spec : specifiers)
+        {
+            result += spec + " ";
+        }
+
+        return result;
+    }
+    
 } // namespace PropertiesGenerator

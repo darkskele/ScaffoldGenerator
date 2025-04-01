@@ -29,6 +29,7 @@ namespace ScaffoldModels
         const ScaffoldProperties::DataType returnType;               /**< Return type of method */
         const std::string name;                                      /**< Name of method */
         const std::vector<ScaffoldProperties::Parameter> parameters; /**< Method parameters */
+        const ScaffoldProperties::DeclartionSpecifier declSpec;      /**< Declaration specifiers */
         const std::string description;                               /**< Method description */
 
         /**
@@ -40,11 +41,12 @@ namespace ScaffoldModels
          */
         MethodModel(const ScaffoldProperties::DataType retType, const std::string n,
                     const std::vector<ScaffoldProperties::Parameter> params,
+                    const ScaffoldProperties::DeclartionSpecifier &dC,
                     const std::string desc = " ")
-                : returnType(retType), name(std::move(n)), parameters(std::move(params)),
-                description(std::move(desc))
-                {
-                }
+            : returnType(retType), name(std::move(n)), parameters(std::move(params)),
+              declSpec(std::move(dC)), description(std::move(desc))
+        {
+        }
     };
 
 } // namespace ScaffoldModels

@@ -23,4 +23,12 @@ namespace PropertiesGenerator
      * @return The generated string representation of parameters
      */
     std::string generateParameterList(const std::vector<ScaffoldProperties::Parameter>& params);
+
+    /**
+     * @brief Converts decalartion specifier object to string
+     * @param dS Declaration Specifier to convert
+     * @return String representation of Declaration Specifier
+     */
+    std::string generateDeclarationSpecifier(const ScaffoldProperties::DeclartionSpecifier &dS);
+
 } // namespace PropertiesGenerator

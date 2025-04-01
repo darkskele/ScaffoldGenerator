@@ -218,4 +218,54 @@ namespace PropertiesParser
         return params;
     }
 
+    ScaffoldProperties::DeclartionSpecifier parseDeclarationSpecifier(std::string_view declStr)
+    {
+        using namespace ScaffoldProperties;
+        // By default there are no declartion specifier
+        DeclartionSpecifier decl{};
+        declStr = ParserUtilities::trim(declStr);
+
+        // Loop through until no more qualifiers are found 
+        while(!declStr.empty())
+        {
+            // Check for 'static' specifier
+            if(declStr.substr(0, 6) == "static")
+            {
+                // Add static specifier to declaration specifiers
+                decl.isStatic = true;
+
+                // Remove from view
+                declStr.remove_prefix(6);
+                declStr = ParserUtilities::trim(declStr);
+            }
+            // Check for 'inline' specifier
+            else if(declStr.substr(0, 6) == "inline")
+            {
+                // Add inline specifier to declaration specifiers
+                decl.isInline = true;
+
+                // Remove from view
+                declStr.remove_prefix(6);
+                declStr = ParserUtilities::trim(declStr);
+            }
+            // Check for 'constexpr' specifier
+            else if(declStr.substr(0, 9) == "constexpr")
+            {
+                // Add constexpr specifier to declaration specifiers
+                decl.isConstexpr = true;
+
+                // Remove from view
+                declStr.remove_prefix(9);
+                declStr = ParserUtilities::trim(declStr);
+            }
+            else
+            {
+                // No more specifiers present
+                break;
+            }
+        }
+
+        return decl;
+    }
+
 } // namespace PropertiesParser

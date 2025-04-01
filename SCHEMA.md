@@ -237,6 +237,48 @@ Our DSL supports a range of built-in data types, as well as user-defined types. 
   | parameters = temp:int&&   // An rvalue reference parameter
   ```
 
+### Declaration Specifiers
+
+In our DSL, methods may be further modified using declaration specifiers. These specifiers are used to control aspects of the function or method's behavior such as linkage, inlining, and compile-time evaluation. They are applied at the beginning of a method declaration (or definition), before the return type. The primary declaration specifiers we support at this stage include:
+
+- **static**  
+  Indicates that the method has internal linkage (for functions) or, in the case of class methods, that the method is associated with the class rather than an instance.
+
+- **inline**  
+  Suggests that the method’s definition is provided in the header (or DSL file) and that it may be inlined by the compiler. This specifier is often used to avoid multiple definition errors when the function is defined in a header file.
+
+- **constexpr**  
+  Specifies that the method can be evaluated at compile time. This is useful for functions intended to be used in constant expressions, ensuring that the function meets the requirements for constexpr evaluation.
+
+#### Usage in the DSL
+
+- **Method Declarations/Definitions:**  
+  These specifiers are applied to both method declarations and definitions. For example, a method might be declared as:
+  
+  ```
+  | declaration = static inline
+  | return = int
+  | method = doSomething:
+  | parameters = param1:int, param2:float
+  | description = "Performs a calculation"
+  _
+  ```
+
+  In the generated code, the specifiers would appear before the return type:
+  
+  ```cpp
+  static inline int doSomething(int param1, float param2);
+  ```
+
+- **Return Types and Parameters:**  
+  Declaration specifiers are not applied directly to return types or parameters. Instead, they modify the method as a whole, and thus are output only in the method declaration/definition. The return types and parameter types are handled separately via the data type and type declarator mechanisms.
+
+#### Future Extensions
+
+Later on, additional specifiers (e.g., **virtual**) and C++20-related specifiers can be incorporated as needed when classes and inheritance are fully implemented.
+
+---
+
 ## Next Steps
 
 For this initial stage, our key focus is on the following keywords and properties:
