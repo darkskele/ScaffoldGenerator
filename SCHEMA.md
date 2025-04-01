@@ -181,3 +181,92 @@ In this example:
 - The method block starts with `- method doSomething:`.
 - Property lines define modifiers, return type, parameters, and a description.
 - The block is explicitly closed with `_`.
+
+---
+
+## Class Generation Schema
+
+This section details the schema specific to class generation in the Scaffolder DSL. It leverages the general DSL syntax while adding properties and rules tailored for defining C++ classes, including member declarations, constructors, destructors, and access specifiers.
+
+### Class Definition
+
+- **class**  
+  The keyword used to define a C++ class along with its members, methods, constructors, and destructors.  
+  *Example:*  
+  `- class MyClass:`
+
+#### Core Properties
+
+- **description**  
+  A human-readable explanation of the class’s purpose or functionality.
+
+- **constructors**  
+  An inline property that specifies the generation of default, copy, and move constructors. If no nested constructor blocks are provided, the system will generate the listed constructors automatically.  
+  *Example:*  
+  `| constructors = default, copy, move`
+
+- **assignment**  
+  Specifies that the copy and move assignment operators should be generated.  
+  *Example:*  
+  `| assignment = copy, move`
+
+- **members**  
+  A comma-separated list of data members. These are grouped by access specifier and can be defined either inline (with a shorthand property) or within nested access blocks.  
+  *Example:*  
+  `| members.private = int id, string name`
+
+### Nested Scopes and Access Specifiers
+
+Within the class block, nested scopes can be used to group declarations by access level. By default, any declaration in the class is treated as private unless enclosed in an explicit access specifier block:
+
+- **private:**  
+  All declarations within this block are private.
+  
+- **public:**  
+  All declarations within this block are public.
+  
+- **protected:**  
+  All declarations within this block are protected.
+
+Additionally, constructors, destructors, and methods can be nested within these access specifier blocks.
+
+### Constructors and Destructors
+
+Constructors and destructors have two modes of declaration:
+
+- **Inline Property Shorthand:**  
+  Use the `constructors` property in the class block to automatically generate default, copy, and move constructors. If a constructor with parameters is needed, it must be defined in a nested block.
+  
+- **Nested Blocks:**  
+  For custom behavior or parameterized constructors, a nested constructor block is used (e.g., `- constructor custom:`). The same applies to destructors (e.g., `- destructor default:`), allowing detailed customization.
+
+### Example Class DSL Snippet
+
+```
+- class MyClass:
+| description = "This is a sample class."
+| constructors = default, copy, move
+| assignment = copy, move
+- private:
+| members = int id, string name
+- constructor custom:
+| parameters = int param1, string param2
+| description = "Custom constructor with parameters"
+_
+- destructor default:
+| description = "Default destructor for MyClass"
+_
+- method setName:
+| return = void
+| parameters = name:string
+| description = "Sets the name for MyClass"
+_
+_
+- public:
+- method getName:
+| return = string
+| description = "Retrieves the name for MyClass"
+_
+_
+_
+```
