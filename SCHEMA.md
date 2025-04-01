@@ -1,46 +1,43 @@
-# Scaffolder DSL Schema - Expanded Draft
+# Scaffolder DSL Schema
 
 This document defines the initial set of keywords, properties, and explicit scope markers for our custom DSL (with a suggested file extension of `.scaff`). Our goal is to create a human-readable, modular format for specifying project structures, which can then be used to generate C++ projects automatically.
 
 ## Overview
 
-Our DSL allows you to define a project structure using a simple syntax that leverages both indentation for readability and explicit scope markers for unambiguous parsing. The high-level design (such as project dependencies, libraries, classes, methods, and more) is expressed in one or more files that the scaffolder tool will parse and then use to generate all necessary project files (CMake, VS Code settings, etc.).
+The Scaffolder DSL is a human-readable, modular language designed for specifying project structures and automatically generating C++ code. This document outlines the general DSL syntax—including keywords, properties, explicit scope markers, and nested scopes—followed by a dedicated section on method generation. Future revisions will incorporate additional constructs such as class, library, and namespace definitions.
 
-While whitespace and indentation are encouraged for human readability, the actual scope boundaries are defined by explicit markers:
+## General Scaffolder Syntax
 
-- **Start of Scope:** A new block begins with a dash (`-`) at the start of a line.
-- **End of Scope:** A block is explicitly closed by a line containing a single underscore (`_`).
+### Keywords
 
-This approach ensures that the structure of the DSL is robust, even if formatting is inconsistent.
-
-## Keywords
-
-The following top-level keywords define the various elements in our project:
+The DSL supports several top-level keywords that define the various elements of a project. The initial set includes:
 
 - **project**  
   Defines the overall project and its high-level properties.
 
 - **library**  
-  Represents a modular library within the project. Libraries can be marked as static or dynamic and encapsulate related functionalities.
+  Represents a modular library within the project.
 
 - **class**  
-  Specifies a C++ class and its related details such as inheritance, methods, and members.
+  Specifies a C++ class along with its members and methods.
 
 - **method**  
-  Describes a member function within a class. It includes the return type, parameters, and an optional description or placeholder implementation.
+  Describes a member function with its return type, parameters, and additional properties.
 
 - **member**  
   Defines a data member (variable) of a class.
 
 - **function**  
-  Represents a standalone function that exists outside of a class context.
+  Represents a standalone function outside a class context.
 
 - **folder**  
-  Used to organize elements into a file/folder structure, guiding how files are laid out in the generated project.
+  Organizes elements into a file and folder structure for the generated project.
 
-## Properties
+*(Additional keywords such as namespace and concept will be introduced later.)*
 
-Each element defined by the keywords can have associated properties. These include:
+### Properties
+
+Each element in the DSL may include one or more of the following properties:
 
 - **name**  
   A unique identifier for the element.
@@ -49,73 +46,42 @@ Each element defined by the keywords can have associated properties. These inclu
   Specifies the version for a project, library, or any versionable component.
 
 - **dependency**  
-  Lists dependencies required by the element (e.g., other libraries or modules, or even specific build features like `cpp20` or `openmp`).
+  Lists required dependencies (e.g., other libraries or build features like `cpp20` or `openmp`).
 
 - **parameters**  
-  For methods or functions, this property defines the list of parameters, including their names and data types.
+  For methods or functions, a comma-separated list of parameters defined as `name:type`.
 
 - **data types**  
-  Specifies the data types for parameters, members, and return types. This will support advanced features such as templates and concepts (to be expanded later).
+  Specifies the data types for parameters, members, and return types. Both built-in and custom types are supported.
 
 - **template**  
-  (Optional) Indicates that the element (class or method) is templated, possibly with specific constraints or concepts.
+  Indicates that the element is templated, with optional constraints or concepts.
 
 - **description**  
-  A human-readable text describing the element's purpose or functionality, useful for documentation and clarity.
+  A human-readable explanation of the element’s purpose or functionality.
 
-## Explicit Scope Markers
+### Explicit Scope Markers
 
-To clearly define the beginning and end of each DSL block, we introduce explicit scope markers:
+To ensure clear parsing independent of formatting, the DSL uses explicit markers for block boundaries:
 
 - **Start of Scope:**  
-  Each new block begins with a dash (`-`) at the start of a line.  
-  Example:  
+  A new block begins with a dash (`-`) at the start of a line, followed by the keyword and identifier.  
+  *Example:*  
   `- method doSomething:`
 
 - **Property Lines:**  
-  Within a scope, properties are defined on lines that start with a vertical bar (`|`), using a key-value syntax.  
-  Example:  
+  Inside a block, properties are defined on lines beginning with a vertical bar (`|`), using a key-value syntax.  
+  *Example:*  
   `| return = void`
 
 - **End of Scope:**  
-  A scope is explicitly closed by a line that contains only an underscore (`_`).  
-  Example:  
+  A block is explicitly terminated by a line containing only an underscore (`_`).  
+  *Example:*  
   `_`
 
-This mechanism allows the parser to detect block boundaries independently of whitespace or indentation.
+### Nested Scopes
 
-## Example DSL Snippet
-
-Below is an example that illustrates the intended format for a method, with explicit scope markers:
-
-```
-- method doSomething:
-| return = void
-| parameters = param1:int, param2:float
-| description = "Performs a math operation"
-_
-```
-
-### Explanation
-
-1. **Header Line:**  
-   `- method doSomething:`  
-   - The dash (`-`) indicates the beginning of a new block.
-   - The keyword `method` specifies that this block defines a method.
-   - `doSomething:` is the method name, with the trailing colon signaling that details follow.
-
-2. **Property Lines:**  
-   Each property line starts with `|`:
-   - `| return = void` specifies that the method returns `void`.
-   - `| parameters = param1:int, param2:float` defines a comma-separated list of parameters, with each parameter expressed in the format `name:type`.
-   - `| description = "Performs a math operation"` provides a human-readable description of the method.
-
-3. **Scope Closure:**  
-   The line `_` indicates the end of the method block. This explicit marker tells the parser that all properties for this method have been defined.
-
-## Nested Scopes
-
-This explicit scope mechanism can also be applied to nested elements. For example, a class containing multiple methods might be structured as follows:
+Nested elements are structured using the same explicit markers. For example, a class containing multiple methods can be written as:
 
 ```
 - class MyClass:
@@ -134,158 +100,84 @@ _
 ```
 
 In this example:
-- The class block starts with `- class MyClass:` and ends with the final `_`.
-- Inside the class block, each method is a separate nested scope that begins with `- method ...:` and ends with its own `_`.
-
-Below are two new sections for our DSL schema that define how users can specify parameter and return type qualifiers as well as the overall data types for our DSL. These sections follow our goal of keeping the DSL simple, intuitive, and C++-inspired.
+- The class block begins with `- class MyClass:` and closes with the final `_`.
+- Each method within the class is a nested block with its own start and end markers.
 
 ---
 
-### Parameter/Return Type Qualifiers
+## Method Generation Schema
 
-In our DSL, both parameter and return types can be enhanced with qualifiers and modifiers to express additional semantics. The allowed qualifiers and modifiers include:
+This section details the schema specific to method generation. It leverages the general DSL syntax while adding properties and rules tailored for defining methods.
+
+### Method Definition
+
+- **method**  
+  The keyword to define a member function.  
+  *Example:*  
+  `- method doSomething:`
+
+#### Core Properties
+
+- **return**  
+  Specifies the return type of the method. It supports built-in types (e.g., `void`, `int`, `float`), custom types, and compound types with qualifiers (`const`, `volatile`), pointers (`*`), lvalue references (`&`), rvalue references (`&&`), and arrays (`[]` or `[n]`).
+
+- **parameters**  
+  A comma-separated list of parameters where each parameter follows the `name:type` format.  
+  *Example:*  
+  `| parameters = param1:int, param2:float`
+
+- **description**  
+  Provides a human-readable description of the method’s functionality.
+
+- **declaration** (optional)  
+  Specifies method modifiers such as `static`, `inline`, or `constexpr` that affect linkage and behavior.  
+  *Example:*  
+  `| declaration = static inline`
+
+### Type Qualifiers and Modifiers
+
+Methods support enhanced type specifications for both parameters and return values:
 
 - **Qualifiers:**  
-  Users can specify qualifiers such as `const` or `volatile` before the base type. For example:  
-  ```
-  | return = const int
-  | parameters = param1:const int, param2:volatile float
-  ```
+  Use qualifiers like `const` or `volatile` before the base type.  
+  *Example:*  
+  `| return = const int`
 
 - **Pointers:**  
-  A pointer is indicated by appending an asterisk (`*`) directly to the type. This means the function or parameter returns a pointer rather than a value. Examples include:  
-  ```
-  | return = int*
-  | parameters = ptr:float*
-  ```
-  When combined with qualifiers:  
-  ```
-  | return = const int*
-  ```
+  Indicate pointers by appending an asterisk (`*`).  
+  *Example:*  
+  `| return = int*`
 
-- **Lvalue References:**  
-  Lvalue references are expressed using the ampersand (`&`). This signals that the function returns or accepts a reference to an object. For instance:  
-  ```
-  | return = int&
-  | parameters = ref:double&
-  ```
-  This can also be combined with qualifiers:  
-  ```
-  | return = const int&
-  ```
-
-- **Rvalue References:**  
-  Rvalue references are denoted using a double ampersand (`&&`). These allow functions to return or accept objects that can be moved from. Examples include:  
-  ```
-  | return = int&&
-  | parameters = temp:int&&
-  ```
-  Rvalue references are especially useful for move semantics, such as in constructors or factory methods, where resources are transferred rather than copied.
+- **References:**  
+  Use `&` for lvalue references and `&&` for rvalue references.  
+  *Examples:*  
+  `| return = const int&`  
+  `| parameters = temp:int&&`
 
 - **Arrays:**  
-  Arrays are specified by appending square brackets after the type. They can be either of unspecified size (`[]`) or fixed size (e.g., `[10]`). Examples include:  
-  ```
-  | return = int[]
-  | parameters = arr:float[5]
-  ```
+  Specify arrays with square brackets, either with unspecified size (`[]`) or fixed size (`[n]`).  
+  *Example:*  
+  `| return = int[10]`
 
 - **Auto:**  
-  For scenarios where the return type should be deduced by the compiler, the DSL supports the use of the keyword `auto`:  
-  ```
-  | return = auto
-  ```
+  The keyword `auto` can be used for deduced return types.  
+  *Example:*  
+  `| return = auto`
 
-These rules allow users to compose types in a manner that is both familiar and expressive, while remaining simple and readable.
+### Example Method DSL Snippet
 
----
+The following snippet illustrates a complete method definition using the DSL:
 
-### Data Types
+```
+- method doSomething:
+| declaration = static inline
+| return = void
+| parameters = param1:int, param2:float
+| description = "Performs a math operation"
+_
+```
 
-Our DSL supports a range of built-in data types, as well as user-defined types. In our current implementation, the following data types are supported:
-
-- **Built-In Types:**  
-  The DSL provides an enumeration of common data types for quick specification. These include:  
-  - `void`
-  - `int`
-  - `uint`
-  - `long`
-  - `ulong`
-  - `longlong` (or `LONGLONG`)
-  - `ulonglong` (or `ULONGLONG`)
-  - `float`
-  - `double`
-  - `bool`
-  - `string`
-  - `char`
-  - `auto`
-
-- **Custom Types:**  
-  If a built-in type does not suffice, users can define a custom type. This is indicated by the keyword `CUSTOM` along with the name of the user-defined type. For example, if you have a user-defined type `MyType`, you might specify:  
-  ```
-  | return = MyType
-  ```
-  Behind the scenes, this will be captured as a custom type in our model.
-
-- **Combining with Qualifiers and Modifiers:**  
-  The final data type for a parameter or return value can include any of the above qualifiers and modifiers. For example:  
-  ```
-  | return = const int*       // A constant pointer to an int
-  | return = int[10]          // An array of 10 ints
-  | parameters = data:const MyType&  // A reference to a constant user-defined type
-  | return = auto             // Let the compiler deduce the return type
-  | return = int&&            // An rvalue reference to an int
-  | parameters = temp:int&&   // An rvalue reference parameter
-  ```
-
-### Declaration Specifiers
-
-In our DSL, methods may be further modified using declaration specifiers. These specifiers are used to control aspects of the function or method's behavior such as linkage, inlining, and compile-time evaluation. They are applied at the beginning of a method declaration (or definition), before the return type. The primary declaration specifiers we support at this stage include:
-
-- **static**  
-  Indicates that the method has internal linkage (for functions) or, in the case of class methods, that the method is associated with the class rather than an instance.
-
-- **inline**  
-  Suggests that the method’s definition is provided in the header (or DSL file) and that it may be inlined by the compiler. This specifier is often used to avoid multiple definition errors when the function is defined in a header file.
-
-- **constexpr**  
-  Specifies that the method can be evaluated at compile time. This is useful for functions intended to be used in constant expressions, ensuring that the function meets the requirements for constexpr evaluation.
-
-#### Usage in the DSL
-
-- **Method Declarations/Definitions:**  
-  These specifiers are applied to both method declarations and definitions. For example, a method might be declared as:
-  
-  ```
-  | declaration = static inline
-  | return = int
-  | method = doSomething:
-  | parameters = param1:int, param2:float
-  | description = "Performs a calculation"
-  _
-  ```
-
-  In the generated code, the specifiers would appear before the return type:
-  
-  ```cpp
-  static inline int doSomething(int param1, float param2);
-  ```
-
-- **Return Types and Parameters:**  
-  Declaration specifiers are not applied directly to return types or parameters. Instead, they modify the method as a whole, and thus are output only in the method declaration/definition. The return types and parameter types are handled separately via the data type and type declarator mechanisms.
-
-#### Future Extensions
-
-Later on, additional specifiers (e.g., **virtual**) and C++20-related specifiers can be incorporated as needed when classes and inheritance are fully implemented.
-
----
-
-## Next Steps
-
-For this initial stage, our key focus is on the following keywords and properties:
-
-- **Keywords:** project, library, class, method, member, function, folder  
-- **Properties:** name, version, dependency, parameters, data types, template, description
-
-Later, we plan to expand this list with additional keywords (such as `namespace`, `concept`, or build-related settings) as our requirements evolve. We also plan to support splitting the DSL across multiple files, where declarations might reside in one file and more detailed definitions in another—the scaffolder will merge these based on unique identifiers.
-
-As the DSL matures, we will update the parser to fully support these explicit scope markers, ensuring that even if users deviate slightly in indentation or spacing, the core structure remains unambiguous.
+In this example:
+- The method block starts with `- method doSomething:`.
+- Property lines define modifiers, return type, parameters, and a description.
+- The block is explicitly closed with `_`.

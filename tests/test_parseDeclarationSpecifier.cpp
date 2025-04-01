@@ -7,6 +7,7 @@
 using namespace ScaffoldProperties;
 using namespace PropertiesParser;
 
+// Test: When given an empty string, no declaration specifiers should be set.
 TEST(ParseDeclarationSpecifierTest, EmptyString) {
     std::string_view input = "";
     DeclartionSpecifier decl = parseDeclarationSpecifier(input);
@@ -15,6 +16,7 @@ TEST(ParseDeclarationSpecifierTest, EmptyString) {
     EXPECT_FALSE(decl.isConstexpr);
 }
 
+// Test: When input is "static", only the static specifier should be set.
 TEST(ParseDeclarationSpecifierTest, OnlyStatic) {
     std::string_view input = "static";
     DeclartionSpecifier decl = parseDeclarationSpecifier(input);
@@ -23,6 +25,7 @@ TEST(ParseDeclarationSpecifierTest, OnlyStatic) {
     EXPECT_FALSE(decl.isConstexpr);
 }
 
+// Test: When input is "inline", only the inline specifier should be set.
 TEST(ParseDeclarationSpecifierTest, OnlyInline) {
     std::string_view input = "inline";
     DeclartionSpecifier decl = parseDeclarationSpecifier(input);
@@ -31,6 +34,7 @@ TEST(ParseDeclarationSpecifierTest, OnlyInline) {
     EXPECT_FALSE(decl.isConstexpr);
 }
 
+// Test: When input is "constexpr", only the constexpr specifier should be set.
 TEST(ParseDeclarationSpecifierTest, OnlyConstexpr) {
     std::string_view input = "constexpr";
     DeclartionSpecifier decl = parseDeclarationSpecifier(input);
@@ -39,6 +43,7 @@ TEST(ParseDeclarationSpecifierTest, OnlyConstexpr) {
     EXPECT_TRUE(decl.isConstexpr);
 }
 
+// Test: When input is "static inline", both static and inline specifiers should be set.
 TEST(ParseDeclarationSpecifierTest, StaticInline) {
     std::string_view input = "static inline";
     DeclartionSpecifier decl = parseDeclarationSpecifier(input);
@@ -47,6 +52,7 @@ TEST(ParseDeclarationSpecifierTest, StaticInline) {
     EXPECT_FALSE(decl.isConstexpr);
 }
 
+// Test: When input is "inline constexpr static", all specifiers should be set, regardless of order.
 TEST(ParseDeclarationSpecifierTest, InlineConstexprStatic) {
     std::string_view input = "inline constexpr static";
     DeclartionSpecifier decl = parseDeclarationSpecifier(input);
@@ -55,6 +61,7 @@ TEST(ParseDeclarationSpecifierTest, InlineConstexprStatic) {
     EXPECT_TRUE(decl.isConstexpr);
 }
 
+// Test: Mixed whitespace should be correctly trimmed and parsed.
 TEST(ParseDeclarationSpecifierTest, MixedWhitespace) {
     std::string_view input = "  static   constexpr    inline   ";
     DeclartionSpecifier decl = parseDeclarationSpecifier(input);

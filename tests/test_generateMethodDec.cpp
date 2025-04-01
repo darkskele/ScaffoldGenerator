@@ -14,16 +14,16 @@ using namespace ScaffoldModels;
 
 // Test: Method with no parameters.
 TEST(GenerateMethodDeclarationTest, NoParameters) {
-    // Create a MethodModel with return type "int", no parameters, and a description.
+    // Create a MethodModel with return type "int", no parameters, and a brief description.
     DataType returnType(Types::INT);
-    std::vector<Parameter> params; // Empty parameters.
-    ScaffoldProperties::DeclartionSpecifier declSpec;
+    std::vector<Parameter> params; // No parameters.
+    DeclartionSpecifier declSpec;  // Default declaration specifiers.
     MethodModel method(returnType, "doSomething", params, declSpec, "Performs a calculation");
     
-    // Generate the declaration.
+    // Generate the declaration string.
     std::string generated = MethodGenerator::generateMethodDeclaration(method);
     
-    // Expected output (4-space indent for the Doxygen comment and declaration):
+    // Expected output: A Doxygen comment block followed by the method declaration.
     std::string expected =
         "    /**\n"
         "     * @brief Performs a calculation\n"
@@ -38,16 +38,18 @@ TEST(GenerateMethodDeclarationTest, WithParameters) {
     // Create a MethodModel with return type "void" and two parameters.
     DataType returnType(Types::VOID);
     std::vector<Parameter> params;
+    // Parameter "param1" of type int.
     params.emplace_back(Parameter(DataType(Types::INT), "param1"));
+    // Parameter "param2" of type float.
     params.emplace_back(Parameter(DataType(Types::FLOAT), "param2"));
     
-    ScaffoldProperties::DeclartionSpecifier declSpec;
+    DeclartionSpecifier declSpec;  // Default declaration specifiers.
     MethodModel method(returnType, "doSomething", params, declSpec, "Does something");
     
-    // Generate the declaration.
+    // Generate the method declaration.
     std::string generated = MethodGenerator::generateMethodDeclaration(method);
     
-    // Expected parameter list: "int param1, float param2"
+    // Expected output with parameter list "int param1, float param2".
     std::string expected =
         "    /**\n"
         "     * @brief Does something\n"
@@ -57,20 +59,22 @@ TEST(GenerateMethodDeclarationTest, WithParameters) {
     EXPECT_EQ(generated, expected);
 }
 
-// Test: Method with extra whitespace in description should be preserved as-is.
+// Test: Method with extra whitespace in description should preserve the spaces.
 TEST(GenerateMethodDeclarationTest, WithWhitespaceInDescription) {
-    // Create a method model where the description includes extra spaces.
+    // Create a MethodModel with a description that has leading and trailing whitespace.
     DataType returnType(Types::DOUBLE);
     std::vector<Parameter> params;
+    // Parameter "x" of type int.
     params.emplace_back(Parameter(DataType(Types::INT), "x"));
-    ScaffoldProperties::DeclartionSpecifier declSpec;
+    DeclartionSpecifier declSpec;
     
-    // Description intentionally has leading/trailing spaces.
+    // Description intentionally contains extra spaces.
     MethodModel method(returnType, "compute", params, declSpec, "  Computes a value  ");
     
+    // Generate the method declaration.
     std::string generated = MethodGenerator::generateMethodDeclaration(method);
     
-    // Expected: The description is output exactly as provided.
+    // Expected output should preserve the whitespace in the description.
     std::string expected =
         "    /**\n"
         "     * @brief   Computes a value  \n"
@@ -82,14 +86,16 @@ TEST(GenerateMethodDeclarationTest, WithWhitespaceInDescription) {
 
 // Test: Return type with a const qualifier.
 TEST(GenerateMethodDeclarationTest, ReturnTypeWithConstQualifier) {
-    // Method with a return type "const int".
+    // Create a MethodModel with return type "const int".
     DataType returnType(Types::INT, TypeQualifier::CONST);
     std::vector<Parameter> params; // No parameters.
-    ScaffoldProperties::DeclartionSpecifier declSpec;
+    DeclartionSpecifier declSpec;
     MethodModel method(returnType, "doSomething", params, declSpec, "Returns a constant int");
     
+    // Generate the declaration.
     std::string generated = MethodGenerator::generateMethodDeclaration(method);
     
+    // Expected output: The return type is prefixed with "const".
     std::string expected =
         "    /**\n"
         "     * @brief Returns a constant int\n"
@@ -101,16 +107,19 @@ TEST(GenerateMethodDeclarationTest, ReturnTypeWithConstQualifier) {
 
 // Test: Parameter with a const qualifier.
 TEST(GenerateMethodDeclarationTest, ParameterWithConstQualifier) {
-    // Method with one parameter that is const-qualified.
+    // Create a MethodModel with one parameter that is const-qualified.
     DataType returnType(Types::VOID);
     std::vector<Parameter> params;
+    // Parameter "param1" of type "const float".
     params.emplace_back(Parameter(DataType(Types::FLOAT, TypeQualifier::CONST), "param1"));
-    ScaffoldProperties::DeclartionSpecifier declSpec;
+    DeclartionSpecifier declSpec;
     
     MethodModel method(returnType, "doSomething", params, declSpec, "Takes a constant float parameter");
     
+    // Generate the declaration.
     std::string generated = MethodGenerator::generateMethodDeclaration(method);
     
+    // Expected output: Parameter type should include "const".
     std::string expected =
         "    /**\n"
         "     * @brief Takes a constant float parameter\n"
@@ -120,18 +129,21 @@ TEST(GenerateMethodDeclarationTest, ParameterWithConstQualifier) {
     EXPECT_EQ(generated, expected);
 }
 
-// Test: Parameter with const and volatile qualifiers.
+// Test: Parameter with both const and volatile qualifiers.
 TEST(GenerateMethodDeclarationTest, ParameterWithConstVolatileQualifiers) {
-    // Method with one parameter that is both const and volatile.
+    // Create a MethodModel with one parameter that is const and volatile.
     DataType returnType(Types::VOID);
     std::vector<Parameter> params;
+    // Parameter "param1" of type "const volatile int".
     params.emplace_back(Parameter(DataType(Types::INT, TypeQualifier::CONST | TypeQualifier::VOLATILE), "param1"));
-    ScaffoldProperties::DeclartionSpecifier declSpec;
+    DeclartionSpecifier declSpec;
     
     MethodModel method(returnType, "doSomething", params, declSpec, "Takes a const volatile int parameter");
     
+    // Generate the declaration.
     std::string generated = MethodGenerator::generateMethodDeclaration(method);
     
+    // Expected output: Parameter type should include both "const" and "volatile".
     std::string expected =
         "    /**\n"
         "     * @brief Takes a const volatile int parameter\n"
@@ -143,15 +155,17 @@ TEST(GenerateMethodDeclarationTest, ParameterWithConstVolatileQualifiers) {
 
 // Test: Return type with a pointer declarator.
 TEST(GenerateMethodDeclarationTest, ReturnTypeWithPointer) {
-    // Create a MethodModel with return type "int*" (pointer to int) and no parameters.
+    // Create a MethodModel with return type "int*" (pointer to int).
     DataType returnType(Types::INT);
-    returnType.typeDecl.ptrCount = 1;
-    std::vector<Parameter> params; // No parameters.
-    ScaffoldProperties::DeclartionSpecifier declSpec;
+    returnType.typeDecl.ptrCount = 1;  // Set pointer count to 1.
+    std::vector<Parameter> params;     // No parameters.
+    DeclartionSpecifier declSpec;
     MethodModel method(returnType, "doPointer", params, declSpec, "Returns a pointer to int");
     
+    // Generate the declaration.
     std::string generated = MethodGenerator::generateMethodDeclaration(method);
     
+    // Expected output: Return type should include a pointer symbol.
     std::string expected =
         "    /**\n"
         "     * @brief Returns a pointer to int\n"
@@ -163,15 +177,17 @@ TEST(GenerateMethodDeclarationTest, ReturnTypeWithPointer) {
 
 // Test: Return type with an lvalue reference declarator.
 TEST(GenerateMethodDeclarationTest, ReturnTypeWithLValueReference) {
-    // Create a MethodModel with return type "int&" and no parameters.
+    // Create a MethodModel with return type "int&".
     DataType returnType(Types::INT);
-    returnType.typeDecl.isLValReference = true;
+    returnType.typeDecl.isLValReference = true; // Set as lvalue reference.
     std::vector<Parameter> params;
-    ScaffoldProperties::DeclartionSpecifier declSpec;
+    DeclartionSpecifier declSpec;
     MethodModel method(returnType, "doLValueRef", params, declSpec, "Returns an lvalue reference to int");
     
+    // Generate the declaration.
     std::string generated = MethodGenerator::generateMethodDeclaration(method);
     
+    // Expected output: Return type should include an ampersand.
     std::string expected =
         "    /**\n"
         "     * @brief Returns an lvalue reference to int\n"
@@ -183,15 +199,17 @@ TEST(GenerateMethodDeclarationTest, ReturnTypeWithLValueReference) {
 
 // Test: Return type with an rvalue reference declarator.
 TEST(GenerateMethodDeclarationTest, ReturnTypeWithRValueReference) {
-    // Create a MethodModel with return type "int&&" and no parameters.
+    // Create a MethodModel with return type "int&&".
     DataType returnType(Types::INT);
-    returnType.typeDecl.isRValReference = true;
+    returnType.typeDecl.isRValReference = true; // Set as rvalue reference.
     std::vector<Parameter> params;
-    ScaffoldProperties::DeclartionSpecifier declSpec;
+    DeclartionSpecifier declSpec;
     MethodModel method(returnType, "doRValueRef", params, declSpec, "Returns an rvalue reference to int");
     
+    // Generate the declaration.
     std::string generated = MethodGenerator::generateMethodDeclaration(method);
     
+    // Expected output: Return type should include "&&".
     std::string expected =
         "    /**\n"
         "     * @brief Returns an rvalue reference to int\n"
@@ -205,13 +223,16 @@ TEST(GenerateMethodDeclarationTest, ReturnTypeWithRValueReference) {
 TEST(GenerateMethodDeclarationTest, ReturnTypeWithArray) {
     // Create a MethodModel with return type "int[10]".
     DataType returnType(Types::INT);
+    // Add an array dimension "10".
     returnType.typeDecl.arrayDimensions.push_back("10");
     std::vector<Parameter> params;
-    ScaffoldProperties::DeclartionSpecifier declSpec;
+    DeclartionSpecifier declSpec;
     MethodModel method(returnType, "doArray", params, declSpec, "Returns an array of 10 ints");
     
+    // Generate the declaration.
     std::string generated = MethodGenerator::generateMethodDeclaration(method);
     
+    // Expected output: Return type should include the array declarator.
     std::string expected =
         "    /**\n"
         "     * @brief Returns an array of 10 ints\n"
@@ -227,13 +248,15 @@ TEST(GenerateMethodDeclarationTest, ParameterWithPointer) {
     DataType returnType(Types::VOID);
     std::vector<Parameter> params;
     DataType paramType(Types::INT);
-    paramType.typeDecl.ptrCount = 1;
+    paramType.typeDecl.ptrCount = 1; // Parameter is a pointer.
     params.emplace_back(Parameter(paramType, "ptr"));
-    ScaffoldProperties::DeclartionSpecifier declSpec;
+    DeclartionSpecifier declSpec;
     MethodModel method(returnType, "doParamPointer", params, declSpec, "Takes a pointer parameter");
     
+    // Generate the declaration.
     std::string generated = MethodGenerator::generateMethodDeclaration(method);
     
+    // Expected output: Parameter type should include a pointer symbol.
     std::string expected =
         "    /**\n"
         "     * @brief Takes a pointer parameter\n"
@@ -249,13 +272,15 @@ TEST(GenerateMethodDeclarationTest, ParameterWithLValueReference) {
     DataType returnType(Types::VOID);
     std::vector<Parameter> params;
     DataType paramType(Types::INT);
-    paramType.typeDecl.isLValReference = true;
+    paramType.typeDecl.isLValReference = true; // Parameter is an lvalue reference.
     params.emplace_back(Parameter(paramType, "ref"));
-    ScaffoldProperties::DeclartionSpecifier declSpec;
+    DeclartionSpecifier declSpec;
     MethodModel method(returnType, "doParamLValueRef", params, declSpec, "Takes an lvalue reference parameter");
     
+    // Generate the declaration.
     std::string generated = MethodGenerator::generateMethodDeclaration(method);
     
+    // Expected output: Parameter type should include an ampersand.
     std::string expected =
         "    /**\n"
         "     * @brief Takes an lvalue reference parameter\n"
@@ -271,13 +296,15 @@ TEST(GenerateMethodDeclarationTest, ParameterWithRValueReference) {
     DataType returnType(Types::VOID);
     std::vector<Parameter> params;
     DataType paramType(Types::INT);
-    paramType.typeDecl.isRValReference = true;
+    paramType.typeDecl.isRValReference = true; // Parameter is an rvalue reference.
     params.emplace_back(Parameter(paramType, "temp"));
-    ScaffoldProperties::DeclartionSpecifier declSpec;
+    DeclartionSpecifier declSpec;
     MethodModel method(returnType, "doParamRValueRef", params, declSpec, "Takes an rvalue reference parameter");
     
+    // Generate the declaration.
     std::string generated = MethodGenerator::generateMethodDeclaration(method);
     
+    // Expected output: Parameter type should include "&&".
     std::string expected =
         "    /**\n"
         "     * @brief Takes an rvalue reference parameter\n"
@@ -293,14 +320,17 @@ TEST(GenerateMethodDeclarationTest, ParameterWithPointerAndArray) {
     DataType returnType(Types::VOID);
     std::vector<Parameter> params;
     DataType paramType(Types::INT);
-    paramType.typeDecl.ptrCount = 1;
+    paramType.typeDecl.ptrCount = 1; // Parameter is a pointer.
+    // Add an array dimension "5".
     paramType.typeDecl.arrayDimensions.push_back("5");
     params.emplace_back(Parameter(paramType, "data"));
-    ScaffoldProperties::DeclartionSpecifier declSpec;
+    DeclartionSpecifier declSpec;
     MethodModel method(returnType, "doParamPtrArray", params, declSpec, "Takes a pointer and array parameter");
     
+    // Generate the declaration.
     std::string generated = MethodGenerator::generateMethodDeclaration(method);
     
+    // Expected output: Parameter type should include both pointer and array declarators.
     std::string expected =
         "    /**\n"
         "     * @brief Takes a pointer and array parameter\n"
@@ -312,15 +342,16 @@ TEST(GenerateMethodDeclarationTest, ParameterWithPointerAndArray) {
 
 // Test: Method declaration with declaration specifiers.
 TEST(GenerateMethodDeclarationTest, WithDeclarationSpecifiers) {
-    // Parse the declaration specifiers from a DSL string.
+    // Parse a set of declaration specifiers from a DSL string.
     DeclartionSpecifier ds = PropertiesParser::parseDeclarationSpecifier("static inline constexpr");
     DataType returnType(Types::INT);
     std::vector<Parameter> params; // No parameters.
     MethodModel method(returnType, "doSomething", params, ds, "Does something");
     
+    // Generate the declaration.
     std::string generated = MethodGenerator::generateMethodDeclaration(method);
     
-    // Expected output: Specifiers precede the return type.
+    // Expected output: Declaration specifiers appear before the return type.
     std::string expected =
         "    /**\n"
         "     * @brief Does something\n"
@@ -332,7 +363,7 @@ TEST(GenerateMethodDeclarationTest, WithDeclarationSpecifiers) {
 
 // Test: Method declaration with declaration specifiers and parameters.
 TEST(GenerateMethodDeclarationTest, WithDeclarationSpecifiersAndParameters) {
-    // Parse a combination of declaration specifiers.
+    // Parse a combination of declaration specifiers from a DSL string.
     DeclartionSpecifier ds = PropertiesParser::parseDeclarationSpecifier("inline constexpr");
     DataType returnType(Types::VOID);
     std::vector<Parameter> params;
@@ -341,9 +372,10 @@ TEST(GenerateMethodDeclarationTest, WithDeclarationSpecifiersAndParameters) {
     params.emplace_back(Parameter(DataType(Types::INT), "param2"));
     MethodModel method(returnType, "doWork", params, ds, "Does work");
     
+    // Generate the declaration.
     std::string generated = MethodGenerator::generateMethodDeclaration(method);
     
-    // Expected output: Specifiers, return type, and parameter list are output in order.
+    // Expected output: Specifiers, return type, method name, and parameter list are output in order.
     std::string expected =
         "    /**\n"
         "     * @brief Does work\n"

@@ -1,80 +1,104 @@
 #include "GeneratorUtilities.h"
 #include <stdexcept>
+#include <string>
 
 /**
- * @namespace Anonymous
- * @brief Anonymous namespace to provide helper functions for Generator utilites
+ * @namespace
+ * @brief Anonymous namespace for internal helper functions used by GeneratorUtilities.
+ *
+ * The functions within this namespace are implementation details and are not exposed outside
+ * of this translation unit. They provide efficient and modern implementations for converting
+ * type qualifiers and declarators to string representations.
  */
 namespace
 {
     /**
-     * @brief Converts type qualifier enum to string
-     * @param tQ Type qualifier to convert
-     * @return String representation of type qualifier
+     * @brief Converts a TypeQualifier enum to its string representation.
+     *
+     * This function examines the provided type qualifier flags and returns a string that includes
+     * the corresponding C++ qualifiers (e.g., "const", "volatile"). The resulting string is suitable
+     * for inclusion in type definitions.
+     *
+     * @param tQ A constant reference to the TypeQualifier enum value.
+     * @return A std::string containing the qualifier(s) followed by a space if applicable.
+     *
+     * @note Designed for efficiency using simple concatenation and minimal temporary allocations.
      */
-    std::string typeQualiferToString(const ScaffoldProperties::TypeQualifier &tQ)
+    std::string typeQualifierToString(const ScaffoldProperties::TypeQualifier &tQ)
     {
-        using Qualifer = ScaffoldProperties::TypeQualifier;
+        using Qualifier = ScaffoldProperties::TypeQualifier;
+        std::string result;
 
-        std::string result = "";
-
-        if (ScaffoldProperties::hasQualifier(tQ, Qualifer::CONST))
+        // Append 'const' qualifier if present.
+        if (ScaffoldProperties::hasQualifier(tQ, Qualifier::CONST))
             result += "const ";
 
-        if (ScaffoldProperties::hasQualifier(tQ, Qualifer::VOLATILE))
+        // Append 'volatile' qualifier if present.
+        if (ScaffoldProperties::hasQualifier(tQ, Qualifier::VOLATILE))
             result += "volatile ";
 
         return result;
     }
 
     /**
-     * @brief Converts type declarator struct to string
-     * @param tD Type declarator to convert
-     * @return String representation of type declarator
-     * 
-     * @throws std::runtime_error if declarator is malformed
+     * @brief Converts a TypeDeclarator structure to its string representation.
+     *
+     * This function constructs a string that represents the type declarator, including pointers,
+     * references, and array dimensions. It ensures that the declarator conforms to valid C++ syntax.
+     *
+     * @param tD A constant reference to the TypeDeclarator structure.
+     * @return A std::string representing the type declarator (e.g., "*&", "&&", "[10]").
+     *
+     * @throws std::runtime_error if the declarator is malformed, such as combining references with arrays,
+     *         or specifying both lvalue and rvalue references simultaneously.
+     *
+     * @note The function processes pointers first, followed by reference symbols, and finally appends
+     *       any array dimensions, ensuring optimal performance and adherence to C++ syntax rules.
      */
     std::string typeDeclaratorToString(const ScaffoldProperties::TypeDeclarator &tD)
     {
-        using Declarator = ScaffoldProperties::TypeDeclarator;
+        std::string result;
 
-        std::string result = "";
-
-        // &[] declarators are not valid in c++
-        if((tD.isLValReference || tD.isRValReference) && (tD.arrayDimensions.size() > 0))
+        // Check for invalid combinations: references cannot be combined with array dimensions.
+        if ((tD.isLValReference || tD.isRValReference) && (!tD.arrayDimensions.empty()))
             throw std::runtime_error("Array of references are not allowed!");
 
-        // Cannot have a lvalue ref and rvalue ref at the same time
-        if(tD.isLValReference && tD.isRValReference)
+        // Check for conflicting reference types: cannot have both lvalue and rvalue references simultaneously.
+        if (tD.isLValReference && tD.isRValReference)
             throw std::runtime_error("Lvalues and Rvalues are not allowed at the same time!");
 
-        // Pointer declarator is always first
-        for(int i = 0; i < tD.ptrCount; ++i)
+        // Efficiently append pointer symbols.
+        for (int i = 0; i < tD.ptrCount; ++i)
             result += '*';
 
-        // Print ampersands as neede
-        if(tD.isLValReference)
+        // Append reference symbols as needed.
+        if (tD.isLValReference)
             result += '&';
-        if(tD.isRValReference)
+        if (tD.isRValReference)
             result += "&&";
 
-        for(const auto& dim : tD.arrayDimensions)
+        // Append each array dimension using proper C++ array syntax.
+        for (const auto &dim : tD.arrayDimensions)
             result += '[' + dim + ']';
 
         return result;
     }
-
-} // namespace
+} // end anonymous namespace
 
 namespace GeneratorUtilities
 {
+    // This function processes a DataType object defined in the ScaffoldProperties namespace,
+    // combining type qualifiers, the base type, and type declarators into a cohesive string.
+    // It supports built-in types, custom types, and compound types with qualifiers and modifiers.
     std::string dataTypeToString(const ScaffoldProperties::DataType &dt)
     {
         using Type = ScaffoldProperties::Types;
 
-        std::string quals = typeQualiferToString(dt.qualifiers);
+        // Convert type qualifiers and declarator to their string representations.
+        std::string quals = typeQualifierToString(dt.qualifiers);
         std::string decl = typeDeclaratorToString(dt.typeDecl);
 
+        // Determine the base type and combine with qualifiers and declarator.
         switch (dt.type)
         {
         case Type::VOID:
@@ -104,7 +128,6 @@ namespace GeneratorUtilities
         case Type::AUTO:
             return quals + "auto" + decl;
         case Type::CUSTOM:
-        {
             if (dt.customType)
             {
                 return quals + *dt.customType + decl;
@@ -113,12 +136,8 @@ namespace GeneratorUtilities
             {
                 throw std::runtime_error("Custom type specified without a name!");
             }
-        }
         default:
-        {
             throw std::runtime_error("Unknown data type.");
         }
-        }
     }
-
 } // namespace GeneratorUtilities

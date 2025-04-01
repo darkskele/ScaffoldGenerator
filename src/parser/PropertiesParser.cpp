@@ -1,87 +1,85 @@
 #include "PropertiesParser.h"
 #include "ParserUtilities.h"
 #include <stdexcept>
+#include <cctype>
 
 namespace PropertiesParser
 {
     // Parse a data type from the provided string view.
-    // This function trims the input and then compares it against known type strings.
     ScaffoldProperties::DataType parseDataType(std::string_view typeStr)
     {
-        // Remove any leading and trailing whitespace.
+        // Trim whitespace from the input.
         typeStr = ParserUtilities::trim(typeStr);
 
-        // Parse qualifiers if any
+        // Extract any type qualifiers from the beginning.
         auto quals = parseTypeQualifier(typeStr);
 
-        // Parse declarators if any
+        // Extract any type declarators (pointers, references, arrays) from the end.
         auto decl = parseTypeDeclarator(typeStr);
 
-        // Compare the trimmed string against known types.
+        // Compare the remaining string against known type names.
         if (typeStr == "void")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::VOID, quals, decl);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::VOID, quals, decl);
         else if (typeStr == "int")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::INT, quals, decl);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::INT, quals, decl);
         else if (typeStr == "uint")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::UINT, quals, decl);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::UINT, quals, decl);
         else if (typeStr == "long")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::LONG, quals, decl);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::LONG, quals, decl);
         else if (typeStr == "ulong")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::ULONG, quals, decl);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::ULONG, quals, decl);
         else if (typeStr == "longlong")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::LONGLONG, quals, decl);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::LONGLONG, quals, decl);
         else if (typeStr == "ulonglong")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::ULONGLONG, quals, decl);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::ULONGLONG, quals, decl);
         else if (typeStr == "float")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::FLOAT, quals, decl);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::FLOAT, quals, decl);
         else if (typeStr == "double")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::DOUBLE, quals, decl);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::DOUBLE, quals, decl);
         else if (typeStr == "bool")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::BOOL, quals, decl);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::BOOL, quals, decl);
         else if (typeStr == "string")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::STRING, quals, decl);  
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::STRING, quals, decl);
         else if (typeStr == "char")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::CHAR, quals, decl);        
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::CHAR, quals, decl);
         else if (typeStr == "auto")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::AUTO, quals, decl); 
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::AUTO, quals, decl);
         else
-            // If the type isn't recognized, treat it as a custom type.
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::CUSTOM, std::string(typeStr), quals, decl); 
+            // If no known type matches, treat it as a custom type.
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::CUSTOM, std::string(typeStr), quals, decl);
     }
 
-    // Checks for type qualifiers in the provided string view and parses if found. 
+    // Parse type qualifiers from the provided string view.
     ScaffoldProperties::TypeQualifier parseTypeQualifier(std::string_view& qualStr)
     {
         using namespace ScaffoldProperties;
-        // By default there are no qualifiers
+        // Start with no qualifiers.
         TypeQualifier quals = TypeQualifier::NONE;
 
-        // Loop through until no more qualifiers are found 
-        while(!qualStr.empty())
+        // Loop to extract all leading qualifiers.
+        while (!qualStr.empty())
         {
-            // Check for 'const' qualifier
-            if(qualStr.substr(0, 5) == "const")
+            // Check if the string starts with "const".
+            if (qualStr.substr(0, 5) == "const")
             {
-                // Add const qualifier to type qualifiers
+                // Add the CONST flag.
                 quals = quals | TypeQualifier::CONST;
-
-                // Remove from view
+                // Remove the parsed qualifier and trim.
                 qualStr.remove_prefix(5);
                 qualStr = ParserUtilities::trim(qualStr);
             }
-            // Check for 'volatile' qualifier
-            else if(qualStr.substr(0, 8) == "volatile")
+            // Check if the string starts with "volatile".
+            else if (qualStr.substr(0, 8) == "volatile")
             {
-                // Add volatile qualifier to type qualifiers
+                // Add the VOLATILE flag.
                 quals = quals | TypeQualifier::VOLATILE;
-
-                // Remove from view
+                // Remove the parsed qualifier and trim.
                 qualStr.remove_prefix(8);
                 qualStr = ParserUtilities::trim(qualStr);
             }
             else
             {
-                // No more qualifiers present
+                // No further qualifiers found.
                 break;
             }
         }
@@ -89,78 +87,76 @@ namespace PropertiesParser
         return quals;
     }
 
+    // Parse type declarators from the provided string view.
     ScaffoldProperties::TypeDeclarator parseTypeDeclarator(std::string_view& typeStr)
     {
         using namespace ScaffoldProperties;
-        // By default there are no declarators
+        // Initialize an empty TypeDeclarator.
         TypeDeclarator tD;
 
-        // Loop until no more declartors are available
-        while(!typeStr.empty())
+        // Loop to process all declarator tokens from the end of the string.
+        while (!typeStr.empty())
         {
-            // Check for raw ptr in data type
-            if(typeStr.back() == '*')
+            // Check if the last character is a pointer symbol '*'.
+            if (typeStr.back() == '*')
             {
-                // Increment ptr count
+                // Increase pointer count.
                 tD.ptrCount++;
-                // Remove from view
+                // Remove the '*' from the end.
                 typeStr.remove_suffix(1);
             }
-            // Check for references
-            else if(typeStr.back() == '&')
+            // Check if the last character indicates a reference.
+            else if (typeStr.back() == '&')
             {
-                // If already set to L value refernce, then this is the second ampersand 
-                // which indicates rvalue ref
-                if(tD.isLValReference)
+                // If an lvalue reference is already detected, this '&' indicates an rvalue reference.
+                if (tD.isLValReference)
                 {
-                    // Set to rval reference and unset lval ref
                     tD.isRValReference = true;
                     tD.isLValReference = false;
-                    // Remove from view
                     typeStr.remove_suffix(1);
                 }
-                // If R value reference already set, then scaff is malformed (&&& is not a 
-                // valid declarator)
-                else if(tD.isRValReference)
+                // If already an rvalue reference is set, further '&' is invalid.
+                else if (tD.isRValReference)
                 {
-                    throw std::runtime_error("Invalid Reference configuration!");
+                    throw std::runtime_error("Invalid reference configuration: too many '&' symbols.");
                 }
-                // Else, first ampersand which equals a L val reference
                 else
                 {
-                    // Set as L val reference
+                    // Set as an lvalue reference.
                     tD.isLValReference = true;
-                    // Remove from view
                     typeStr.remove_suffix(1);
                 }
             }
-            // Check for array dimensions
-            else if (typeStr.back() == ']') {
+            // Check for array declarators.
+            else if (typeStr.back() == ']')
+            {
                 // Find the matching '['.
                 size_t openBracketPos = typeStr.find_last_of('[');
-                if (openBracketPos == std::string_view::npos) {
-                    throw std::runtime_error("Mismatched array brackets in declarator!");
+                if (openBracketPos == std::string_view::npos)
+                {
+                    throw std::runtime_error("Mismatched array brackets in declarator.");
                 }
-                // Extract the dimension between '[' and ']'
+                // Extract the dimension string between '[' and ']'.
                 std::string_view dim = typeStr.substr(openBracketPos + 1, typeStr.size() - openBracketPos - 2);
-                
-                // Validate the dimension: if non-empty, it must consist only of digits.
-                if (!dim.empty()) {
-                    for (char c : dim) {
-                        if (!std::isdigit(c)) {
+                // Validate the dimension if non-empty (must be numeric).
+                if (!dim.empty())
+                {
+                    for (char c : dim)
+                    {
+                        if (!std::isdigit(c))
+                        {
                             throw std::runtime_error("Array dimension must be a number.");
                         }
                     }
                 }
-                
-                // Store the dimension (empty string for unsized arrays)
+                // Save the array dimension (empty for unsized arrays).
                 tD.arrayDimensions.push_back(std::string(dim));
-                // Remove the entire "[...]" from the view.
+                // Remove the entire array declarator from the string.
                 typeStr.remove_suffix(typeStr.size() - openBracketPos);
             }
             else
             {
-                // No more declarators found
+                // No more declarators detected.
                 break;
             }
         }
@@ -169,22 +165,21 @@ namespace PropertiesParser
     }
 
     // Parse a comma-separated list of parameters from the provided string view.
-    // Expected format: "param1:int, param2:float"
     std::vector<ScaffoldProperties::Parameter> parseParameters(std::string_view paramStr)
     {
         std::vector<ScaffoldProperties::Parameter> params;
-        // Trim the entire parameter string first.
+        // Trim whitespace from the entire parameter string.
         paramStr = ParserUtilities::trim(paramStr);
 
-        // Loop until the entire string has been processed.
+        // Process each parameter token until the string is exhausted.
         while (!paramStr.empty())
         {
-            // Find the position of the next comma.
+            // Find the next comma that separates parameters.
             size_t commaPos = paramStr.find(',');
             std::string_view token;
             if (commaPos == std::string_view::npos)
             {
-                // If no comma is found, the remainder is one token.
+                // If no comma, the remaining string is one token.
                 token = paramStr;
                 paramStr.remove_prefix(paramStr.size());
             }
@@ -192,17 +187,17 @@ namespace PropertiesParser
             {
                 // Extract the token before the comma.
                 token = paramStr.substr(0, commaPos);
-                // Remove the processed token and the comma from the string.
+                // Remove the token and the comma from the parameter string.
                 paramStr.remove_prefix(commaPos + 1);
             }
 
-            // Trim whitespace from the token.
+            // Trim the token.
             token = ParserUtilities::trim(token);
-            // Find the colon that separates the parameter name from its type.
+            // Find the colon that separates the parameter name and its type.
             size_t colonPos = token.find(':');
             if (colonPos == std::string_view::npos)
             {
-                // If no colon is found, the format is invalid.
+                // Malformed parameter if colon is missing.
                 throw std::runtime_error("Invalid parameter format; expected 'name:type'.");
             }
 
@@ -218,49 +213,42 @@ namespace PropertiesParser
         return params;
     }
 
+    // Parse declaration specifiers from the provided string view.
     ScaffoldProperties::DeclartionSpecifier parseDeclarationSpecifier(std::string_view declStr)
     {
         using namespace ScaffoldProperties;
-        // By default there are no declartion specifier
+        // Initialize an empty declaration specifier.
         DeclartionSpecifier decl{};
+        // Trim whitespace from the input.
         declStr = ParserUtilities::trim(declStr);
 
-        // Loop through until no more qualifiers are found 
-        while(!declStr.empty())
+        // Loop to extract all declaration specifiers.
+        while (!declStr.empty())
         {
-            // Check for 'static' specifier
-            if(declStr.substr(0, 6) == "static")
+            // Check for "static" specifier.
+            if (declStr.substr(0, 6) == "static")
             {
-                // Add static specifier to declaration specifiers
                 decl.isStatic = true;
-
-                // Remove from view
                 declStr.remove_prefix(6);
                 declStr = ParserUtilities::trim(declStr);
             }
-            // Check for 'inline' specifier
-            else if(declStr.substr(0, 6) == "inline")
+            // Check for "inline" specifier.
+            else if (declStr.substr(0, 6) == "inline")
             {
-                // Add inline specifier to declaration specifiers
                 decl.isInline = true;
-
-                // Remove from view
                 declStr.remove_prefix(6);
                 declStr = ParserUtilities::trim(declStr);
             }
-            // Check for 'constexpr' specifier
-            else if(declStr.substr(0, 9) == "constexpr")
+            // Check for "constexpr" specifier.
+            else if (declStr.substr(0, 9) == "constexpr")
             {
-                // Add constexpr specifier to declaration specifiers
                 decl.isConstexpr = true;
-
-                // Remove from view
                 declStr.remove_prefix(9);
                 declStr = ParserUtilities::trim(declStr);
             }
             else
             {
-                // No more specifiers present
+                // No further specifiers found.
                 break;
             }
         }
