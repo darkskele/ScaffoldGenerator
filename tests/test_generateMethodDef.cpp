@@ -45,4 +45,65 @@ TEST(GenerateMethodDefinitionTest, WithParameters) {
     EXPECT_EQ(generated, expected);
 }
 
-// Additional tests could be added here for edge cases or custom types.
+TEST(GenerateMethodDefinitionTest, ReturnTypeWithConstQualifier) {
+    // Create a MethodModel with return type "const int" (qualified with const) and no parameters.
+    DataType returnType(Types::INT, TypeQualifier::CONST);
+    std::vector<Parameter> params;  // No parameters.
+    MethodModel method(returnType, "doSomething", params, "Returns a constant int");
+    
+    std::string className = "MyClass";
+    std::string generated = MethodGenerator::generateMethodDefinition(className, method);
+    
+    // Expected output:
+    // "const int MyClass::doSomething() {\n    throw std::runtime_error(\"Not implemented\");\n}\n"
+    std::string expected =
+        "const int MyClass::doSomething() {\n"
+        "    throw std::runtime_error(\"Not implemented\");\n"
+        "}\n";
+    
+    EXPECT_EQ(generated, expected);
+}
+
+TEST(GenerateMethodDefinitionTest, ParameterWithConstQualifier) {
+    // Create a MethodModel with one parameter that is const-qualified.
+    DataType returnType(Types::VOID);
+    std::vector<Parameter> params;
+    params.emplace_back(Parameter(DataType(Types::FLOAT, TypeQualifier::CONST), "param1"));
+    
+    MethodModel method(returnType, "doSomething", params, "Takes a constant float parameter");
+    
+    std::string className = "MyClass";
+    std::string generated = MethodGenerator::generateMethodDefinition(className, method);
+    
+    // Expected output:
+    // "void MyClass::doSomething(const float param1) {\n    throw std::runtime_error(\"Not implemented\");\n}\n"
+    std::string expected =
+        "void MyClass::doSomething(const float param1) {\n"
+        "    throw std::runtime_error(\"Not implemented\");\n"
+        "}\n";
+    
+    EXPECT_EQ(generated, expected);
+}
+
+TEST(GenerateMethodDefinitionTest, ParameterWithConstVolatileQualifiers) {
+    // Create a MethodModel with one parameter that is both const and volatile.
+    DataType returnType(Types::VOID);
+    std::vector<Parameter> params;
+    params.emplace_back(Parameter(DataType(Types::INT, TypeQualifier::CONST | TypeQualifier::VOLATILE), "param1"));
+    
+    MethodModel method(returnType, "doSomething", params, "Takes a const volatile int parameter");
+    
+    std::string className = "MyClass";
+    std::string generated = MethodGenerator::generateMethodDefinition(className, method);
+    
+    // Expected output:
+    // "void MyClass::doSomething(const volatile int param1) {\n    throw std::runtime_error(\"Not implemented\");\n}\n"
+    std::string expected =
+        "void MyClass::doSomething(const volatile int param1) {\n"
+        "    throw std::runtime_error(\"Not implemented\");\n"
+        "}\n";
+    
+    EXPECT_EQ(generated, expected);
+}
+
+

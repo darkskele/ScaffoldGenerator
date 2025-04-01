@@ -11,34 +11,79 @@ namespace PropertiesParser
         // Remove any leading and trailing whitespace.
         typeStr = ParserUtilities::trim(typeStr);
 
+        // Parse qualifiers if any
+        auto quals = parseTypeQualifier(typeStr);
+
         // Compare the trimmed string against known types.
         if (typeStr == "void")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::VOID);
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::VOID, quals);  
         else if (typeStr == "int")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::INT);
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::INT, quals);  
         else if (typeStr == "uint")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::UINT);
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::UINT, quals);  
         else if (typeStr == "long")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::LONG);
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::LONG, quals);  
         else if (typeStr == "ulong")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::ULONG);
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::ULONG, quals);  
         else if (typeStr == "longlong")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::LONGLONG);
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::LONGLONG, quals);  
         else if (typeStr == "ulonglong")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::ULONGLONG);
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::ULONGLONG, quals);  
         else if (typeStr == "float")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::FLOAT);
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::FLOAT, quals);  
         else if (typeStr == "double")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::DOUBLE);
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::DOUBLE, quals);  
         else if (typeStr == "bool")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::BOOL);
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::BOOL, quals);  
         else if (typeStr == "string")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::STRING);
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::STRING, quals);  
         else if (typeStr == "char")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::CHAR);
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::CHAR, quals);        
+        else if (typeStr == "auto")
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::AUTO, quals);
         else
             // If the type isn't recognized, treat it as a custom type.
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::CUSTOM, std::string(typeStr));
+            return ScaffoldProperties::DataType(ScaffoldProperties::Types::CUSTOM, std::string(typeStr), quals);
+    }
+
+    // Checks for type qualifiers in the provided string view and parses if found. 
+    ScaffoldProperties::TypeQualifier parseTypeQualifier(std::string_view& qualStr)
+    {
+        using namespace ScaffoldProperties;
+        // By default there are no qualifiers
+        TypeQualifier quals = TypeQualifier::NONE;
+
+        // Loop through until no more qualifiers are found 
+        while(!qualStr.empty())
+        {
+            // Check for 'const' qualifier
+            if(qualStr.substr(0, 5) == "const")
+            {
+                // Add const qualifier to type qualifiers
+                quals = quals | TypeQualifier::CONST;
+
+                // Remove from view
+                qualStr.remove_prefix(5);
+                qualStr = ParserUtilities::trim(qualStr);
+            }
+            // Check for 'volatile' qualifier
+            else if(qualStr.substr(0, 8) == "volatile")
+            {
+                // Add volatile qualifier to type qualifiers
+                quals = quals | TypeQualifier::VOLATILE;
+
+                // Remove from view
+                qualStr.remove_prefix(8);
+                qualStr = ParserUtilities::trim(qualStr);
+            }
+            else
+            {
+                // No more qualifiers present
+                break;
+            }
+        }
+
+        return quals;
     }
 
     // Parse a comma-separated list of parameters from the provided string view.

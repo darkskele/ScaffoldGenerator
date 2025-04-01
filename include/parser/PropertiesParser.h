@@ -21,10 +21,27 @@ namespace PropertiesParser
 {
     /**
      * @brief Parses datatype from the provided string view
+     * 
+     * This function first extracts any type qualifiers (e.g., "const", "volatile")
+     * and then compares the remaining string against known type strings. If the
+     * type isn't recognized, it is treated as a custom type.
+     * 
      * @param typeStr String view to scaff segment to parse
      * @return The parsed datatype
      */
     ScaffoldProperties::DataType parseDataType(std::string_view typeStr);
+
+    /**
+     * @brief Parses type qualifier from provided string view
+     *
+     * This function checks if the given string starts with recognized qualifiers
+     * (e.g., "const" or "volatile"). It updates the string view to remove those
+     * qualifiers as they are found.
+     *
+     * @param qualStr String view to scaff segment to parse
+     * @return The parsed type qualifier
+     */
+    ScaffoldProperties::TypeQualifier parseTypeQualifier(std::string_view& qualStr);
 
     /**
      * @brief Parses parameters from the provided string view

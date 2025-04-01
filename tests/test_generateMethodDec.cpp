@@ -72,3 +72,58 @@ TEST(GenerateMethodDeclarationTest, WithWhitespaceInDescription) {
     
     EXPECT_EQ(generated, expected);
 }
+
+TEST(GenerateMethodDeclarationTest, ReturnTypeWithConstQualifier) {
+    // Method with a return type "const int".
+    DataType returnType(Types::INT, TypeQualifier::CONST);
+    std::vector<Parameter> params; // No parameters.
+    MethodModel method(returnType, "doSomething", params, "Returns a constant int");
+    
+    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    
+    std::string expected =
+        "    /**\n"
+        "     * @brief Returns a constant int\n"
+        "     */\n"
+        "    const int doSomething();\n";
+    
+    EXPECT_EQ(generated, expected);
+}
+
+TEST(GenerateMethodDeclarationTest, ParameterWithConstQualifier) {
+    // Method with one parameter that is const-qualified.
+    DataType returnType(Types::VOID);
+    std::vector<Parameter> params;
+    params.emplace_back(Parameter(DataType(Types::FLOAT, TypeQualifier::CONST), "param1"));
+    
+    MethodModel method(returnType, "doSomething", params, "Takes a constant float parameter");
+    
+    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    
+    std::string expected =
+        "    /**\n"
+        "     * @brief Takes a constant float parameter\n"
+        "     */\n"
+        "    void doSomething(const float param1);\n";
+    
+    EXPECT_EQ(generated, expected);
+}
+
+TEST(GenerateMethodDeclarationTest, ParameterWithConstVolatileQualifiers) {
+    // Method with one parameter that is both const and volatile.
+    DataType returnType(Types::VOID);
+    std::vector<Parameter> params;
+    params.emplace_back(Parameter(DataType(Types::INT, TypeQualifier::CONST | TypeQualifier::VOLATILE), "param1"));
+    
+    MethodModel method(returnType, "doSomething", params, "Takes a const volatile int parameter");
+    
+    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    
+    std::string expected =
+        "    /**\n"
+        "     * @brief Takes a const volatile int parameter\n"
+        "     */\n"
+        "    void doSomething(const volatile int param1);\n";
+    
+    EXPECT_EQ(generated, expected);
+}

@@ -67,3 +67,33 @@ TEST(ParseParametersTest, TrailingCommaHandledGracefully) {
     EXPECT_EQ(params[0].name, "param1");
     EXPECT_EQ(params[1].name, "param2");
 }
+
+TEST(ParseParametersTest, RecognizesConstParameter) {
+    std::string_view input = "param1: const int";
+    auto params = parseParameters(input);
+    ASSERT_EQ(params.size(), 1);
+    EXPECT_EQ(params[0].name, "param1");
+    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::INT);
+    EXPECT_TRUE(ScaffoldProperties::hasQualifier(params[0].type.qualifiers, ScaffoldProperties::TypeQualifier::CONST));
+    EXPECT_FALSE(ScaffoldProperties::hasQualifier(params[0].type.qualifiers, ScaffoldProperties::TypeQualifier::VOLATILE));
+}
+
+TEST(ParseParametersTest, RecognizesVolatileParameter) {
+    std::string_view input = "param1: volatile float";
+    auto params = parseParameters(input);
+    ASSERT_EQ(params.size(), 1);
+    EXPECT_EQ(params[0].name, "param1");
+    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::FLOAT);
+    EXPECT_TRUE(ScaffoldProperties::hasQualifier(params[0].type.qualifiers, ScaffoldProperties::TypeQualifier::VOLATILE));
+    EXPECT_FALSE(ScaffoldProperties::hasQualifier(params[0].type.qualifiers, ScaffoldProperties::TypeQualifier::CONST));
+}
+
+TEST(ParseParametersTest, RecognizesConstVolatileParameter) {
+    std::string_view input = "param1: const volatile double";
+    auto params = parseParameters(input);
+    ASSERT_EQ(params.size(), 1);
+    EXPECT_EQ(params[0].name, "param1");
+    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::DOUBLE);
+    EXPECT_TRUE(ScaffoldProperties::hasQualifier(params[0].type.qualifiers, ScaffoldProperties::TypeQualifier::CONST));
+    EXPECT_TRUE(ScaffoldProperties::hasQualifier(params[0].type.qualifiers, ScaffoldProperties::TypeQualifier::VOLATILE));
+}

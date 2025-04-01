@@ -86,3 +86,51 @@ TEST(MethodParserTest, UnrecognizedPropertyThrows) {
         parseMethodProperties(methodName, propertyLines);
     }, std::runtime_error);
 }
+
+TEST(MethodParserTest, ReturnTypeWithQualifier) {
+    // Test that a method with a qualified return type is parsed correctly.
+    std::string methodName = "doConstCalc";
+    std::vector<std::string_view> propertyLines = {
+        " | return = const int",
+        " | parameters = param1:int, param2:float",
+        " | description = \"Returns a constant int\""
+    };
+
+    auto methodModel = parseMethodProperties(methodName, propertyLines);
+    
+    EXPECT_EQ(methodModel.returnType.type, ScaffoldProperties::Types::INT);
+    // Check that the return type has the const qualifier.
+    EXPECT_TRUE(ScaffoldProperties::hasQualifier(methodModel.returnType.qualifiers,
+                                                   ScaffoldProperties::TypeQualifier::CONST));
+    EXPECT_FALSE(ScaffoldProperties::hasQualifier(methodModel.returnType.qualifiers,
+                                                    ScaffoldProperties::TypeQualifier::VOLATILE));
+}
+
+TEST(MethodParserTest, ParameterWithMultipleQualifiers) {
+    // Test that parameters with both const and volatile qualifiers are parsed correctly.
+    std::string methodName = "doComplexCalc";
+    std::vector<std::string_view> propertyLines = {
+        " | return = double",
+        " | parameters = param1: const volatile int, param2: volatile float",
+        " | description = \"Calculates with qualified parameters\""
+    };
+
+    auto methodModel = parseMethodProperties(methodName, propertyLines);
+    ASSERT_EQ(methodModel.parameters.size(), 2);
+    
+    // For param1, expect both const and volatile.
+    EXPECT_EQ(methodModel.parameters[0].name, "param1");
+    EXPECT_EQ(methodModel.parameters[0].type.type, ScaffoldProperties::Types::INT);
+    EXPECT_TRUE(ScaffoldProperties::hasQualifier(methodModel.parameters[0].type.qualifiers,
+                                                   ScaffoldProperties::TypeQualifier::CONST));
+    EXPECT_TRUE(ScaffoldProperties::hasQualifier(methodModel.parameters[0].type.qualifiers,
+                                                   ScaffoldProperties::TypeQualifier::VOLATILE));
+    
+    // For param2, expect only volatile.
+    EXPECT_EQ(methodModel.parameters[1].name, "param2");
+    EXPECT_EQ(methodModel.parameters[1].type.type, ScaffoldProperties::Types::FLOAT);
+    EXPECT_FALSE(ScaffoldProperties::hasQualifier(methodModel.parameters[1].type.qualifiers,
+                                                    ScaffoldProperties::TypeQualifier::CONST));
+    EXPECT_TRUE(ScaffoldProperties::hasQualifier(methodModel.parameters[1].type.qualifiers,
+                                                   ScaffoldProperties::TypeQualifier::VOLATILE));
+}

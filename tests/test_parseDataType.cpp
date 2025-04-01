@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include "PropertiesParser.h"      // Declares parseDataType
-#include "ScaffoldProperties.h"    // Contains the Types enum and DataType struct
+#include "ScaffoldProperties.h"    // Contains the Types enum, DataType struct, and TypeQualifier definitions
 #include <string_view>
 
 using namespace PropertiesParser;
@@ -68,6 +68,11 @@ TEST(ParseDataTypeTest, RecognizesChar) {
     EXPECT_EQ(dt.type, ScaffoldProperties::Types::CHAR);
 }
 
+TEST(ParseDataTypeTest, RecognizesAuto) {
+    auto dt = parseDataType("auto");
+    EXPECT_EQ(dt.type, ScaffoldProperties::Types::AUTO);
+}
+
 TEST(ParseDataTypeTest, HandlesWhitespace) {
     // Extra spaces should be trimmed.
     auto dt = parseDataType("   int   ");
@@ -88,4 +93,33 @@ TEST(ParseDataTypeTest, EmptyInputReturnsCustomEmpty) {
     EXPECT_EQ(dt.type, ScaffoldProperties::Types::CUSTOM);
     ASSERT_TRUE(dt.customType.has_value());
     EXPECT_EQ(*dt.customType, "");
+}
+
+// ----- New Tests for Type Qualifiers -----
+
+TEST(ParseDataTypeTest, RecognizesConstQualifier) {
+    auto dt = parseDataType("const int");
+    EXPECT_EQ(dt.type, ScaffoldProperties::Types::INT);
+    EXPECT_TRUE(ScaffoldProperties::hasQualifier(dt.qualifiers, ScaffoldProperties::TypeQualifier::CONST));
+    EXPECT_FALSE(ScaffoldProperties::hasQualifier(dt.qualifiers, ScaffoldProperties::TypeQualifier::VOLATILE));
+}
+
+TEST(ParseDataTypeTest, RecognizesVolatileQualifier) {
+    auto dt = parseDataType("volatile float");
+    EXPECT_EQ(dt.type, ScaffoldProperties::Types::FLOAT);
+    EXPECT_TRUE(ScaffoldProperties::hasQualifier(dt.qualifiers, ScaffoldProperties::TypeQualifier::VOLATILE));
+    EXPECT_FALSE(ScaffoldProperties::hasQualifier(dt.qualifiers, ScaffoldProperties::TypeQualifier::CONST));
+}
+
+TEST(ParseDataTypeTest, RecognizesConstVolatileQualifier) {
+    auto dt = parseDataType("const volatile double");
+    EXPECT_EQ(dt.type, ScaffoldProperties::Types::DOUBLE);
+    EXPECT_TRUE(ScaffoldProperties::hasQualifier(dt.qualifiers, ScaffoldProperties::TypeQualifier::CONST));
+    EXPECT_TRUE(ScaffoldProperties::hasQualifier(dt.qualifiers, ScaffoldProperties::TypeQualifier::VOLATILE));
+}
+
+TEST(ParseDataTypeTest, RecognizesQualifiersWithWhitespace) {
+    auto dt = parseDataType("   volatile   int   ");
+    EXPECT_EQ(dt.type, ScaffoldProperties::Types::INT);
+    EXPECT_TRUE(ScaffoldProperties::hasQualifier(dt.qualifiers, ScaffoldProperties::TypeQualifier::VOLATILE));
 }

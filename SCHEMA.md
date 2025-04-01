@@ -137,6 +137,96 @@ In this example:
 - The class block starts with `- class MyClass:` and ends with the final `_`.
 - Inside the class block, each method is a separate nested scope that begins with `- method ...:` and ends with its own `_`.
 
+Below are two new sections for our DSL schema that define how users can specify parameter and return type qualifiers as well as the overall data types for our DSL. These sections follow our goal of keeping the DSL simple, intuitive, and C++-inspired.
+
+---
+
+### Parameter/Return Type Qualifiers
+
+In our DSL, both parameter and return types can be enhanced with qualifiers and modifiers to express additional semantics. The allowed qualifiers and modifiers include:
+
+- **Qualifiers:**  
+  Users can specify qualifiers such as `const` or `volatile` before the base type. For example:  
+  ```
+  | return = const int
+  | parameters = param1:const int, param2:volatile float
+  ```
+
+- **Pointers:**  
+  A pointer is indicated by appending an asterisk (`*`) directly to the type. This means the function or parameter returns a pointer rather than a value. Examples include:  
+  ```
+  | return = int*
+  | parameters = ptr:float*
+  ```
+  When combined with qualifiers:  
+  ```
+  | return = const int*
+  ```
+
+- **References:**  
+  References are expressed using the ampersand (`&`). This signals that the function returns a reference. For instance:  
+  ```
+  | return = int&
+  | parameters = ref:double&
+  ```
+  This can also be combined with qualifiers:  
+  ```
+  | return = const int&
+  ```
+
+- **Arrays:**  
+  Arrays are specified by appending square brackets after the type. They can be either of unspecified size (`[]`) or fixed size (e.g., `[10]`). Examples include:  
+  ```
+  | return = int[]
+  | parameters = arr:float[5]
+  ```
+
+- **Auto:**  
+  For scenarios where the return type should be deduced by the compiler, the DSL supports the use of the keyword `auto`:  
+  ```
+  | return = auto
+  ```
+
+These rules allow users to compose types in a manner that is both familiar and expressive, while remaining simple and readable.
+
+---
+
+### Data Types
+
+Our DSL supports a range of built-in data types, as well as user-defined types. In our current implementation, the following data types are supported:
+
+- **Built-In Types:**  
+  The DSL provides an enumeration of common data types for quick specification. These include:  
+  - `void`
+  - `int`
+  - `uint`
+  - `long`
+  - `ulong`
+  - `longlong` (or `LONGLONG`)
+  - `ulonglong` (or `ULONGLONG`)
+  - `float`
+  - `double`
+  - `bool`
+  - `string`
+  - `char`
+  - `auto`
+
+- **Custom Types:**  
+  If a built-in type does not suffice, users can define a custom type. This is indicated by the keyword `CUSTOM` along with the name of the user-defined type. For example, if you have a user-defined type `MyType`, you might specify:  
+  ```
+  | return = MyType
+  ```
+  Behind the scenes, this will be captured as a custom type in our model.
+
+- **Combining with Qualifiers and Modifiers:**  
+  The final data type for a parameter or return value can include any of the above qualifiers and modifiers. For example:  
+  ```
+  | return = const int*       // A constant pointer to an int
+  | return = int[10]          // An array of 10 ints
+  | parameters = data:const MyType&  // A reference to a constant user-defined type
+  | return = auto             // Let the compiler deduce the return type
+  ```
+
 ## Next Steps
 
 For this initial stage, our key focus is on the following keywords and properties:

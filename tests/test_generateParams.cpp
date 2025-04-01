@@ -43,7 +43,7 @@ TEST(GenerateParameterListTest, MultipleParameters) {
 // Test for a custom type parameter.
 TEST(GenerateParameterListTest, CustomTypeParameter) {
     // Create a parameter "customParam" with type CUSTOM and custom type name "MyType".
-    ScaffoldProperties::DataType customType(ScaffoldProperties::Types::CUSTOM, "MyType");
+    ScaffoldProperties::DataType customType(ScaffoldProperties::Types::CUSTOM, std::string("MyType"), ScaffoldProperties::TypeQualifier::NONE);
     ScaffoldProperties::Parameter param(customType, "customParam");
     std::vector<ScaffoldProperties::Parameter> params = { param };
     
