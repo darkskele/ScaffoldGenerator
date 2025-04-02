@@ -6,7 +6,7 @@
 // Expected output: "MyClass& operator=(MyClass&& other) noexcept;"
 TEST(AssignmentOperatorGeneratorTest, GenerateMoveAssignmentDeclaration) {
     std::string className = "MyClass";
-    std::string expected = "MyClass& operator=(MyClass&& other) noexcept;";
+    std::string expected = "    MyClass& operator=(MyClass&& other) noexcept;";
     
     // Call the generator function.
     std::string output = SpecialMemberGenerator::generateMoveAssignmentDeclaration(className);
@@ -39,7 +39,7 @@ TEST(AssignmentOperatorGeneratorTest, GenerateMoveAssignmentDefinition) {
 // Expected output: "MyClass& operator=(const MyClass& other);"
 TEST(AssignmentOperatorGeneratorTest, GenerateCopyAssignmentDeclaration) {
     std::string className = "MyClass";
-    std::string expected = "MyClass& operator=(const MyClass& other);";
+    std::string expected = "    MyClass& operator=(const MyClass& other);";
     
     // Call the generator function.
     std::string output = SpecialMemberGenerator::generateCopyAssignmentDeclaration(className);

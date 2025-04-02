@@ -116,7 +116,7 @@ namespace SpecialMemberGenerator
         // Build move assignment operator declaration.
         // This creates a declaration of the form:
         // MyClass& operator=(MyClass&& other) noexcept;
-        oss << className << "& operator=(" << className << "&& other) noexcept;";
+        oss << "    " << className << "& operator=(" << className << "&& other) noexcept;";
         return oss.str();
     }
 
@@ -140,7 +140,7 @@ namespace SpecialMemberGenerator
         // Build copy assignment operator declaration.
         // This creates a declaration of the form:
         // MyClass& operator=(const MyClass& other);
-        oss << className << "& operator=(const " << className << "& other);";
+        oss << "    " << className << "& operator=(const " << className << "& other);";
         return oss.str();
     }
 
