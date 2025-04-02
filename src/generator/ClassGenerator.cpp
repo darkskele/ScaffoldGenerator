@@ -1,0 +1,165 @@
+#include "ClassGenerator.h"
+#include "SpecialMemberGenerator.h"
+#include "MethodGenerator.h"
+#include "GeneratorUtilities.h"
+#include <sstream>
+#include <format>
+
+// Anonymous namespace for helper functions.
+namespace
+{
+    /**
+     * @brief Helper function to generate method definitions.
+     *
+     * Iterates over the provided methods and appends each method's definition to the output stream.
+     *
+     * @param methods The vector of MethodModel objects.
+     * @param oss The output stream to append the definitions.
+     */
+    void classMethodDefinitionGenerator(const std::vector<ScaffoldModels::MethodModel>& methods, 
+                                        const std::string& className, std::ostringstream& oss)
+    {
+        for (const auto& meth : methods)
+        {
+            // Generate the definition for each method and append a newline.
+            oss << MethodGenerator::generateMethodDefinition(className, meth) << "\n";
+        }
+    }
+}
+
+namespace ClassGenerator
+{
+    std::string generateClassDeclaration(const ScaffoldModels::ClassModel& cl)
+    {
+        std::ostringstream oss;
+        // Generate Doxygen-style class comment.
+        oss << "/**\n * @class " << cl.name << "\n * @brief " << cl.description << "\n */\n";
+        // Start class declaration.
+        oss << "class " << cl.name << " {\npublic:\n";
+
+        // Generate constructor declarations.
+        for (const auto& ctor : cl.constructors)
+        {
+            oss << SpecialMemberGenerator::generateConstructorDeclaration(cl.name, ctor);
+        }
+
+        // Generate destructor declaration if available.
+        if (cl.destructor)
+        {
+            oss << SpecialMemberGenerator::generateDestructorDeclaration(cl.name) << "\n";
+        }
+
+        // Generate copy assignment declaration if specified.
+        if (cl.hasCopyAssignment)
+        {
+            oss << SpecialMemberGenerator::generateCopyAssignmentDeclaration(cl.name) << "\n";
+        }
+
+        // Generate move assignment declaration if specified.
+        if (cl.hasMoveAssignment)
+        {
+            oss << SpecialMemberGenerator::generateMoveAssignmentDeclaration(cl.name) << "\n";
+        }
+
+        // Generate declarations for public methods.
+        for (const auto& meth : cl.publicMethods)
+        {
+            oss << MethodGenerator::generateMethodDeclaration(meth);
+        }
+        // Generate declarations for public members.
+        for (const auto& mem : cl.publicMembers)
+        {
+            oss << std::format("    {} {};\n", GeneratorUtilities::dataTypeToString(mem.type), mem.name);
+        }
+
+        // Generate private section if necessary.
+        if (!cl.privateMembers.empty() || !cl.privateMethods.empty())
+        {
+            oss << "private:\n";
+            for (const auto& meth : cl.privateMethods)
+            {
+                oss << MethodGenerator::generateMethodDeclaration(meth);
+            }
+            for (const auto& mem : cl.privateMembers)
+            {
+                oss << std::format("    {} {};\n", GeneratorUtilities::dataTypeToString(mem.type), mem.name);
+            }
+        }
+
+        // Generate protected section if necessary.
+        if (!cl.protectedMembers.empty() || !cl.protectedMethods.empty())
+        {
+            oss << "protected:\n";
+            for (const auto& meth : cl.protectedMethods)
+            {
+                oss << MethodGenerator::generateMethodDeclaration(meth);
+            }
+            for (const auto& mem : cl.protectedMembers)
+            {
+                oss << std::format("    {} {};\n", GeneratorUtilities::dataTypeToString(mem.type), mem.name);
+            }
+        }
+
+        // End class declaration.
+        oss << "};\n";
+        return oss.str();
+    }
+
+    std::string generateClassDefinition(const ScaffoldModels::ClassModel& cl)
+    {
+        std::ostringstream oss;
+
+        // Generate definitions for constructors.
+        for (const auto& ctor : cl.constructors)
+        {
+            // Generate out-of-line constructor definition.
+            std::string def = SpecialMemberGenerator::generateConstructorDefinition(cl.name, ctor,
+                cl.publicMembers, cl.privateMembers, cl.protectedMembers);
+            if (!def.empty())
+            {
+                oss << def << "\n";
+            }
+        }
+
+        // Generate definition for copy assignment operator if specified.
+        if (cl.hasCopyAssignment)
+        {
+            std::string def = SpecialMemberGenerator::generateCopyAssignmentDefinition(cl.name);
+            if (!def.empty())
+            {
+                oss << def << "\n";
+            }
+        }
+
+        // Generate definition for move assignment operator if specified.
+        if (cl.hasMoveAssignment)
+        {
+            std::string def = SpecialMemberGenerator::generateMoveAssignmentDefinition(cl.name);
+            if (!def.empty())
+            {
+                oss << def << "\n";
+            }
+        }
+
+        // Generate destructor definition if available.
+        if (cl.destructor)
+        {
+            std::string def = SpecialMemberGenerator::generateDestructorDefinition(cl.name);
+            if (!def.empty())
+            {
+                oss << def << "\n";
+            }
+        }
+
+        // Generate definitions for public methods.
+        classMethodDefinitionGenerator(cl.publicMethods, cl.name, oss);
+
+        // Generate definitions for private methods.
+        classMethodDefinitionGenerator(cl.privateMethods, cl.name, oss);
+
+        // Generate definitions for protected methods.
+        classMethodDefinitionGenerator(cl.protectedMethods, cl.name, oss);
+
+        return oss.str();
+    }
+}
