@@ -197,8 +197,8 @@
       */
      struct Parameter
      {
-         const DataType type;    /**< Data type of the parameter */
-         const std::string name; /**< Name of the parameter */
+        DataType type;    /**< Data type of the parameter */
+        std::string name; /**< Name of the parameter */
  
          /**
           * @brief Constructor for Parameter.

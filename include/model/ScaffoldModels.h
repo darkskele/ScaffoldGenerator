@@ -11,8 +11,10 @@
 #pragma once
 
 #include "ScaffoldProperties.h"
+
 #include <vector>
 #include <string>
+#include <optional>
 
 /**
  * @namespace ScaffoldModels
@@ -69,7 +71,7 @@ namespace ScaffoldModels
      */
     struct SpecialMemberFunction
     {
-        const std::string description; /**< Description of the special member function */
+        std::string description; /**< Description of the special member function */
 
         /**
          * @brief Constructor for SpecialMemberFunction.
@@ -120,23 +122,97 @@ namespace ScaffoldModels
     };
 
     /**
-     * @brief Model representing a destructor for a class.
+     * @brief Model representing a destructor.
      *
-     * This structure inherits common properties from SpecialMemberFunction.
-     * Unlike constructors, destructors do not accept parameters.
+     * This structure is a specialized version of SpecialMemberFunction that represents
+     * a class destructor. It cannot have parameters or overloads.
      */
     struct Destructor : public SpecialMemberFunction
     {
         /**
-         * @brief Constructor for the Destructor model.
-         *
-         * @param desc A description of the destructor.
+         * @brief Constructs a Destructor with a description.
+         * @param desc The description of the destructor.
          */
-        Destructor(const std::string &desc)
-            : SpecialMemberFunction(desc)
+        explicit Destructor(const std::string &desc) : SpecialMemberFunction(desc) {}
+
+        // Make move/copy constructors defaulted so it can be used with std::optional
+        Destructor(const Destructor &) = default;
+        Destructor(Destructor &&) = default;
+        Destructor &operator=(const Destructor &) = default;
+        Destructor &operator=(Destructor &&) = default;
+    };
+
+    /**
+     * @brief Represents a C++ class as defined in the scaffolder DSL.
+     *
+     * This structure models a C++ class declaration and definition, capturing
+     * data members, methods, constructors, destructors, and metadata like description
+     * and assignment operators. It is the central structure used to translate DSL
+     * class definitions into actual header and source files.
+     */
+    struct ClassModel
+    {
+        const std::string name; /**< Name of the class */
+
+        const std::string description; /**< Doxygen-style description of the class */
+
+        const std::vector<ScaffoldModels::Constructor> constructors; /**< All defined constructors, including default/copy/move/custom */
+        const std::optional<ScaffoldModels::Destructor> destructor;  /**< Optional destructor if defined in the DSL */
+
+        const std::vector<ScaffoldModels::MethodModel> publicMethods;    /**< All public methods */
+        const std::vector<ScaffoldModels::MethodModel> privateMethods;   /**< All private methods */
+        const std::vector<ScaffoldModels::MethodModel> protectedMethods; /**< All protected methods */
+
+        const std::vector<ScaffoldProperties::Parameter> publicMembers;    /**< Public data members (for simplicity, same struct as params) */
+        const std::vector<ScaffoldProperties::Parameter> privateMembers;   /**< Private data members */
+        const std::vector<ScaffoldProperties::Parameter> protectedMembers; /**< Protected data members */
+
+        const bool hasCopyAssignment; /**< True if copy assignment operator should be generated */
+        const bool hasMoveAssignment; /**< True if move assignment operator should be generated */
+
+        /**
+         * @brief Constructor for ClassModel.
+         *
+         * @param n Name of the class.
+         * @param desc Human-readable description for Doxygen.
+         * @param ctors A list of constructor definitions.
+         * @param dtor Optional destructor definition.
+         * @param pubMethods List of public method definitions.
+         * @param privMethods List of private method definitions.
+         * @param protMethods List of protected method definitions.
+         * @param pubMembers List of public data members.
+         * @param privMembers List of private data members.
+         * @param protMembers List of protected data members.
+         * @param copyAssign Whether the copy assignment operator should be generated.
+         * @param moveAssign Whether the move assignment operator should be generated.
+         */
+        ClassModel(
+            const std::string &n,
+            const std::string &desc,
+            const std::vector<ScaffoldModels::Constructor> &ctors,
+            const std::optional<ScaffoldModels::Destructor> &dtor,
+            const std::vector<ScaffoldModels::MethodModel> &pubMethods,
+            const std::vector<ScaffoldModels::MethodModel> &privMethods,
+            const std::vector<ScaffoldModels::MethodModel> &protMethods,
+            const std::vector<ScaffoldProperties::Parameter> &pubMembers,
+            const std::vector<ScaffoldProperties::Parameter> &privMembers,
+            const std::vector<ScaffoldProperties::Parameter> &protMembers,
+            bool copyAssign,
+            bool moveAssign)
+            : name(n),
+              description(desc),
+              constructors(ctors),
+              destructor(dtor),
+              publicMethods(pubMethods),
+              privateMethods(privMethods),
+              protectedMethods(protMethods),
+              publicMembers(pubMembers),
+              privateMembers(privMembers),
+              protectedMembers(protMembers),
+              hasCopyAssignment(copyAssign),
+              hasMoveAssignment(moveAssign)
         {
         }
     };
-    
 
 } // namespace ScaffoldModels
