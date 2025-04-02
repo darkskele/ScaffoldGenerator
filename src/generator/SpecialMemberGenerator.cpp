@@ -93,4 +93,69 @@ namespace SpecialMemberGenerator
         return oss.str();
     }
 
+    std::string generateDestructorDeclaration(const std::string& className)
+    {
+        std::ostringstream oss;
+        // Build the destructor declaration.
+        // This generates a declaration like:
+        // "    ~MyClass() = default;"
+        oss << "    ~" << className << "() = default;";
+        return oss.str();
+    }
+
+    std::string generateDestructorDefinition(const std::string& className)
+    {
+        // For default destructors, no out-of-line definition is needed.
+        // Return an empty string as a placeholder.
+        return "";
+    }
+
+    std::string generateMoveAssignmentDeclaration(const std::string& className)
+    {
+        std::ostringstream oss;
+        // Build move assignment operator declaration.
+        // This creates a declaration of the form:
+        // MyClass& operator=(MyClass&& other) noexcept;
+        oss << className << "& operator=(" << className << "&& other) noexcept;";
+        return oss.str();
+    }
+
+    std::string generateMoveAssignmentDefinition(const std::string& className)
+    {
+        std::ostringstream oss;
+        // Start constructing the move assignment operator definition.
+        // The generated signature will be:
+        // MyClass& MyClass::operator=(MyClass&& other) noexcept {
+        oss << className << "& " << className << "::operator=(" << className << "&& other) noexcept {\n";
+        // Insert a placeholder body that indicates the method is not yet implemented.
+        oss << "    // Placeholder implementation: move assignment operator is not implemented.\n";
+        oss << "    throw std::runtime_error(\"Not implemented\");\n";
+        oss << "}\n";
+        return oss.str();
+    }
+
+    std::string generateCopyAssignmentDeclaration(const std::string& className)
+    {
+        std::ostringstream oss;
+        // Build copy assignment operator declaration.
+        // This creates a declaration of the form:
+        // MyClass& operator=(const MyClass& other);
+        oss << className << "& operator=(const " << className << "& other);";
+        return oss.str();
+    }
+
+    std::string generateCopyAssignmentDefinition(const std::string& className)
+    {
+        std::ostringstream oss;
+        // Start constructing the copy assignment operator definition.
+        // The generated signature will be:
+        // MyClass& MyClass::operator=(const MyClass& other) {
+        oss << className << "& " << className << "::operator=(const " << className << "& other) {\n";
+        // Insert a placeholder body that indicates the method is not yet implemented.
+        oss << "    // Placeholder implementation: copy assignment operator is not implemented.\n";
+        oss << "    throw std::runtime_error(\"Not implemented\");\n";
+        oss << "}\n";
+        return oss.str();
+    }
+
 } // namespace SpecialMemberGenerator

@@ -52,4 +52,81 @@ namespace SpecialMemberGenerator
         const std::vector<ScaffoldProperties::Parameter> privateMembers,
         const std::vector<ScaffoldProperties::Parameter> protectedMembers);
 
+    /**
+     * @brief Generates the destructor declaration.
+     *
+     * This function produces the declaration for the destructor. For a default destructor, the
+     * generated declaration is of the form:
+     *     ~MyClass() = default;
+     *
+     * @param className The name of the class.
+     * @return A string containing the destructor declaration.
+     */
+    std::string generateDestructorDeclaration(const std::string& className);
+
+    /**
+     * @brief Generates the destructor definition.
+     *
+     * For default destructors, an out-of-line definition is not required, so this function
+     * returns an empty string.
+     *
+     * @param className The name of the class.
+     * @return A string containing the destructor definition (empty for default destructors).
+     */
+    std::string generateDestructorDefinition(const std::string& className);
+
+    /**
+     * @brief Generates the move assignment operator declaration.
+     *
+     * This function produces the declaration for the move assignment operator.
+     * The generated declaration is of the form:
+     *     MyClass& operator=(MyClass&& other) noexcept;
+     *
+     * @param className The name of the class.
+     * @return A string containing the move assignment operator declaration.
+     */
+    std::string generateMoveAssignmentDeclaration(const std::string& className);
+
+    /**
+     * @brief Generates the move assignment operator definition.
+     *
+     * This function produces the definition for the move assignment operator with a placeholder
+     * body that throws a runtime error indicating the method is not yet implemented.
+     * The generated definition is of the form:
+     *     MyClass& MyClass::operator=(MyClass&& other) noexcept {
+     *         throw std::runtime_error("Not implemented");
+     *     }
+     *
+     * @param className The name of the class.
+     * @return A string containing the move assignment operator definition.
+     */
+    std::string generateMoveAssignmentDefinition(const std::string& className);
+
+    /**
+     * @brief Generates the copy assignment operator declaration.
+     *
+     * This function produces the declaration for the copy assignment operator.
+     * The generated declaration is of the form:
+     *     MyClass& operator=(const MyClass& other);
+     *
+     * @param className The name of the class.
+     * @return A string containing the copy assignment operator declaration.
+     */
+    std::string generateCopyAssignmentDeclaration(const std::string& className);
+
+    /**
+     * @brief Generates the copy assignment operator definition.
+     *
+     * This function produces the definition for the copy assignment operator with a placeholder
+     * body that throws a runtime error indicating the method is not yet implemented.
+     * The generated definition is of the form:
+     *     MyClass& MyClass::operator=(const MyClass& other) {
+     *         throw std::runtime_error("Not implemented");
+     *     }
+     *
+     * @param className The name of the class.
+     * @return A string containing the copy assignment operator definition.
+     */
+    std::string generateCopyAssignmentDefinition(const std::string& className);
+
 } // namespace SpecialMemberGenerator
