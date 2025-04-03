@@ -1,16 +1,16 @@
 #include "gtest/gtest.h"
-#include "MethodParser.h"            // Declares parseMethodProperties
+#include "CallableParser.h"            // Declares parseMethodProperties
 #include "ScaffoldModels.h"          // Contains the MethodModel struct
 #include "ScaffoldProperties.h"      // Contains type definitions (Types, DataType, etc.)
 #include <vector>
 #include <string_view>
 #include <stdexcept>
 
-using namespace MethodParser;  // Bring MethodParser functions into scope.
+using namespace CallableParser;  // Bring CallableParser functions into scope.
 using namespace ScaffoldProperties;
 
 // Test: Valid method block with return type, parameters, and description.
-TEST(MethodParserTest, ValidMethodProperties) {
+TEST(CallableParserTest, ValidMethodProperties) {
     std::string methodName = "doSomething";
     std::vector<std::string_view> propertyLines = {
         " | return = int",
@@ -37,7 +37,7 @@ TEST(MethodParserTest, ValidMethodProperties) {
 }
 
 // Test: Method block with only a description provided.
-TEST(MethodParserTest, OnlyDescriptionProvided) {
+TEST(CallableParserTest, OnlyDescriptionProvided) {
     std::string methodName = "doSomethingElse";
     std::vector<std::string_view> propertyLines = {
         " | description = \"Just a description\""
@@ -56,7 +56,7 @@ TEST(MethodParserTest, OnlyDescriptionProvided) {
 }
 
 // Test: Extra whitespace in property lines is trimmed properly.
-TEST(MethodParserTest, WhitespaceTrimming) {
+TEST(CallableParserTest, WhitespaceTrimming) {
     std::string methodName = "doTest";
     std::vector<std::string_view> propertyLines = {
         "   |  return =   double   ",
@@ -79,7 +79,7 @@ TEST(MethodParserTest, WhitespaceTrimming) {
 }
 
 // Test: An unrecognized property should throw a runtime error.
-TEST(MethodParserTest, UnrecognizedPropertyThrows) {
+TEST(CallableParserTest, UnrecognizedPropertyThrows) {
     std::string methodName = "doSomething";
     std::vector<std::string_view> propertyLines = {
         " | unknown = value"
@@ -91,7 +91,7 @@ TEST(MethodParserTest, UnrecognizedPropertyThrows) {
 }
 
 // Test: Return type with a const qualifier is parsed correctly.
-TEST(MethodParserTest, ReturnTypeWithQualifier) {
+TEST(CallableParserTest, ReturnTypeWithQualifier) {
     std::string methodName = "doConstCalc";
     std::vector<std::string_view> propertyLines = {
         " | return = const int",
@@ -108,7 +108,7 @@ TEST(MethodParserTest, ReturnTypeWithQualifier) {
 }
 
 // Test: Parameter with both const and volatile qualifiers is parsed correctly.
-TEST(MethodParserTest, ParameterWithMultipleQualifiers) {
+TEST(CallableParserTest, ParameterWithMultipleQualifiers) {
     std::string methodName = "doComplexCalc";
     std::vector<std::string_view> propertyLines = {
         " | return = double",
@@ -133,7 +133,7 @@ TEST(MethodParserTest, ParameterWithMultipleQualifiers) {
 }
 
 // Test: Return type with a single pointer declarator.
-TEST(MethodParserTest, ReturnTypeWithPointer) {
+TEST(CallableParserTest, ReturnTypeWithPointer) {
     std::string methodName = "doPointerCalc";
     std::vector<std::string_view> propertyLines = {
         " | return = int*",
@@ -151,7 +151,7 @@ TEST(MethodParserTest, ReturnTypeWithPointer) {
 }
 
 // Test: Return type with an lvalue reference.
-TEST(MethodParserTest, ReturnTypeWithLValueReference) {
+TEST(CallableParserTest, ReturnTypeWithLValueReference) {
     std::string methodName = "doReferenceCalc";
     std::vector<std::string_view> propertyLines = {
         " | return = int&",
@@ -169,7 +169,7 @@ TEST(MethodParserTest, ReturnTypeWithLValueReference) {
 }
 
 // Test: Return type with an rvalue reference.
-TEST(MethodParserTest, ReturnTypeWithRValueReference) {
+TEST(CallableParserTest, ReturnTypeWithRValueReference) {
     std::string methodName = "doRValueCalc";
     std::vector<std::string_view> propertyLines = {
         " | return = int&&",
@@ -187,7 +187,7 @@ TEST(MethodParserTest, ReturnTypeWithRValueReference) {
 }
 
 // Test: Return type with an array dimension.
-TEST(MethodParserTest, ReturnTypeWithArray) {
+TEST(CallableParserTest, ReturnTypeWithArray) {
     std::string methodName = "doArrayCalc";
     std::vector<std::string_view> propertyLines = {
         " | return = int[10]",
@@ -203,7 +203,7 @@ TEST(MethodParserTest, ReturnTypeWithArray) {
 }
 
 // Test: Parameter with a combination of pointer and array declarators.
-TEST(MethodParserTest, ParameterWithPointerAndArray) {
+TEST(CallableParserTest, ParameterWithPointerAndArray) {
     std::string methodName = "doParamTest";
     std::vector<std::string_view> propertyLines = {
         " | return = void",
@@ -222,7 +222,7 @@ TEST(MethodParserTest, ParameterWithPointerAndArray) {
 }
 
 // Test: Declaration specifiers are parsed correctly from the DSL.
-TEST(MethodParserTest, DeclarationSpecifiersParsed) {
+TEST(CallableParserTest, DeclarationSpecifiersParsed) {
     std::string methodName = "doSomething";
     std::vector<std::string_view> propertyLines = {
         " | declaration = static inline constexpr",

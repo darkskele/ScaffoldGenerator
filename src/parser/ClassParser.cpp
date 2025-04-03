@@ -1,7 +1,7 @@
 #include "ClassParser.h"
 #include "ParserUtilities.h"
 #include "PropertiesParser.h"
-#include "MethodParser.h"
+#include "CallableParser.h"
 #include "SpecialMemberFunctionParser.h"
 
 #include <stdexcept>
@@ -66,8 +66,8 @@ namespace ClassParser
         {
             if (currentKeyword == "method")
             {
-                // Delegate method properties parsing to MethodParser.
-                MethodModel method = MethodParser::parseMethodProperties(blockIdentifier, buffer);
+                // Delegate method properties parsing to CallableParser.
+                MethodModel method = CallableParser::parseMethodProperties(blockIdentifier, buffer);
                 // Add method to the correct access group.
                 switch (currentAccess)
                 {
