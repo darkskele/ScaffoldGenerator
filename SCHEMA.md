@@ -1,582 +1,366 @@
 # Scaffolder DSL Schema
 
-This document defines the initial set of keywords, properties, and explicit scope markers for our custom DSL (with a suggested file extension of `.scaff`). Our goal is to create a human-readable, modular format for specifying project structures, which can then be used to generate C++ projects automatically.
+This document describes the **.scaff** file format that was created for specifying C++ project structures. The Scaffolder DSL is a human‐readable, modular language that automates the generation of C++ code and CMake configurations by describing projects, libraries, folders, namespaces, classes, free functions, and member methods.
+
+---
 
 ## Overview
 
-The Scaffolder DSL is a human-readable, modular language designed for specifying project structures and automatically generating C++ code. This document outlines the general DSL syntax—including keywords, properties, explicit scope markers, and nested scopes—followed by a dedicated section on method generation. Future revisions will incorporate additional constructs such as class, library, and namespace definitions.
+The Scaffolder DSL lets you describe an entire C++ project using a series of explicit blocks. A DSL file starts with a **project** block that sets up the global configuration (version, dependencies) and creates a root folder. The DSL then allows you to declare additional elements—such as libraries, folders, namespaces, classes, functions, and methods—in a nested hierarchy.
 
-## General Scaffolder Syntax
+Files generated from a **.scaff** file are automatically split into two default directories:
+- **include:** Contains all declaration files.
+- **src:** Contains all implementation files.
 
-### Keywords
+Every folder declared in the DSL (at any level) is created in both the `include` and `src` directories. Their nested structure determines the relative file paths in each directory.
 
-The DSL supports several top-level keywords that define the various elements of a project. The initial set includes:
+---
 
-- **project**  
-  Defines the overall project and its high-level properties.
+## Table of Contents
 
-- **library**  
-  Represents a modular library within the project.
+1. [Overview](#overview)
+2. [Contents and Purpose](#contents-and-purpose)
+3. [Keywords and Properties Overview](#keywords-and-properties-overview)
+4. [Scoping and Formatting Rules](#scoping-and-formatting-rules)
+5. [Data Types, Parameters, and Declaration Specifiers](#data-types-parameters-and-declaration-specifiers)
+6. [Error Conditions](#error-conditions)
+7. [Detailed Keywords](#detailed-keywords)  
+   1. [Project](#project)  
+   2. [Library](#library)  
+   3. [Folder](#folder)  
+   4. [Namespace](#namespace)  
+   5. [Class](#class)  
+   6. [Function](#function)  
+   7. [Method](#method)
+8. [File Generation](#file-generation-and-structure)
+9. [Conclusion](#conclusion)
 
-- **class**  
-  Specifies a C++ class along with its members and methods.
+---
 
-- **method**  
-  Describes a member function with its return type, parameters, and additional properties.
+## Contents and Purpose
 
-- **fucntion**  
-  Describes a function with its return type, parameters, and additional properties.
+The DSL captures every aspect of a C++ project’s structure in a concise, declarative format. Every **.scaff** file must begin with a **project** block, which defines global settings (such as version and dependencies) and the root folder for the project. Nested within this block, you can declare libraries (each generating its own folder with metadata), organizational folders, namespaces, classes, and free functions. This structure not only organizes your code but also drives the generation of declarations (in `include`) and implementations (in `src`).
 
-- **member**  
-  Defines a data member (variable) of a class.
+---
 
-- **function**  
-  Represents a standalone function outside a class context.
+## Keywords and Properties Overview
 
-- **folder**  
-  Organizes elements into a file and folder structure for the generated project.
+Each DSL element is declared by a keyword and may have associated properties, defined as key–value pairs on lines that start with a vertical bar (`|`). Common properties include:
 
-*(Additional keywords such as namespace and concept will be introduced later.)*
+- **name:** The unique identifier for the element (usually implicit in the block header).
+- **version:** Version information for projects, libraries, or versionable components.
+- **dependency:** A comma-separated list of required libraries or build features (e.g., `Boost`, `cpp20`).
+- **parameters:** A comma-separated list (format `name:type`) for functions and methods.
+- **description:** A brief explanation of the element’s purpose.
+- **declaration:** Modifiers for functions or methods (e.g., `static`, `inline`, `constexpr`).
 
-### Properties
+---
 
-Each element in the DSL may include one or more of the following properties:
+## Scoping and Formatting Rules
 
-- **name**  
-  A unique identifier for the element.
-
-- **version**  
-  Specifies the version for a project, library, or any versionable component.
-
-- **dependency**  
-  Lists required dependencies (e.g., other libraries or build features like `cpp20` or `openmp`).
-
-- **parameters**  
-  For methods or functions, a comma-separated list of parameters defined as `name:type`.
-
-- **data types**  
-  Specifies the data types for parameters, members, and return types. Both built-in and custom types are supported.
-
-- **template**  
-  Indicates that the element is templated, with optional constraints or concepts.
-
-- **description**  
-  A human-readable explanation of the element’s purpose or functionality.
-
-### Explicit Scope Markers
-
-To ensure clear parsing independent of formatting, the DSL uses explicit markers for block boundaries:
+The DSL uses explicit markers for defining blocks, regardless of how you indent the file. Indentation is optional and for readability only.
 
 - **Start of Scope:**  
-  A new block begins with a dash (`-`) at the start of a line, followed by the keyword and identifier.  
+  A block begins with a dash (`-`), followed by the keyword and an optional identifier, ending with a colon.  
   *Example:*  
-  `- method doSomething:`
+  `- project MyProject:`
 
 - **Property Lines:**  
-  Inside a block, properties are defined on lines beginning with a vertical bar (`|`), using a key-value syntax.  
+  Each property line begins with a vertical bar (`|`) followed by the key–value pair.  
   *Example:*  
-  `| return = void`
+  `| version = 1.0.0`
 
 - **End of Scope:**  
-  A block is explicitly terminated by a line containing only an underscore (`_`).  
+  A block ends with a line containing only an underscore (`_`).  
   *Example:*  
   `_`
 
-### Nested Scopes
-
-Nested elements are structured using the same explicit markers. For example, a class containing multiple methods can be written as:
-
-```
-- class MyClass:
-| description = "This is a sample class"
-- method doSomething:
-| return = void
-| parameters = param1:int, param2:float
-| description = "Performs a math operation"
-_
-- method helper:
-| return = int
-| parameters = x:double
-| description = "A helper function"
-_
-_
-```
-
-In this example:
-- The class block begins with `- class MyClass:` and closes with the final `_`.
-- Each method within the class is a nested block with its own start and end markers.
-
 ---
 
-## Method Generation Schema
+## Data Types, Parameters, and Declaration Specifiers
 
-This section details the schema specific to method generation. It leverages the general DSL syntax while adding properties and rules tailored for defining methods.
+### Data Types
 
-### Method Definition
+Data types are used to specify the return types for functions and methods, as well as the types for parameters and class members. The DSL recognizes several built-in types:
 
-- **method**  
-  The keyword to define a member function.  
-  *Example:*  
-  `- method doSomething:`
+- **void, int, uint, long, ulong, longlong, ulonglong, float, double, bool, string, char, auto**
 
-#### Core Properties
+Any type string that does not match these is treated as a **custom** type.
 
-- **return**  
-  Specifies the return type of the method. It supports built-in types (e.g., `void`, `int`, `float`), custom types, and compound types with qualifiers (`const`, `volatile`), pointers (`*`), lvalue references (`&`), rvalue references (`&&`), and arrays (`[]` or `[n]`).
+### Type Qualifiers and Declarators
 
-- **parameters**  
-  A comma-separated list of parameters where each parameter follows the `name:type` format.  
-  *Example:*  
-  `| parameters = param1:int, param2:float`
-
-- **description**  
-  Provides a human-readable description of the method’s functionality.
-
-- **declaration** (optional)  
-  Specifies method modifiers such as `static`, `inline`, or `constexpr` that affect linkage and behavior.  
-  *Example:*  
-  `| declaration = static inline`
-
-### Type Qualifiers and Modifiers
-
-Methods support enhanced type specifications for both parameters and return values:
-
+When specifying a data type, you can use:
 - **Qualifiers:**  
-  Use qualifiers like `const` or `volatile` before the base type.  
-  *Example:*  
-  `| return = const int`
-
-- **Pointers:**  
-  Indicate pointers by appending an asterisk (`*`).  
-  *Example:*  
-  `| return = int*`
-
-- **References:**  
-  Use `&` for lvalue references and `&&` for rvalue references.  
-  *Examples:*  
-  `| return = const int&`  
-  `| parameters = temp:int&&`
-
-- **Arrays:**  
-  Specify arrays with square brackets, either with unspecified size (`[]`) or fixed size (`[n]`).  
-  *Example:*  
-  `| return = int[10]`
-
-- **Auto:**  
-  The keyword `auto` can be used for deduced return types.  
-  *Example:*  
-  `| return = auto`
-
-### Example Method DSL Snippet
-
-The following snippet illustrates a complete method definition using the DSL:
-
-```
-- method doSomething:
-| declaration = static inline
-| return = void
-| parameters = param1:int, param2:float
-| description = "Performs a math operation"
-_
-```
-
-In this example:
-- The method block starts with `- method doSomething:`.
-- Property lines define modifiers, return type, parameters, and a description.
-- The block is explicitly closed with `_`.
-
----
-
-## Class Generation Schema
-
-This section details the schema specific to class generation in the Scaffolder DSL. It leverages the general DSL syntax while adding properties and rules tailored for defining C++ classes, including member declarations, constructors, destructors, and access specifiers.
-
-### Class Definition
-
-- **class**  
-  The keyword used to define a C++ class along with its members, methods, constructors, and destructors.  
-  *Example:*  
-  `- class MyClass:`
-
-#### Core Properties
-
-- **description**  
-  A human-readable explanation of the class’s purpose or functionality.
-
-- **constructors**  
-  An inline property that specifies the generation of default, copy, and move constructors. If no nested constructor blocks are provided, the system will generate the listed constructors automatically.  
-  *Example:*  
-  `| constructors = default, copy, move`
-
-- **assignment**  
-  Specifies that the copy and move assignment operators should be generated.  
-  *Example:*  
-  `| assignment = copy, move`
-
-- **members**  
-  A comma-separated list of data members. These are grouped by access specifier and can be defined either inline (with a shorthand property) or within nested access blocks.  
-  *Example:*  
-  `| members.private = int id, string name`
-
-### Nested Scopes and Access Specifiers
-
-Within the class block, nested scopes can be used to group declarations by access level. By default, any declaration in the class is treated as private unless enclosed in an explicit access specifier block:
-
-- **private:**  
-  All declarations within this block are private.
+  Place qualifiers like `const` and `volatile` at the beginning. For example:  
+  `const int`
   
-- **public:**  
-  All declarations within this block are public.
+- **Declarators:**  
+  Modify the type with pointers (`*`), references (`&` for lvalue or `&&` for rvalue), and arrays (using `[]` or `[n]` for fixed size). These tokens appear at the end of the type declaration. For example:  
+  `int*`  
+  `int&`  
+  `int&&`  
+  `int[10]`
+
+The DSL’s parser extracts qualifiers and declarators to build a structured representation of the type.
+
+### Parameter Parsing
+
+Parameters for functions and methods are declared as a comma-separated list in the format `name:type`.  
+*Example:*  
+```
+| parameters = id:int, name:string, values: const float*[5]
+```
+The parser splits the list on commas and uses the data type parser to interpret the type (including qualifiers and declarators). If a parameter is malformed (e.g., missing the colon), a parse error is thrown.
+
+### Declaration Specifiers
+
+The `declaration` property allows you to specify function and method modifiers:
+- **static**
+- **inline**
+- **constexpr**
+
+These specifiers are parsed sequentially from the provided string, and each is applied to the declaration to adjust linkage or optimization.
+
+---
+
+## Error Conditions
+
+The DSL enforces strict rules to ensure consistency:
+
+- **Multiple Project Blocks:**  
+  Only one project block is allowed per file. Encountering a second or nested `- project` triggers an error.
+
+- **Nested Libraries:**  
+  Library blocks must be declared at the top level of a project; nested library blocks are forbidden.
+
+- **Invalid Contexts:**  
+  - Methods are only allowed inside classes.
+  - Functions cannot be declared inside classes.
   
-- **protected:**  
-  All declarations within this block are protected.
+- **Malformed Parameters:**  
+  Missing colons or improperly formatted parameters result in a parse error.
 
-Additionally, constructors, destructors, and methods can be nested within these access specifier blocks.
+- **Misplaced Properties:**  
+  Properties must appear in the initial property section of a block. Additional property lines later in the block cause errors.
 
-### Constructors and Destructors
-
-Constructors and destructors have two modes of declaration:
-
-- **Inline Property Shorthand:**  
-  Use the `constructors` property in the class block to automatically generate default, copy, and move constructors. If a constructor with parameters is needed, it must be defined in a nested block.
-  
-- **Nested Blocks:**  
-  For custom behavior or parameterized constructors, a nested constructor block is used (e.g., `- constructor custom:`). The same applies to destructors (e.g., `- destructor default:`), allowing detailed customization.
-
-### Example Class DSL Snippet
-
-```
-- class MyClass:
-| description = "This is a sample class."
-| constructors = default, copy, move
-| assignment = copy, move
-- private:
-| members = int id, string name
-- constructor custom:
-| parameters = int param1, string param2
-| description = "Custom constructor with parameters"
-_
-- destructor default:
-| description = "Default destructor for MyClass"
-_
-- method setName:
-| return = void
-| parameters = name:string
-| description = "Sets the name for MyClass"
-_
-_
-- public:
-- method getName:
-| return = string
-| description = "Retrieves the name for MyClass"
-_
-_
-_
-```
+- **Syntax Errors:**  
+  Missing colons, leading dashes, or end-of-scope markers (`_`) produce errors.
 
 ---
 
-## Function Generation Schema
+## Detailed Keywords
 
-This section details the DSL rules for defining free-standing functions. Functions share nearly all properties with methods—including return types, parameters, declaration specifiers, and descriptions—but are declared using their own keyword and must reside in the global or namespace scope.
+The following sections provide details for each DSL keyword, ordered by broadness of scope.
 
-### Function Definition
+### Project
 
-- **function**  
-  The keyword to define a free function.  
-  *Example:*  
-  `- function doSomething:`
-
-#### Core Properties
-
-- **return**  
-  Specifies the return type of the function. This supports built-in types (e.g., `void`, `int`, `float`), custom types, and compound types with qualifiers (`const`, `volatile`), pointers (`*`), lvalue references (`&`), rvalue references (`&&`), and arrays (`[]` or `[n]`).
-
-- **parameters**  
-  A comma-separated list of parameters, where each parameter is defined in the `name:type` format.  
-  *Example:*  
-  `| parameters = param1:int, param2:float`
-
-- **description**  
-  Provides a human-readable explanation of the function’s purpose or behavior.
-
-- **declaration** (optional)  
-  Specifies function modifiers such as `inline`, `static`, or `constexpr` that affect linkage and optimization.  
-  *Example:*  
-  `| declaration = inline constexpr`
-
-### Additional Notes
-
-- **Scoping Restriction:**  
-  Free functions must be declared at the global or namespace level. Declaring a function within a class scope is not allowed and will result in an error during code generation.  
-  *Note:* Although methods and free functions share the same properties, the DSL distinguishes them by their scope. The `function` keyword is reserved for global or namespace-level callables.
-
-- **Similarity to Methods:**  
-  Apart from the scoping restriction, the function schema is identical to the method schema. In effect, the properties and modifiers applicable to methods are also available to functions, allowing for flexible and consistent specification of callable entities across your DSL.
-
-### Example Function DSL Snippet
-
-```
-- function doSomething:
-| declaration = inline constexpr
-| return = int
-| parameters = param1:int, param2:float
-| description = "Calculates something and returns an integer result"
-_
-```
-
-In this snippet:  
-- The block begins with `- function doSomething:`, indicating a free function declaration.  
-- Property lines specify the declaration specifiers, return type, parameters, and description.  
-- The block ends with `_`, marking the end of the function scope.
-
----
-
-## Namespace Generation Schema
-
-The DSL also supports the **namespace** keyword for defining C++ namespaces. A namespace can be either named (e.g., `- namespace MyNamespace:`) or anonymous (e.g., `- namespace:`). It accepts a **description** property and can include nested scopes such as classes, functions, and even other namespaces.
-
-**Important:** If a **method** is declared directly within a namespace, it will generate an error. Methods must be defined within a class.
-
-### Keyword
-
-- **namespace**  
-  Defines a C++ namespace.  
-  *Named Namespace:*  
-  `- namespace MyNamespace:`  
-  *Anonymous Namespace:*  
-  `- namespace:`
-
-### Properties
-
-- **description**  
-  Provides a human-readable explanation of the namespace’s purpose.
-
-### Nested Scopes
-
-Within a namespace, you may nest:
-- **class** definitions (which can include methods, constructors, etc.)
-- **function** definitions (for free-standing functions)
-- **namespace** definitions (for nested namespaces)
-
-**Error Condition:** Declaring a **method** directly inside a namespace is invalid and will generate an error.
-
-### Examples
-
-#### Named Namespace with Nested Elements
-
-```
-- namespace MyNamespace:
-| description = "Groups related classes and free functions."
-- class MyClass:
-| description = "A sample class within MyNamespace."
-- constructor default:
-| description = "Default constructor for MyClass."
-_
-- function freeFunction:
-| declaration = inline constexpr
-| return = int
-| parameters = param1:int, param2:float
-| description = "A free-standing function in MyNamespace."
-_
-_
-```
-
-#### Nested Namespaces
-
-```
-- namespace OuterNamespace:
-| description = "The outer namespace."
-- namespace InnerNamespace:
-| description = "A nested namespace inside OuterNamespace."
-- function innerFunction:
-| return = void
-| parameters =
-| description = "A function inside InnerNamespace."
-_
-_
-```
-
-#### Anonymous Namespace
-
-```
-- namespace:
-| description = "An anonymous namespace with internal linkage."
-- function helper:
-| return = void
-| parameters =
-| description = "A helper function in an anonymous namespace."
-_
-_
-```
-
----
-
-## Folder Generation Schema
-
-The DSL now includes a dedicated mechanism for organizing files into folders. Folders are treated as explicit scopes in the DSL and serve only for code organization—they do not affect the build configuration. Every folder declared will be created in both default directories: header files will be placed under `include`, and implementation files under `src`. The folder’s position in the nested hierarchy determines its relative placement in the generated file system.
-
-### Folder Keyword and Syntax
-
-- **folder**  
-  Declares a folder scope to organize generated files. The keyword is used as a block marker with an explicit start and end, following the same conventions as other DSL elements.
-
-- **Scope and Nesting:**  
-  - If a folder is declared at the top level (i.e., not nested within another folder), it becomes a direct subfolder of both the `include` and `src` directories.
-  - If a folder is nested within another folder, it will appear as a subfolder of its parent. For example, a folder declared within a top-level folder called `algorithms` will generate the structure `include/algorithms/<nested-folder>` and `src/algorithms/<nested-folder>`.
-
-### Folder Scope Syntax
-
-- **Start of Folder Scope:**  
-  Use a dash followed by the keyword `folder` and the folder name, ending with a colon.  
-  *Example:*  
-  `- folder core:`
-
-- **End of Folder Scope:**  
-  The folder block is closed explicitly using an underscore (`_`).
-
-### Examples
-
-#### Example 1: Top-Level Folder Declaration
-
-This example creates a folder named `core` at the project level. The folder will be present in both default directories:
-
-```
-- project MyProject:
-| // Project-level declarations and elements
-- folder core:
-  // Any code elements (classes, functions, etc.) declared here
-  // will be generated under include/core/ and src/core/
-_
-_
-```
-
-#### Example 2: Nested Folder Structure
-
-In this example, a folder named `algorithms` is declared at the top level with nested folders for specific algorithm types. The nesting directly maps to the generated folder hierarchy.
-
-```
-- project MyProject:
-- folder algorithms:
-  // Creates include/algorithms/ and src/algorithms/
-  - folder sorting:
-    // Creates include/algorithms/sorting/ and src/algorithms/sorting/
-    // Code declared here will be placed in the sorting subfolder.
+- **Scope:** Must be the first and only project block in the DSL file.
+- **Purpose:**  
+  Defines the overall project, sets global properties (version, dependency), and creates the root folder (mirrored in both `include` and `src`).
+- **Properties:**  
+  - **name** (implicit in the header)  
+  - **version**  
+  - **dependency**
+- **Allowed Nested Elements:**  
+  Libraries, folders, namespaces, classes, and free functions.
+- **Syntax Example:**
+  ```
+  - project MyProject:
+  | version = 1.0.0
+  | dependency = Boost, cpp20
+  ... (nested content)
   _
-  - folder searching:
-    // Creates include/algorithms/searching/ and src/algorithms/searching/
-    // Code declared here will be placed in the searching subfolder.
+  ```
+- **Error Conditions:**  
+  - A second or nested `- project` block is disallowed.
+  - Methods or invalid keywords in this block trigger errors.
+
+### Library
+
+- **Scope:** Must be declared directly within a project; cannot be nested inside other elements.
+- **Purpose:**  
+  Represents a modular library that creates its own folder (in both `include` and `src`) and carries metadata (version, dependency).
+- **Properties:**  
+  - **name** (implicit)  
+  - **version**  
+  - **dependency**
+- **Allowed Nested Elements:**  
+  Folders, classes, namespaces, and free functions.
+- **Syntax Example:**
+  ```
+  - library MyLibrary:
+  | version = 1.2.3
+  | dependency = cpp20
+  - folder core:
+    - class Logger:
+    | description = "Provides logging functionality"
+    - method log:
+    | return = void
+    | parameters = message:string
+    | description = "Logs a message"
+    _
+    _
   _
-_
-_
-```
+  ```
+- **Error Conditions:**  
+  - Nested library blocks trigger an error.
+  - Methods declared directly in a library block are invalid.
 
-#### Example 3: Associating Code Elements with Folders
+### Folder
 
-Code elements (such as classes, functions, or namespaces) may be declared within a folder scope. Their generated header files will be placed under the corresponding folder in `include`, and their implementation files under `src`.
+- **Scope:** Can appear at any level (project, library, namespace) for organizational purposes.
+- **Purpose:**  
+  Organizes code into folders. Each folder is generated in both `include` and `src` directories, with nested elements split accordingly into header (declaration) and source (implementation) files.
+- **Properties:**  
+  - **name** (implicit)
+- **Allowed Nested Elements:**  
+  Classes, functions, namespaces, and even other folders.
+- **Syntax Example:**
+  ```
+  - folder core:
+  ... (nested content)
+  _
+  ```
+- **Error Conditions:**  
+  - A folder must have a valid identifier.
+  - Misplaced property lines produce errors.
 
-```
-- project MyProject:
-- folder utilities:
-  // Both include/utilities/ and src/utilities/ are created.
-  - class Logger:
-  | // Class properties, constructors, and methods
-  - method log:
+### Namespace
+
+- **Scope:** Declared at the project level or nested within folders or libraries.
+- **Purpose:**  
+  Defines a C++ namespace to group related classes and free functions.
+- **Properties:**  
+  - **name** (optional for anonymous namespaces)  
+  - **description**
+- **Allowed Nested Elements:**  
+  Classes, free functions, and nested namespaces.
+- **Syntax Example:**
+  ```
+  - namespace MyNamespace:
+  | description = "Groups related classes and functions."
+  ... (nested classes and functions)
+  _
+  ```
+- **Error Conditions:**  
+  - Methods cannot be declared directly within a namespace.
+  - Invalid nesting or missing markers trigger errors.
+
+### Class
+
+- **Scope:** Declared within folders, libraries, or namespaces.
+- **Purpose:**  
+  Defines a C++ class with its members, methods, constructors, and destructors.
+- **Properties:**  
+  - **name** (implicit)  
+  - **description**  
+  - **constructors** (for auto-generation of default, copy, and move constructors)  
+  - **assignment** (for copy/move assignment operators)  
+  - **members** (grouped by access specifier)
+- **Allowed Nested Elements:**  
+  Methods, constructors, destructors, and member variables.
+- **Syntax Example:**
+  ```
+  - class MyClass:
+  | description = "This is a sample class."
+  | constructors = default, copy, move
+  | assignment = copy, move
+  - private:
+  | members = int id, string name
+  - constructor custom:
+  | parameters = int param1, string param2
+  | description = "Custom constructor"
+  _
+  - destructor default:
+  | description = "Default destructor"
+  _
+  - method setName:
   | return = void
-  | parameters = message:string
-  // The Logger class and its implementation files are placed in utilities.
+  | parameters = name:string
+  | description = "Sets the class name"
   _
   _
-_
-_
-```
+  - public:
+  - method getName:
+  | return = string
+  | description = "Retrieves the class name"
+  _
+  _
+  _
+  ```
+- **Error Conditions:**  
+  - Free functions or methods declared outside allowed contexts cause errors.
+  - Malformed parameters trigger parse errors.
 
-### Summary
+### Function
 
-- **Implicit Placement:**  
-  All folders declared are automatically created in both the `include` and `src` directories.
+- **Scope:** Must be declared at the global or namespace level (not within a class).
+- **Purpose:**  
+  Describes a free-standing function with its return type, parameters, and optional declaration modifiers.
+- **Properties:**  
+  - **name** (implicit)  
+  - **return**  
+  - **parameters**  
+  - **description**  
+  - **declaration** (optional)
+- **Syntax Example:**
+  ```
+  - function doSomething:
+  | declaration = inline constexpr
+  | return = int
+  | parameters = param1:int, param2:float
+  | description = "Performs a calculation"
+  _
+  ```
+- **Error Conditions:**  
+  - Declaring a function inside a class is invalid.
+  - Missing or misformatted properties produce errors.
 
-- **Nested Hierarchy:**  
-  The nesting of folder blocks in the DSL corresponds directly to the folder hierarchy in the generated file system.
+### Method
 
-- **Organization Only:**  
-  Folders serve only to organize code files; they do not affect build configurations or carry additional documentation properties.
-
----
-
-## Library Generation Schema (Updated)
-
-The **library** keyword is used to define a modular library within your project. This element functions similarly to a folder by creating a directory in both the `include` and `src` paths, but it also carries metadata to inform CMake configuration. The library element accepts properties for versioning and dependency management.
-
-### Core Properties
-
-- **name**  
-  A unique identifier for the library, specified as part of the library block’s identifier (e.g., `- library MyLibrary:`).
-
-- **version**  
-  Specifies the version of the library, which can be used by CMake to manage versioning.
-
-- **dependency**  
-  A comma-separated list of dependencies. These can refer to other libraries (that are not nested within this one) or external build features (such as `Boost`, `cpp20`, etc.).
-
-### Scope and Structure
-
-- **Folder Creation:**  
-  Like folders, a library creates a folder with the same name in both the `include` and `src` directories. The internal structure is determined by the nested elements (such as folder, class, or function).
-
-- **Nesting Restriction:**  
-  Libraries **cannot** be nested inside other libraries. If a user attempts to nest a library within another library, it will generate a DSL error. This rule ensures clarity in the generated project structure and avoids confusion in CMake configuration.
-
-### Syntax
-
-- **Start of Library Scope:**  
-  The library block begins with a dash (`-`) followed by the keyword `library` and the library name, ending with a colon.  
-  *Example:*  
-  `- library MyLibrary:`
-
-- **Property Lines:**  
-  Inside the block, properties are defined with the vertical bar (`|`) syntax.  
-  *Examples:*  
-  `| version = 1.0.0`  
-  `| dependency = Boost, cpp20`
-
-- **Nested Scopes:**  
-  The library block can contain folder scopes and other code elements. However, another `library` element cannot appear within this block.
-
-- **End of Library Scope:**  
-  The block is explicitly closed with an underscore (`_`).
-
-### Example Library DSL Snippet
-
-```
-- library MyLibrary:
-| version = 1.0.0
-| dependency = Boost, cpp20
-- folder core:
-  // Code elements declared here (classes, functions, etc.)
-  - class Logger:
-  | // Logger class definition
-  - method log:
+- **Scope:** Must be declared within a class.
+- **Purpose:**  
+  Specifies a member function with its return type, parameters, and optional declaration modifiers.
+- **Properties:**  
+  - **name** (implicit)  
+  - **return**  
+  - **parameters**  
+  - **description**  
+  - **declaration** (optional)
+- **Syntax Example:**
+  ```
+  - method doSomething:
+  | declaration = static inline
   | return = void
-  | parameters = message:string
-  | // Method implementation
+  | parameters = param1:int, param2:float
+  | description = "Executes a class operation"
   _
-  _
-_
-```
+  ```
+- **Error Conditions:**  
+  - Methods declared outside a class trigger an error.
+  - Invalid parameter formats or missing end-of-scope markers produce errors.
 
-#### Explanation
+## File Generation and Structure
 
-- **Library Declaration:**  
-  The block `- library MyLibrary:` defines a library named *MyLibrary*.
-  
-- **Version and Dependencies:**  
-  The properties `| version = 1.0.0` and `| dependency = Boost, cpp20` provide CMake with the necessary versioning and dependency data.
-  
-- **Folder Generation:**  
-  Similar to a folder declaration, the library creates corresponding directories (`include/MyLibrary` and `src/MyLibrary`), and any nested folder (like `core`) will be subdirectories within those.
-  
-- **Nesting Restriction:**  
-  Attempting to nest another `library` block inside *MyLibrary* will trigger an error. This rule is enforced to maintain a flat library structure and prevent ambiguity in CMake configurations.
+In the Scaffolder DSL, the concept of a “file” is defined by the scope in which elements appear. The broadest scopes—those that appear directly under a project, folder, or library—are considered top-level and will generate individual files. Each file is actually split into two parts:
+- **Header File (in the `include` folder):** Contains declarations.
+- **Implementation File (in the `src` folder):** Contains definitions/implementations.
+
+The rules for file generation are as follows:
+
+- **Namespaces:**  
+  A namespace declared at the project, folder, or library level generates its own file. This file contains all the contents of the namespace (such as nested classes and free functions) and is split into header and source parts.
+
+- **Classes:**  
+  A class that appears directly at the project, folder, or library level also generates its own set of files. This ensures that the class declaration is placed in the header file, with its corresponding implementations (methods, constructors, etc.) placed in the source file.
+
+- **Free Functions:**  
+  Collections of free functions declared at one of these broader scopes (project, folder, or library) are grouped together to form a file. The functions are split so that declarations appear in the header file and definitions in the source file.
+
+In essence, any DSL element that is not nested within another file-level element (i.e., beyond the folder level) is treated as a candidate for file generation. This design keeps the generated project structure organized, with a clear separation between interface (declarations in `include`) and implementation (definitions in `src`).
 
 ---
+
+## Conclusion
+
+The Scaffolder DSL provides a comprehensive, modular way to define C++ project structures. This schema document outlines every aspect of the DSL—from global settings in the project block to the detailed handling of types, parameters, and declaration specifiers, as well as error conditions and file generation rules. By following this schema, you can create a **.scaff** file that drives automatic, consistent code generation and build configuration for your C++ projects.
