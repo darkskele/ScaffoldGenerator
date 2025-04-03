@@ -29,7 +29,7 @@ TEST(ProjectParserTest, ParsesEmptyProjectBlock) {
     EXPECT_TRUE(proj.subFolders.empty());
     EXPECT_TRUE(proj.classFiles.empty());
     EXPECT_TRUE(proj.namespaceFiles.empty());
-    EXPECT_TRUE(proj.functionFiles.empty());
+    EXPECT_TRUE(proj.functionFile.empty());
 }
 
 TEST(ProjectParserTest, ParsesProjectWithNestedLibrary) {
@@ -97,9 +97,9 @@ TEST(ProjectParserTest, ParsesMixedNestedContentInProject) {
     ASSERT_EQ(proj.subFolders.size(), 1);
     EXPECT_EQ(proj.subFolders[0].name, "core");
     
-    // The free function declared directly at the project level appears in project functionFiles.
-    ASSERT_EQ(proj.functionFiles.size(), 1);
-    EXPECT_EQ(proj.functionFiles[0].name, "topLevelFunc");
+    // The free function declared directly at the project level appears in project functionFile.
+    ASSERT_EQ(proj.functionFile.size(), 1);
+    EXPECT_EQ(proj.functionFile[0].name, "topLevelFunc");
     
     // The namespace block should have its own free function.
     ASSERT_EQ(proj.namespaceFiles.size(), 1);

@@ -66,7 +66,7 @@ namespace LibraryParser
         std::vector<CodeGroupModels::FolderModel> subFolders;
         std::vector<ClassModels::ClassModel> classFiles;
         std::vector<CodeGroupModels::NamespaceModel> namespaceFiles;
-        std::vector<CallableModels::FunctionModel> functionFiles;
+        std::vector<CallableModels::FunctionModel> functionFile;
 
         bool validContentFound = false;
 
@@ -139,7 +139,7 @@ namespace LibraryParser
                         throw std::runtime_error("Function block must have an identifier in library block.");
 
                     auto fn = CallableParser::parseFunctionProperties(identifier, lines);
-                    functionFiles.push_back(fn);
+                    functionFile.push_back(fn);
                 }
                 else if (keyword == "library")
                 {
@@ -172,14 +172,14 @@ namespace LibraryParser
             throw std::runtime_error("Malformed DSL file: no valid content found in library block");
 
         // Create a FolderModel for the nested content.
-        CodeGroupModels::FolderModel folderModel(libraryName, subFolders, classFiles, namespaceFiles, functionFiles);
+        CodeGroupModels::FolderModel folderModel(libraryName, subFolders, classFiles, namespaceFiles, functionFile);
 
         // Construct and return the LibraryModel using the parsed properties and nested content.
         return CodeGroupModels::LibraryModel(libraryName, version, dependencies,
                                              folderModel.subFolders,
                                              folderModel.classFiles,
                                              folderModel.namespaceFiles,
-                                             folderModel.functionFiles);
+                                             folderModel.functionFile);
     }
 
 } // namespace LibraryParser

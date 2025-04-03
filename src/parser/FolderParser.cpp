@@ -22,7 +22,7 @@ namespace FolderParser
         std::vector<CodeGroupModels::FolderModel> subFolders;        // Nested folder blocks.
         std::vector<ClassModels::ClassModel> classFiles;             // Class blocks (each generating its own file).
         std::vector<CodeGroupModels::NamespaceModel> namespaceFiles; // Namespace blocks (each generating its own file).
-        std::vector<CallableModels::FunctionModel> functionFiles;    // Free function blocks, all grouped into one file.
+        std::vector<CallableModels::FunctionModel> functionFile;    // Free function blocks, all grouped into one file.
 
         // Flag to indicate that valid DSL content has been encountered.
         bool validContentFound = false;
@@ -109,8 +109,8 @@ namespace FolderParser
 
                     // Parse the function block using the CallableParser.
                     auto fn = CallableParser::parseFunctionProperties(identifier, lines);
-                    // Add the function to the functionFiles vector.
-                    functionFiles.push_back(fn);
+                    // Add the function to the functionFile vector.
+                    functionFile.push_back(fn);
                 }
                 else if (keyword == "method")
                 {
@@ -144,7 +144,7 @@ namespace FolderParser
             throw std::runtime_error("Malformed DSL file: no valid content found in folder block");
 
         // Construct and return the FolderModel with the parsed subfolders, class files, namespace files, and free function blocks.
-        return CodeGroupModels::FolderModel(folderName, subFolders, classFiles, namespaceFiles, functionFiles);
+        return CodeGroupModels::FolderModel(folderName, subFolders, classFiles, namespaceFiles, functionFile);
     }
 
 } // namespace FolderParser

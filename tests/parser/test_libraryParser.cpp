@@ -26,7 +26,7 @@ TEST(LibraryParserTest, ParsesEmptyLibraryBlock) {
     EXPECT_TRUE(lib.subFolders.empty());
     EXPECT_TRUE(lib.classFiles.empty());
     EXPECT_TRUE(lib.namespaceFiles.empty());
-    EXPECT_TRUE(lib.functionFiles.empty());
+    EXPECT_TRUE(lib.functionFile.empty());
 }
 
 TEST(LibraryParserTest, ParsesLibraryWithNestedClass) {
@@ -47,7 +47,7 @@ TEST(LibraryParserTest, ParsesLibraryWithNestedClass) {
     EXPECT_EQ(lib.classFiles[0].name, "MyClass");
     EXPECT_TRUE(lib.subFolders.empty());
     EXPECT_TRUE(lib.namespaceFiles.empty());
-    EXPECT_TRUE(lib.functionFiles.empty());
+    EXPECT_TRUE(lib.functionFile.empty());
 }
 
 TEST(LibraryParserTest, ParsesLibraryWithNestedNamespace) {
@@ -90,9 +90,9 @@ TEST(LibraryParserTest, ParsesLibraryWithFunctionGroup) {
     
     LibraryModel lib = parseLibraryBlock("LibWithFunctions", lines);
     EXPECT_EQ(lib.name, "LibWithFunctions");
-    ASSERT_EQ(lib.functionFiles.size(), 2);
-    EXPECT_EQ(lib.functionFiles[0].name, "funcOne");
-    EXPECT_EQ(lib.functionFiles[1].name, "funcTwo");
+    ASSERT_EQ(lib.functionFile.size(), 2);
+    EXPECT_EQ(lib.functionFile[0].name, "funcOne");
+    EXPECT_EQ(lib.functionFile[1].name, "funcTwo");
 }
 
 TEST(LibraryParserTest, ParsesLibraryWithNestedFolder) {
@@ -206,8 +206,8 @@ TEST(LibraryParserTest, ParsesMixedNestedContentInLibrary) {
     LibraryModel lib = parseLibraryBlock("MixedLib", lines);
     EXPECT_EQ(lib.name, "MixedLib");
     // One free function.
-    ASSERT_EQ(lib.functionFiles.size(), 1);
-    EXPECT_EQ(lib.functionFiles[0].name, "freeFunc1");
+    ASSERT_EQ(lib.functionFile.size(), 1);
+    EXPECT_EQ(lib.functionFile[0].name, "freeFunc1");
     // One class.
     ASSERT_EQ(lib.classFiles.size(), 1);
     EXPECT_EQ(lib.classFiles[0].name, "TestClass");

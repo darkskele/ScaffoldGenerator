@@ -66,7 +66,7 @@ namespace ProjectParser
         std::vector<CodeGroupModels::FolderModel> subFolders;
         std::vector<ClassModels::ClassModel> classFiles;
         std::vector<CodeGroupModels::NamespaceModel> namespaceFiles;
-        std::vector<CallableModels::FunctionModel> functionFiles;
+        std::vector<CallableModels::FunctionModel> functionFile;
         std::vector<CodeGroupModels::LibraryModel> libraries;
 
         bool validContentFound = false;
@@ -137,7 +137,7 @@ namespace ProjectParser
                     if (identifier.empty())
                         throw std::runtime_error("Function block must have an identifier in project block.");
                     auto fn = CallableParser::parseFunctionProperties(identifier, lines);
-                    functionFiles.push_back(fn);
+                    functionFile.push_back(fn);
                 }
                 else if (keyword == "library")
                 {
@@ -173,7 +173,7 @@ namespace ProjectParser
 
         // Construct and return the ProjectModel.
         return CodeGroupModels::ProjectModel(projectName, version, dependencies, libraries,
-                                             subFolders, classFiles, namespaceFiles, functionFiles);
+                                             subFolders, classFiles, namespaceFiles, functionFile);
     }
 
 } // namespace ProjectParser

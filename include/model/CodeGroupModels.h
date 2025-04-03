@@ -64,8 +64,8 @@ namespace CodeGroupModels
         /// Namespaces defined in this folder; each will generate its own file.
         std::vector<NamespaceModel> namespaceFiles;
 
-        // Each inner vector represents a file that may contain multiple free functions.
-        std::vector<CallableModels::FunctionModel> functionFiles;
+        // The entire vector represents a file that may contain multiple free functions.
+        std::vector<CallableModels::FunctionModel> functionFile;
 
         /**
          * @brief Constructs a new FolderModel.
@@ -74,18 +74,18 @@ namespace CodeGroupModels
          * @param subFolders A vector of subfolders contained within this folder.
          * @param classFiles A vector of class models that will each generate a file.
          * @param namespaceFiles A vector of namespace models that will each generate a file.
-         * @param functionFiles A vector of functions; the vector itself represents a file containing free functions.
+         * @param functionFile A vector of functions; the vector itself represents a file containing free functions.
          */
         FolderModel(std::string name,
                     const std::vector<FolderModel> &subFolders = {},
                     const std::vector<ClassModels::ClassModel> &classFiles = {},
                     const std::vector<NamespaceModel> &namespaceFiles = {},
-                    const std::vector<CallableModels::FunctionModel> &functionFiles = {})
+                    const std::vector<CallableModels::FunctionModel> &functionFile = {})
             : name(std::move(name)),
               subFolders(subFolders),
               classFiles(classFiles),
               namespaceFiles(namespaceFiles),
-              functionFiles(functionFiles)
+              functionFile(functionFile)
         {
         }
     };
@@ -114,7 +114,7 @@ namespace CodeGroupModels
          * @param subFolders Optional subfolder models nested inside the library.
          * @param classFiles Optional class models that generate individual files.
          * @param namespaceFiles Optional namespace models that generate individual files.
-         * @param functionFiles Optional free function models; the vector represents a file containing functions.
+         * @param functionFile Optional free function models; the vector represents a file containing functions.
          */
         LibraryModel(std::string name,
                      std::string version,
@@ -122,8 +122,8 @@ namespace CodeGroupModels
                      const std::vector<FolderModel> &subFolders = {},
                      const std::vector<ClassModels::ClassModel> &classFiles = {},
                      const std::vector<NamespaceModel> &namespaceFiles = {},
-                     const std::vector<CallableModels::FunctionModel> &functionFiles = {})
-            : FolderModel(std::move(name), subFolders, classFiles, namespaceFiles, functionFiles),
+                     const std::vector<CallableModels::FunctionModel> &functionFile = {})
+            : FolderModel(std::move(name), subFolders, classFiles, namespaceFiles, functionFile),
               version(std::move(version)),
               dependencies(std::move(dependencies))
         {
@@ -156,7 +156,7 @@ namespace CodeGroupModels
          * @param subFolders Optional subfolder models nested inside the project.
          * @param classFiles Optional class models that generate individual files.
          * @param namespaceFiles Optional namespace models that generate individual files.
-         * @param functionFiles Optional free function models; the vector represents a file containing functions.
+         * @param functionFile Optional free function models; the vector represents a file containing functions.
          */
         ProjectModel(std::string name,
                      std::string version,
@@ -165,8 +165,8 @@ namespace CodeGroupModels
                      const std::vector<FolderModel> &subFolders = {},
                      const std::vector<ClassModels::ClassModel> &classFiles = {},
                      const std::vector<NamespaceModel> &namespaceFiles = {},
-                     const std::vector<CallableModels::FunctionModel> &functionFiles = {})
-            : FolderModel(std::move(name), subFolders, classFiles, namespaceFiles, functionFiles),
+                     const std::vector<CallableModels::FunctionModel> &functionFile = {})
+            : FolderModel(std::move(name), subFolders, classFiles, namespaceFiles, functionFile),
               version(std::move(version)),
               dependencies(std::move(dependencies)),
               libraries(std::move(libraries))
