@@ -124,10 +124,4 @@ namespace NamespaceParser
         return ScaffoldModels::NamespaceModel{ nsName.value_or(""), description, classes, functions, nestedNamespaces };
     }
 
-    ScaffoldModels::NamespaceModel parseNamespaceBlock(const std::optional<std::string>& nsName,
-                                                         const std::vector<std::string_view>& lines)
-    {
-        std::deque<std::string_view> dq(lines.begin(), lines.end());
-        return parseNamespaceBlock(nsName, dq);
-    }
 } // namespace NamespaceParser

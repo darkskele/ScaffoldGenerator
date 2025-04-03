@@ -48,14 +48,4 @@ namespace NamespaceParser
      */
     ScaffoldModels::NamespaceModel parseNamespaceBlock(const std::optional<std::string>& nsName,
                                                          std::deque<std::string_view>& lines);
-
-    /**
-     * @brief Convenience overload to parse a namespace block from a vector of DSL lines.
-     *
-     * @param nsName Optional name for the namespace.
-     * @param lines A vector of DSL lines representing the namespace block.
-     * @return ScaffoldModels::NamespaceModel The parsed namespace model.
-     */
-    ScaffoldModels::NamespaceModel parseNamespaceBlock(const std::optional<std::string>& nsName,
-                                                         const std::vector<std::string_view>& lines);
 }
