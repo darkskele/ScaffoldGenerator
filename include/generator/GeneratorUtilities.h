@@ -58,7 +58,7 @@
      * @param indentLevel The number of spaces to prepend to each line.
      * @return A new string where each line of the input code is indented by the specified number of spaces.
      */
-    std::string indentCode(const std::string &code, int indentLevel);
+    std::string indentCode(const std::string &code, int indentLevel = 4);
 
  } // namespace GeneratorUtilities
  
