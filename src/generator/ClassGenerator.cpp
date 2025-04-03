@@ -1,6 +1,6 @@
 #include "ClassGenerator.h"
 #include "SpecialMemberGenerator.h"
-#include "MethodGenerator.h"
+#include "CallableGenerator.h"
 #include "GeneratorUtilities.h"
 #include <sstream>
 #include <format>
@@ -22,7 +22,7 @@ namespace
         for (const auto& meth : methods)
         {
             // Generate the definition for each method and append a newline.
-            oss << MethodGenerator::generateMethodDefinition(className, meth) << "\n";
+            oss << CallableGenerator::generateMethodDefinition(className, meth) << "\n";
         }
     }
 }
@@ -64,7 +64,7 @@ namespace ClassGenerator
         // Generate declarations for public methods.
         for (const auto& meth : cl.publicMethods)
         {
-            oss << MethodGenerator::generateMethodDeclaration(meth);
+            oss << CallableGenerator::generateMethodDeclaration(meth);
         }
         // Generate declarations for public members.
         for (const auto& mem : cl.publicMembers)
@@ -78,7 +78,7 @@ namespace ClassGenerator
             oss << "private:\n";
             for (const auto& meth : cl.privateMethods)
             {
-                oss << MethodGenerator::generateMethodDeclaration(meth);
+                oss << CallableGenerator::generateMethodDeclaration(meth);
             }
             for (const auto& mem : cl.privateMembers)
             {
@@ -92,7 +92,7 @@ namespace ClassGenerator
             oss << "protected:\n";
             for (const auto& meth : cl.protectedMethods)
             {
-                oss << MethodGenerator::generateMethodDeclaration(meth);
+                oss << CallableGenerator::generateMethodDeclaration(meth);
             }
             for (const auto& mem : cl.protectedMembers)
             {

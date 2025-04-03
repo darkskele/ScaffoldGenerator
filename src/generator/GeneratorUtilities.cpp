@@ -1,6 +1,7 @@
 #include "GeneratorUtilities.h"
 #include <stdexcept>
 #include <string>
+#include <sstream>
 
 /**
  * @namespace
@@ -139,5 +140,31 @@ namespace GeneratorUtilities
         default:
             throw std::runtime_error("Unknown data type.");
         }
+    }
+
+    // Helper function to indent code.
+    std::string indentCode(const std::string &code, int indentLevel)
+    {
+        // Create an input string stream to read the code line by line.
+        std::istringstream iss(code);
+
+        // Create an output string stream to accumulate the indented code.
+        std::ostringstream oss;
+
+        // Construct a string that contains 'indentLevel' spaces.
+        std::string indent(indentLevel, ' ');
+
+        // Temporary variable to store each line read from the input code.
+        std::string line;
+
+        // Read the code line by line until the end of the input stream.
+        while (std::getline(iss, line))
+        {
+            // For each line, prepend the indent string and then append a newline.
+            oss << indent << line << "\n";
+        }
+
+        // Return the complete indented code as a string.
+        return oss.str();
     }
 } // namespace GeneratorUtilities

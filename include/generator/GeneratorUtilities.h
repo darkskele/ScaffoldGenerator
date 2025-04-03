@@ -47,5 +47,18 @@
       * @endcode
       */
      std::string dataTypeToString(const ScaffoldProperties::DataType &dt);
+
+    /**
+     * @brief Indents every line in the provided code block.
+     *
+     * This function reads the input code line by line and prepends each line with a specified
+     * number of space characters (indentLevel). The resulting indented code is returned as a new string.
+     *
+     * @param code The original code block as a string.
+     * @param indentLevel The number of spaces to prepend to each line.
+     * @return A new string where each line of the input code is indented by the specified number of spaces.
+     */
+    std::string indentCode(const std::string &code, int indentLevel);
+
  } // namespace GeneratorUtilities
  

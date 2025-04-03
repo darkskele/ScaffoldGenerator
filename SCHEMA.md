@@ -24,6 +24,9 @@ The DSL supports several top-level keywords that define the various elements of 
 - **method**  
   Describes a member function with its return type, parameters, and additional properties.
 
+- **fucntion**  
+  Describes a function with its return type, parameters, and additional properties.
+
 - **member**  
   Defines a data member (variable) of a class.
 
@@ -270,3 +273,59 @@ _
 _
 _
 ```
+
+---
+
+## Function Generation Schema
+
+This section details the DSL rules for defining free-standing functions. Functions share nearly all properties with methods—including return types, parameters, declaration specifiers, and descriptions—but are declared using their own keyword and must reside in the global or namespace scope.
+
+### Function Definition
+
+- **function**  
+  The keyword to define a free function.  
+  *Example:*  
+  `- function doSomething:`
+
+#### Core Properties
+
+- **return**  
+  Specifies the return type of the function. This supports built-in types (e.g., `void`, `int`, `float`), custom types, and compound types with qualifiers (`const`, `volatile`), pointers (`*`), lvalue references (`&`), rvalue references (`&&`), and arrays (`[]` or `[n]`).
+
+- **parameters**  
+  A comma-separated list of parameters, where each parameter is defined in the `name:type` format.  
+  *Example:*  
+  `| parameters = param1:int, param2:float`
+
+- **description**  
+  Provides a human-readable explanation of the function’s purpose or behavior.
+
+- **declaration** (optional)  
+  Specifies function modifiers such as `inline`, `static`, or `constexpr` that affect linkage and optimization.  
+  *Example:*  
+  `| declaration = inline constexpr`
+
+### Additional Notes
+
+- **Scoping Restriction:**  
+  Free functions must be declared at the global or namespace level. Declaring a function within a class scope is not allowed and will result in an error during code generation.  
+  *Note:* Although methods and free functions share the same properties, the DSL distinguishes them by their scope. The `function` keyword is reserved for global or namespace-level callables.
+
+- **Similarity to Methods:**  
+  Apart from the scoping restriction, the function schema is identical to the method schema. In effect, the properties and modifiers applicable to methods are also available to functions, allowing for flexible and consistent specification of callable entities across your DSL.
+
+### Example Function DSL Snippet
+
+```
+- function doSomething:
+| declaration = inline constexpr
+| return = int
+| parameters = param1:int, param2:float
+| description = "Calculates something and returns an integer result"
+_
+```
+
+In this snippet:  
+- The block begins with `- function doSomething:`, indicating a free function declaration.  
+- Property lines specify the declaration specifiers, return type, parameters, and description.  
+- The block ends with `_`, marking the end of the function scope.

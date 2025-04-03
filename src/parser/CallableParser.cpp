@@ -1,29 +1,29 @@
-#include "MethodParser.h"
+#include "CallableParser.h"
 #include "ScaffoldProperties.h"
 #include "ParserUtilities.h"
 #include "PropertiesParser.h"
 #include <stdexcept>
 
-namespace MethodParser
+namespace CallableParser
 {
-    ScaffoldModels::MethodModel parseMethodProperties(const std::string &methodName, const std::vector<std::string_view> &propertyLines)
+    ScaffoldModels::CallableModel parseCallableProperties(const std::string &callableName, const std::vector<std::string_view> &propertyLines)
     {
         // Initialize default properties:
-        // Return type defaults to 'void'
+        // Default return type is 'void'.
         ScaffoldProperties::DataType returnType = PropertiesParser::parseDataType("void");
-        // Empty parameter list
+        // Default parameter list is empty.
         std::vector<ScaffoldProperties::Parameter> params;
-        // Default method description (empty string)
+        // Default description is empty.
         std::string description;
-        // Default declaration specifier (all false)
+        // Default declaration specifier (no modifiers).
         ScaffoldProperties::DeclartionSpecifier declSpec;
 
-        // Iterate over each property line in the method block.
+        // Iterate over each property line in the callable block.
         for (auto line : propertyLines)
         {
-            // Remove any leading/trailing whitespace.
+            // Trim leading and trailing whitespace.
             line = ParserUtilities::trim(line);
-            // Skip empty lines or those that don't start with the expected '|' prefix.
+            // Skip empty lines or lines not starting with the expected '|' character.
             if (line.empty() || line.front() != '|')
                 continue;
 
@@ -35,21 +35,21 @@ namespace MethodParser
             // Find the '=' separator to split the key and value.
             size_t equalPos = line.find('=');
             if (equalPos == std::string_view::npos)
-                continue;  // Skip lines without a key-value pair
+                continue;  // Skip lines without a key-value pair.
 
-            // Extract and trim the key and value from the line.
+            // Extract and trim the key and value.
             std::string_view key = ParserUtilities::trim(line.substr(0, equalPos));
             std::string_view value = ParserUtilities::trim(line.substr(equalPos + 1));
 
             // Process recognized keys and update properties accordingly.
             if (key == "return")
             {
-                // Parse the return type from the value.
+                // Parse the return type.
                 returnType = PropertiesParser::parseDataType(value);
             }
             else if (key == "parameters")
             {
-                // Parse the parameter list from the value.
+                // Parse the parameter list.
                 params = PropertiesParser::parseParameters(value);
             }
             else if (key == "description")
@@ -60,22 +60,21 @@ namespace MethodParser
                     value.remove_prefix(1);
                     value.remove_suffix(1);
                 }
-                // Convert the trimmed string_view into a std::string.
                 description = std::string(ParserUtilities::trim(value));
             }
-            else if(key == "declaration")
+            else if (key == "declaration")
             {
-                // Parse the declaration specifier from the value.
+                // Parse the declaration specifier.
                 declSpec = PropertiesParser::parseDeclarationSpecifier(value);
             }
             else
             {
-                // If an unrecognized property key is found, throw an error.
-                throw std::runtime_error("Unrecognised property in Method block!");
+                // If an unrecognized property key is encountered, throw an error.
+                throw std::runtime_error("Unrecognised property in callable block!");
             }
         }
 
-        // Construct and return a MethodModel with the parsed properties.
-        return ScaffoldModels::MethodModel(returnType, methodName, params, declSpec, description);
+        // Construct and return a CallableModel with the parsed properties.
+        return ScaffoldModels::CallableModel(returnType, callableName, params, declSpec, description);
     }
-} // namespace MethodParser
+} // namespace CallableParser
