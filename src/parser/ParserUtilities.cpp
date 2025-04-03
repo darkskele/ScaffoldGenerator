@@ -39,15 +39,5 @@ namespace ParserUtilities
 
         return tokens;
     }
-
-    void flushBlock(std::vector<std::string_view>& buffer, const std::function<void(const std::vector<std::string_view>&)>& handler)
-    {
-        // If there's anything to flush, call the handler and clear the buffer
-        if (!buffer.empty())
-        {
-            handler(buffer);
-            buffer.clear();
-        }
-    }
     
 } // namespace ParserUtilities

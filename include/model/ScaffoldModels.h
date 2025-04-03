@@ -244,4 +244,66 @@ namespace ScaffoldModels
         }
     };
 
+    /**
+     * @brief Represents a namespace in the code generation system.
+     *
+     * This struct models a namespace that can contain nested classes and functions.
+     * Additional nested namespaces can be added if necessary.
+     */
+    struct NamespaceModel
+    {
+        std::string name;                       ///< The name of the namespace.
+        std::string description;                ///< A description of what the namespace represents.
+        std::vector<ClassModel> classes;        ///< A list of classes defined within this namespace.
+        std::vector<FunctionModel> functions;   ///< A list of functions defined within this namespace.
+        std::vector<NamespaceModel> namespaces; ///< A list of nested namespaces.
+    };
+
+    /**
+     * @brief Represents a folder in the project structure.
+     *
+     * A folder serves as a container for files and is created in both the include and src directories.
+     * The folder's nesting within the DSL determines its relative placement in the generated file system.
+     * Each DSL element declared within the folder is assumed to generate its own file.
+     */
+    struct FolderModel
+    {
+        /// The name of the folder.
+        std::string name;
+
+        /// Subfolders contained within this folder.
+        std::vector<FolderModel> subFolders;
+
+        /// Classes defined in this folder; each will generate its own file.
+        std::vector<ClassModel> classFiles;
+
+        /// Namespaces defined in this folder; each will generate its own file.
+        std::vector<NamespaceModel> namespaceFiles;
+
+        // Each inner vector represents a file that may contain multiple free functions.
+        std::vector<FunctionModel> functionFiles;
+
+        /**
+         * @brief Constructs a new FolderModel.
+         *
+         * @param name The name of the folder.
+         * @param subFolders A vector of subfolders contained within this folder.
+         * @param classFiles A vector of class models that will each generate a file.
+         * @param namespaceFiles A vector of namespace models that will each generate a file.
+         * @param functionFiles A vector of functions; the vector itself represents a file containing free functions.
+         */
+        FolderModel(std::string name,
+                    const std::vector<FolderModel> &subFolders = {},
+                    const std::vector<ClassModel> &classFiles = {},
+                    const std::vector<NamespaceModel> &namespaceFiles = {},
+                    const std::vector<FunctionModel> &functionFiles = {})
+            : name(std::move(name)),
+              subFolders(subFolders),
+              classFiles(classFiles),
+              namespaceFiles(namespaceFiles),
+              functionFiles(functionFiles)
+        {
+        }
+    };
+
 } // namespace ScaffoldModels

@@ -2,46 +2,63 @@
 #include "ScaffoldProperties.h"
 #include "ScaffoldModels.h"
 #include <gtest/gtest.h>
+#include <deque>
+#include <string_view>
 
 using namespace SpecialMemberFunctionParser;
 using namespace ScaffoldModels;
 using namespace ScaffoldProperties;
 
 TEST(ConstructorParserTest, ParsesDefaultConstructorWithDescription) {
-    auto ctor = parseConstructorProperties("default", { "| description = \"A default ctor\"" });
+    std::deque<std::string_view> lines = {
+        "| description = \"A default ctor\"",
+        "_"  // end of block marker
+    };
+    auto ctor = parseConstructorProperties("default", lines);
     EXPECT_EQ(ctor.type, ConstructorType::DEFAULT);
     EXPECT_EQ(ctor.description, "A default ctor");
     EXPECT_TRUE(ctor.parameters.empty());
 }
 
 TEST(ConstructorParserTest, ParsesCopyConstructorNoParameters) {
-    auto ctor = parseConstructorProperties("copy", {});
+    std::deque<std::string_view> lines;  // no properties provided
+    auto ctor = parseConstructorProperties("copy", lines);
     EXPECT_EQ(ctor.type, ConstructorType::COPY);
     EXPECT_TRUE(ctor.parameters.empty());
 }
 
 TEST(ConstructorParserTest, ParsesMoveConstructorNoParameters) {
-    auto ctor = parseConstructorProperties("move", {});
+    std::deque<std::string_view> lines;  // no properties provided
+    auto ctor = parseConstructorProperties("move", lines);
     EXPECT_EQ(ctor.type, ConstructorType::MOVE);
     EXPECT_TRUE(ctor.parameters.empty());
 }
 
 TEST(ConstructorParserTest, ThrowsIfCopyConstructorHasParameters) {
+    std::deque<std::string_view> lines = {
+        "| parameters = x:int",
+        "_"  // end of block marker
+    };
     EXPECT_THROW({
-        parseConstructorProperties("copy", { "| parameters = x:int" });
+        parseConstructorProperties("copy", lines);
     }, std::runtime_error);
 }
 
 TEST(ConstructorParserTest, ThrowsIfMoveConstructorHasParameters) {
+    std::deque<std::string_view> lines = {
+        "| parameters = y:string",
+        "_"  // end of block marker
+    };
     EXPECT_THROW({
-        parseConstructorProperties("move", { "| parameters = y:string" });
+        parseConstructorProperties("move", lines);
     }, std::runtime_error);
 }
 
 TEST(ConstructorParserTest, ParsesCustomConstructorWithParametersAndDescription) {
-    std::vector<std::string_view> lines = {
+    std::deque<std::string_view> lines = {
         "| parameters = x:int, name:string",
-        "| description = \"Constructs with id and name\""
+        "| description = \"Constructs with id and name\"",
+        "_"  // end of block marker
     };
 
     auto ctor = parseConstructorProperties("custom", lines);
@@ -55,13 +72,18 @@ TEST(ConstructorParserTest, ParsesCustomConstructorWithParametersAndDescription)
 }
 
 TEST(ConstructorParserTest, ThrowsOnUnknownConstructorType) {
+    std::deque<std::string_view> lines;  // empty deque
     EXPECT_THROW({
-        parseConstructorProperties("nonsense", {});
+        parseConstructorProperties("nonsense", lines);
     }, std::runtime_error);
 }
 
 TEST(ConstructorParserTest, ThrowsOnUnknownProperty) {
+    std::deque<std::string_view> lines = {
+        "| madeup = nonsense",
+        "_"  // end of block marker
+    };
     EXPECT_THROW({
-        parseConstructorProperties("custom", { "| madeup = nonsense" });
+        parseConstructorProperties("custom", lines);
     }, std::runtime_error);
 }

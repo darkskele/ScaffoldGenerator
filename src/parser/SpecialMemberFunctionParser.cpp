@@ -8,7 +8,7 @@
 namespace SpecialMemberFunctionParser
 {
     ScaffoldModels::Constructor parseConstructorProperties(const std::string &constructorIdentifier,
-                                                           const std::vector<std::string_view> &propertyLines)
+                                                             std::deque<std::string_view>& propertyLines)
     {
         // Map the string identifier to an enum value representing the constructor type.
         ScaffoldModels::ConstructorType type;
@@ -27,48 +27,48 @@ namespace SpecialMemberFunctionParser
         std::vector<ScaffoldProperties::Parameter> parameters;
         std::string description;
 
-        // Iterate through each line inside the constructor block.
-        for (auto line : propertyLines)
+        // Consume property lines until an end-of-scope marker ("_") is reached.
+        while (!propertyLines.empty())
         {
-            // Remove any leading/trailing whitespace.
-            line = ParserUtilities::trim(line);
+            std::string_view line = ParserUtilities::trim(propertyLines.front());
+            propertyLines.pop_front(); // Consume the line
 
-            // Skip lines that are empty or don't start with '|'.
+            if (line == "_")
+                break; // End of the constructor block.
+
+            // Process only lines that start with the '|' character.
             if (line.empty() || line.front() != '|')
                 continue;
 
-            // Remove the '|' prefix and re-trim the line.
+            // Remove the '|' prefix and trim the line.
             line.remove_prefix(1);
             line = ParserUtilities::trim(line);
 
-            // Attempt to split the line into key/value using '='.
+            // Find the '=' separator to split the key and value.
             size_t equalPos = line.find('=');
             if (equalPos == std::string_view::npos)
-                continue;  // Skip malformed lines without '='.
+                continue;  // Skip malformed lines.
 
-            // Extract the key and value from the line.
             std::string_view key = ParserUtilities::trim(line.substr(0, equalPos));
             std::string_view value = ParserUtilities::trim(line.substr(equalPos + 1));
 
             if (key == "parameters")
             {
-                // Parse the comma-separated parameter list using a shared utility.
+                // Parse the comma-separated parameter list.
                 parameters = PropertiesParser::parseParameters(value);
             }
             else if (key == "description")
             {
-                // Remove quotes if present around the description string.
+                // Remove quotes if present.
                 if (value.size() >= 2 && value.front() == '"' && value.back() == '"')
                 {
                     value.remove_prefix(1);
                     value.remove_suffix(1);
                 }
-                // Convert string_view to std::string and trim it.
                 description = std::string(ParserUtilities::trim(value));
             }
             else
             {
-                // Throw an error if an unknown property key is encountered.
                 throw std::runtime_error("Unrecognized property in constructor block: " + std::string(key));
             }
         }
@@ -85,23 +85,26 @@ namespace SpecialMemberFunctionParser
         return ScaffoldModels::Constructor(type, parameters, description);
     }
 
-    ScaffoldModels::Destructor parseDestructorProperties(const std::vector<std::string_view> &propertyLines)
+    ScaffoldModels::Destructor parseDestructorProperties(std::deque<std::string_view>& propertyLines)
     {
-        // Destructors only have an optional description; no parameters or other fields.
+        // Destructors only support an optional description.
         std::string description;
 
-        for (auto line : propertyLines)
+        while (!propertyLines.empty())
         {
-            line = ParserUtilities::trim(line);
+            std::string_view line = ParserUtilities::trim(propertyLines.front());
+            propertyLines.pop_front(); // Consume the line
 
-            // Skip if the line is empty or does not start with '|'.
+            if (line == "_")
+                break; // End of the destructor block.
+
+            // Process only lines that start with the '|' character.
             if (line.empty() || line.front() != '|')
                 continue;
 
             line.remove_prefix(1);
             line = ParserUtilities::trim(line);
 
-            // Attempt to split into key/value.
             size_t equalPos = line.find('=');
             if (equalPos == std::string_view::npos)
                 continue;
@@ -111,23 +114,19 @@ namespace SpecialMemberFunctionParser
 
             if (key == "description")
             {
-                // Strip quotes from the description if present.
                 if (value.size() >= 2 && value.front() == '"' && value.back() == '"')
                 {
                     value.remove_prefix(1);
                     value.remove_suffix(1);
                 }
-
                 description = std::string(ParserUtilities::trim(value));
             }
             else
             {
-                // Destructors must not include unknown properties.
                 throw std::runtime_error("Unrecognized property in destructor block: " + std::string(key));
             }
         }
 
-        // Return the parsed destructor model with its description.
         return ScaffoldModels::Destructor(description);
     }
 }

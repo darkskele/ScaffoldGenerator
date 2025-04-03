@@ -15,7 +15,7 @@
  #include "ScaffoldModels.h"
  #include <string>
  #include <string_view>
- #include <vector>
+ #include <deque>
  
  /**
   * @namespace CallableParser
@@ -35,18 +35,18 @@
      /**
       * @brief Parses a callable block and constructs a CallableModel.
       *
-      * This function processes the property lines (each expected to start with the '|' character)
+      * This function consumes property lines (each expected to start with the '|' character) from the provided deque
       * and extracts key-value pairs to build a CallableModel instance. It handles return type conversion,
       * parameter list parsing, description extraction, and declaration specifiers. If any unrecognized
       * property is encountered or the block is malformed, a std::runtime_error is thrown.
       *
       * @param callableName The name of the callable (extracted from the header line).
-      * @param propertyLines A vector of string_views representing the property lines from the DSL.
+      * @param propertyLines A deque of string_views representing the property lines from the DSL. Lines are consumed as they are processed.
       * @return A CallableModel containing the parsed properties.
       *
       * @throws std::runtime_error if the callable block is malformed.
       */
-     ScaffoldModels::CallableModel parseCallableProperties(const std::string &callableName, const std::vector<std::string_view> &propertyLines);
+     ScaffoldModels::CallableModel parseCallableProperties(const std::string &callableName, std::deque<std::string_view>& propertyLines);
  
      /**
       * @brief Parses a method block and constructs a MethodModel.
@@ -54,12 +54,12 @@
       * This inline function wraps parseCallableProperties to build a MethodModel.
       *
       * @param methodName The name of the method.
-      * @param propertyLines A vector of string_views representing the property lines from the DSL.
+      * @param propertyLines A deque of string_views representing the property lines from the DSL.
       * @return A MethodModel containing the parsed properties.
       *
       * @throws std::runtime_error if the callable block is malformed.
       */
-     inline ScaffoldModels::MethodModel parseMethodProperties(const std::string &methodName, const std::vector<std::string_view> &propertyLines)
+     inline ScaffoldModels::MethodModel parseMethodProperties(const std::string &methodName, std::deque<std::string_view>& propertyLines)
      {
          auto base = parseCallableProperties(methodName, propertyLines);
          return ScaffoldModels::MethodModel(base.returnType, methodName, base.parameters, base.declSpec, base.description);
@@ -71,15 +71,16 @@
       * This inline function wraps parseCallableProperties to build a FunctionModel.
       *
       * @param functionName The name of the function.
-      * @param propertyLines A vector of string_views representing the property lines from the DSL.
+      * @param propertyLines A deque of string_views representing the property lines from the DSL.
       * @return A FunctionModel containing the parsed properties.
       *
       * @throws std::runtime_error if the callable block is malformed.
       */
-     inline ScaffoldModels::FunctionModel parseFunctionProperties(const std::string &functionName, const std::vector<std::string_view> &propertyLines)
+     inline ScaffoldModels::FunctionModel parseFunctionProperties(const std::string &functionName, std::deque<std::string_view>& propertyLines)
      {
          auto base = parseCallableProperties(functionName, propertyLines);
          return ScaffoldModels::FunctionModel(base.returnType, functionName, base.parameters, base.declSpec, base.description);
      }
+     
  } // namespace CallableParser
  

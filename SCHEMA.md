@@ -329,3 +329,175 @@ In this snippet:
 - The block begins with `- function doSomething:`, indicating a free function declaration.  
 - Property lines specify the declaration specifiers, return type, parameters, and description.  
 - The block ends with `_`, marking the end of the function scope.
+
+---
+
+## Namespace Generation Schema
+
+The DSL also supports the **namespace** keyword for defining C++ namespaces. A namespace can be either named (e.g., `- namespace MyNamespace:`) or anonymous (e.g., `- namespace:`). It accepts a **description** property and can include nested scopes such as classes, functions, and even other namespaces.
+
+**Important:** If a **method** is declared directly within a namespace, it will generate an error. Methods must be defined within a class.
+
+### Keyword
+
+- **namespace**  
+  Defines a C++ namespace.  
+  *Named Namespace:*  
+  `- namespace MyNamespace:`  
+  *Anonymous Namespace:*  
+  `- namespace:`
+
+### Properties
+
+- **description**  
+  Provides a human-readable explanation of the namespace’s purpose.
+
+### Nested Scopes
+
+Within a namespace, you may nest:
+- **class** definitions (which can include methods, constructors, etc.)
+- **function** definitions (for free-standing functions)
+- **namespace** definitions (for nested namespaces)
+
+**Error Condition:** Declaring a **method** directly inside a namespace is invalid and will generate an error.
+
+### Examples
+
+#### Named Namespace with Nested Elements
+
+```
+- namespace MyNamespace:
+| description = "Groups related classes and free functions."
+- class MyClass:
+| description = "A sample class within MyNamespace."
+- constructor default:
+| description = "Default constructor for MyClass."
+_
+- function freeFunction:
+| declaration = inline constexpr
+| return = int
+| parameters = param1:int, param2:float
+| description = "A free-standing function in MyNamespace."
+_
+_
+```
+
+#### Nested Namespaces
+
+```
+- namespace OuterNamespace:
+| description = "The outer namespace."
+- namespace InnerNamespace:
+| description = "A nested namespace inside OuterNamespace."
+- function innerFunction:
+| return = void
+| parameters =
+| description = "A function inside InnerNamespace."
+_
+_
+```
+
+#### Anonymous Namespace
+
+```
+- namespace:
+| description = "An anonymous namespace with internal linkage."
+- function helper:
+| return = void
+| parameters =
+| description = "A helper function in an anonymous namespace."
+_
+_
+```
+
+---
+
+## Folder Generation Schema
+
+The DSL now includes a dedicated mechanism for organizing files into folders. Folders are treated as explicit scopes in the DSL and serve only for code organization—they do not affect the build configuration. Every folder declared will be created in both default directories: header files will be placed under `include`, and implementation files under `src`. The folder’s position in the nested hierarchy determines its relative placement in the generated file system.
+
+### Folder Keyword and Syntax
+
+- **folder**  
+  Declares a folder scope to organize generated files. The keyword is used as a block marker with an explicit start and end, following the same conventions as other DSL elements.
+
+- **Scope and Nesting:**  
+  - If a folder is declared at the top level (i.e., not nested within another folder), it becomes a direct subfolder of both the `include` and `src` directories.
+  - If a folder is nested within another folder, it will appear as a subfolder of its parent. For example, a folder declared within a top-level folder called `algorithms` will generate the structure `include/algorithms/<nested-folder>` and `src/algorithms/<nested-folder>`.
+
+### Folder Scope Syntax
+
+- **Start of Folder Scope:**  
+  Use a dash followed by the keyword `folder` and the folder name, ending with a colon.  
+  *Example:*  
+  `- folder core:`
+
+- **End of Folder Scope:**  
+  The folder block is closed explicitly using an underscore (`_`).
+
+### Examples
+
+#### Example 1: Top-Level Folder Declaration
+
+This example creates a folder named `core` at the project level. The folder will be present in both default directories:
+
+```
+- project MyProject:
+| // Project-level declarations and elements
+- folder core:
+  // Any code elements (classes, functions, etc.) declared here
+  // will be generated under include/core/ and src/core/
+_
+_
+```
+
+#### Example 2: Nested Folder Structure
+
+In this example, a folder named `algorithms` is declared at the top level with nested folders for specific algorithm types. The nesting directly maps to the generated folder hierarchy.
+
+```
+- project MyProject:
+- folder algorithms:
+  // Creates include/algorithms/ and src/algorithms/
+  - folder sorting:
+    // Creates include/algorithms/sorting/ and src/algorithms/sorting/
+    // Code declared here will be placed in the sorting subfolder.
+  _
+  - folder searching:
+    // Creates include/algorithms/searching/ and src/algorithms/searching/
+    // Code declared here will be placed in the searching subfolder.
+  _
+_
+_
+```
+
+#### Example 3: Associating Code Elements with Folders
+
+Code elements (such as classes, functions, or namespaces) may be declared within a folder scope. Their generated header files will be placed under the corresponding folder in `include`, and their implementation files under `src`.
+
+```
+- project MyProject:
+- folder utilities:
+  // Both include/utilities/ and src/utilities/ are created.
+  - class Logger:
+  | // Class properties, constructors, and methods
+  - method log:
+  | return = void
+  | parameters = message:string
+  // The Logger class and its implementation files are placed in utilities.
+  _
+  _
+_
+_
+```
+
+### Summary
+
+- **Implicit Placement:**  
+  All folders declared are automatically created in both the `include` and `src` directories.
+
+- **Nested Hierarchy:**  
+  The nesting of folder blocks in the DSL corresponds directly to the folder hierarchy in the generated file system.
+
+- **Organization Only:**  
+  Folders serve only to organize code files; they do not affect build configurations or carry additional documentation properties.

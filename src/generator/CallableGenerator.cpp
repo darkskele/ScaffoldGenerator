@@ -70,8 +70,7 @@ namespace CallableGenerator
         std::string decl = generateCallableDeclaration(method);
 
         // Indent the declaration so it fits inside a class definition.
-        // Here we use a hardcoded indent of 4 spaces.
-        return GeneratorUtilities::indentCode(decl, 4);
+        return GeneratorUtilities::indentCode(decl);
     }
 
     std::string generateMethodDefinition(const std::string &className, const ScaffoldModels::MethodModel &method)
