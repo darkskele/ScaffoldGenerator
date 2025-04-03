@@ -2,7 +2,6 @@
 #include "MethodParser.h"            // Declares parseMethodProperties
 #include "ScaffoldModels.h"          // Contains the MethodModel struct
 #include "ScaffoldProperties.h"      // Contains type definitions (Types, DataType, etc.)
-#include "PropertiesGenerator.h"     // (Used indirectly by the parser)
 #include <vector>
 #include <string_view>
 #include <stdexcept>

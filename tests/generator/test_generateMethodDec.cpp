@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "MethodGenerator.h"
+#include "CallableGenerator.h"
 #include "ScaffoldModels.h"
 #include "ScaffoldProperties.h"
 #include "PropertiesParser.h"
@@ -21,7 +21,7 @@ TEST(GenerateMethodDeclarationTest, NoParameters) {
     MethodModel method(returnType, "doSomething", params, declSpec, "Performs a calculation");
     
     // Generate the declaration string.
-    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    std::string generated = CallableGenerator::generateMethodDeclaration(method);
     
     // Expected output: A Doxygen comment block followed by the method declaration.
     std::string expected =
@@ -47,7 +47,7 @@ TEST(GenerateMethodDeclarationTest, WithParameters) {
     MethodModel method(returnType, "doSomething", params, declSpec, "Does something");
     
     // Generate the method declaration.
-    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    std::string generated = CallableGenerator::generateMethodDeclaration(method);
     
     // Expected output with parameter list "int param1, float param2".
     std::string expected =
@@ -72,7 +72,7 @@ TEST(GenerateMethodDeclarationTest, WithWhitespaceInDescription) {
     MethodModel method(returnType, "compute", params, declSpec, "  Computes a value  ");
     
     // Generate the method declaration.
-    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    std::string generated = CallableGenerator::generateMethodDeclaration(method);
     
     // Expected output should preserve the whitespace in the description.
     std::string expected =
@@ -93,7 +93,7 @@ TEST(GenerateMethodDeclarationTest, ReturnTypeWithConstQualifier) {
     MethodModel method(returnType, "doSomething", params, declSpec, "Returns a constant int");
     
     // Generate the declaration.
-    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    std::string generated = CallableGenerator::generateMethodDeclaration(method);
     
     // Expected output: The return type is prefixed with "const".
     std::string expected =
@@ -117,7 +117,7 @@ TEST(GenerateMethodDeclarationTest, ParameterWithConstQualifier) {
     MethodModel method(returnType, "doSomething", params, declSpec, "Takes a constant float parameter");
     
     // Generate the declaration.
-    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    std::string generated = CallableGenerator::generateMethodDeclaration(method);
     
     // Expected output: Parameter type should include "const".
     std::string expected =
@@ -141,7 +141,7 @@ TEST(GenerateMethodDeclarationTest, ParameterWithConstVolatileQualifiers) {
     MethodModel method(returnType, "doSomething", params, declSpec, "Takes a const volatile int parameter");
     
     // Generate the declaration.
-    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    std::string generated = CallableGenerator::generateMethodDeclaration(method);
     
     // Expected output: Parameter type should include both "const" and "volatile".
     std::string expected =
@@ -163,7 +163,7 @@ TEST(GenerateMethodDeclarationTest, ReturnTypeWithPointer) {
     MethodModel method(returnType, "doPointer", params, declSpec, "Returns a pointer to int");
     
     // Generate the declaration.
-    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    std::string generated = CallableGenerator::generateMethodDeclaration(method);
     
     // Expected output: Return type should include a pointer symbol.
     std::string expected =
@@ -185,7 +185,7 @@ TEST(GenerateMethodDeclarationTest, ReturnTypeWithLValueReference) {
     MethodModel method(returnType, "doLValueRef", params, declSpec, "Returns an lvalue reference to int");
     
     // Generate the declaration.
-    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    std::string generated = CallableGenerator::generateMethodDeclaration(method);
     
     // Expected output: Return type should include an ampersand.
     std::string expected =
@@ -207,7 +207,7 @@ TEST(GenerateMethodDeclarationTest, ReturnTypeWithRValueReference) {
     MethodModel method(returnType, "doRValueRef", params, declSpec, "Returns an rvalue reference to int");
     
     // Generate the declaration.
-    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    std::string generated = CallableGenerator::generateMethodDeclaration(method);
     
     // Expected output: Return type should include "&&".
     std::string expected =
@@ -230,7 +230,7 @@ TEST(GenerateMethodDeclarationTest, ReturnTypeWithArray) {
     MethodModel method(returnType, "doArray", params, declSpec, "Returns an array of 10 ints");
     
     // Generate the declaration.
-    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    std::string generated = CallableGenerator::generateMethodDeclaration(method);
     
     // Expected output: Return type should include the array declarator.
     std::string expected =
@@ -254,7 +254,7 @@ TEST(GenerateMethodDeclarationTest, ParameterWithPointer) {
     MethodModel method(returnType, "doParamPointer", params, declSpec, "Takes a pointer parameter");
     
     // Generate the declaration.
-    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    std::string generated = CallableGenerator::generateMethodDeclaration(method);
     
     // Expected output: Parameter type should include a pointer symbol.
     std::string expected =
@@ -278,7 +278,7 @@ TEST(GenerateMethodDeclarationTest, ParameterWithLValueReference) {
     MethodModel method(returnType, "doParamLValueRef", params, declSpec, "Takes an lvalue reference parameter");
     
     // Generate the declaration.
-    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    std::string generated = CallableGenerator::generateMethodDeclaration(method);
     
     // Expected output: Parameter type should include an ampersand.
     std::string expected =
@@ -302,7 +302,7 @@ TEST(GenerateMethodDeclarationTest, ParameterWithRValueReference) {
     MethodModel method(returnType, "doParamRValueRef", params, declSpec, "Takes an rvalue reference parameter");
     
     // Generate the declaration.
-    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    std::string generated = CallableGenerator::generateMethodDeclaration(method);
     
     // Expected output: Parameter type should include "&&".
     std::string expected =
@@ -328,7 +328,7 @@ TEST(GenerateMethodDeclarationTest, ParameterWithPointerAndArray) {
     MethodModel method(returnType, "doParamPtrArray", params, declSpec, "Takes a pointer and array parameter");
     
     // Generate the declaration.
-    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    std::string generated = CallableGenerator::generateMethodDeclaration(method);
     
     // Expected output: Parameter type should include both pointer and array declarators.
     std::string expected =
@@ -349,7 +349,7 @@ TEST(GenerateMethodDeclarationTest, WithDeclarationSpecifiers) {
     MethodModel method(returnType, "doSomething", params, ds, "Does something");
     
     // Generate the declaration.
-    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    std::string generated = CallableGenerator::generateMethodDeclaration(method);
     
     // Expected output: Declaration specifiers appear before the return type.
     std::string expected =
@@ -373,7 +373,7 @@ TEST(GenerateMethodDeclarationTest, WithDeclarationSpecifiersAndParameters) {
     MethodModel method(returnType, "doWork", params, ds, "Does work");
     
     // Generate the declaration.
-    std::string generated = MethodGenerator::generateMethodDeclaration(method);
+    std::string generated = CallableGenerator::generateMethodDeclaration(method);
     
     // Expected output: Specifiers, return type, method name, and parameter list are output in order.
     std::string expected =

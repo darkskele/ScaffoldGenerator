@@ -1,46 +1,79 @@
 cmake_minimum_required(VERSION 3.16)
 project(ScaffolderProject VERSION 1.0.0)
 
+# Set C++20.
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Optionally, add the include directory for public headers.
-include_directories(${PROJECT_SOURCE_DIR}/include)
+# Define directories.
+set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
+set(TEST_DIR ${PROJECT_SOURCE_DIR}/tests)  # Directory containing testUtility.h
 
-# Collect production sources from the subdirectories under src/
-file(GLOB_RECURSE PRODUCTION_SOURCES
-    ${PROJECT_SOURCE_DIR}/src/generator/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/parser/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/model/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/properties/*.cpp
+# --- Models Library (Header-Only) ---
+add_library(models INTERFACE)
+target_include_directories(models INTERFACE ${INCLUDE_DIR}/model)
+
+# --- Generator Library ---
+file(GLOB_RECURSE GENERATOR_SOURCES ${PROJECT_SOURCE_DIR}/src/generator/*.cpp)
+add_library(generator ${GENERATOR_SOURCES})
+target_include_directories(generator PUBLIC 
+    ${INCLUDE_DIR}/generator
+    ${INCLUDE_DIR}   # For shared headers.
 )
+target_link_libraries(generator PUBLIC models)
 
-# Create the library target first.
-add_library(scaffolder_lib ${PRODUCTION_SOURCES})
-
-# Now set the include directories for scaffolder_lib.
-target_include_directories(scaffolder_lib PUBLIC
-    ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/include/generator
-    ${PROJECT_SOURCE_DIR}/include/parser
-    ${PROJECT_SOURCE_DIR}/include/model
-    ${PROJECT_SOURCE_DIR}/include/properties
+# --- Parser Library ---
+file(GLOB_RECURSE PARSER_SOURCES ${PROJECT_SOURCE_DIR}/src/parser/*.cpp)
+add_library(parser ${PARSER_SOURCES})
+target_include_directories(parser PUBLIC 
+    ${INCLUDE_DIR}/parser
+    ${INCLUDE_DIR}
 )
+target_link_libraries(parser PUBLIC models)
 
 # --- Testing Setup ---
 enable_testing()
-
-# Find GoogleTest (assumes it's installed on your system or available in your Docker image).
 find_package(GTest REQUIRED)
 
-# Gather all test source files.
-file(GLOB_RECURSE TEST_SOURCES ${PROJECT_SOURCE_DIR}/tests/*.cpp)
+# --- Parser Tests ---
+file(GLOB_RECURSE PARSER_TEST_SOURCES ${PROJECT_SOURCE_DIR}/tests/parser/*.cpp)
+add_executable(ParserTests ${PARSER_TEST_SOURCES})
+target_include_directories(ParserTests PRIVATE 
+    ${INCLUDE_DIR}    # For headers in include/
+    ${TEST_DIR}       # For testUtility.h
+)
+target_link_libraries(ParserTests PRIVATE 
+    parser
+    models
+    GTest::gtest_main
+    Threads::Threads
+)
+add_test(NAME ParserTests COMMAND ParserTests)
 
-# Create an executable target for tests.
-add_executable(UnitTests ${TEST_SOURCES})
+# --- Generator Tests (using an imported parser target) ---
+file(GLOB_RECURSE GENERATOR_TEST_SOURCES ${PROJECT_SOURCE_DIR}/tests/generator/*.cpp)
+add_executable(GeneratorTests ${GENERATOR_TEST_SOURCES})
+target_include_directories(GeneratorTests PRIVATE 
+    ${INCLUDE_DIR}
+    ${TEST_DIR}       # For testUtility.h
+)
 
-# Link the tests with your production library, gtest_main, and pthread if needed.
-target_link_libraries(UnitTests PRIVATE scaffolder_lib GTest::gtest_main Threads::Threads)
+# Create an imported target for the parser library.
+# Update PARSER_LIB_PATH below to point to your prebuilt parser library binary.
+if(NOT TARGET parser_imported)
+    add_library(parser_imported STATIC IMPORTED)
+    set(PARSER_LIB_PATH "${PROJECT_SOURCE_DIR}/build-parser-tests/libparser.a")
+    set_target_properties(parser_imported PROPERTIES
+        IMPORTED_LOCATION "${PARSER_LIB_PATH}"
+        INTERFACE_INCLUDE_DIRECTORIES "${PROJECT_SOURCE_DIR}/include/parser"
+    )
+endif()
 
-# Register the test so that 'ctest' can run it.
-add_test(NAME UnitTests COMMAND UnitTests)
+target_link_libraries(GeneratorTests PRIVATE 
+    generator
+    parser_imported
+    models
+    GTest::gtest_main
+    Threads::Threads
+)
+add_test(NAME GeneratorTests COMMAND GeneratorTests)

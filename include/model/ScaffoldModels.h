@@ -26,41 +26,70 @@
 namespace ScaffoldModels
 {
     /**
-     * @brief Model representing a method or function.
+     * @brief Represents a callable entity, such as a function or a method.
      *
-     * This structure encapsulates all properties required to define a method within the DSL.
-     * It includes the return type, method name, parameters, declaration specifiers, and a description.
-     *
-     * @note All members are declared as const to promote immutability and thread safety.
+     * This base model encapsulates common properties shared by methods and functions,
+     * including the return type, name, parameters, declaration specifiers, and a description.
      */
-    struct MethodModel
+    struct CallableModel
     {
-        const ScaffoldProperties::DataType returnType;               /**< Return type of the method */
-        const std::string name;                                      /**< Name of the method */
-        const std::vector<ScaffoldProperties::Parameter> parameters; /**< Method parameters */
-        const ScaffoldProperties::DeclartionSpecifier declSpec;      /**< Declaration specifiers */
-        const std::string description;                               /**< Description of the method */
+        /// The return type of the callable.
+        ScaffoldProperties::DataType returnType;
+        /// The name of the callable.
+        std::string name;
+        /// A vector of parameters associated with the callable.
+        std::vector<ScaffoldProperties::Parameter> parameters;
+        /// Declaration specifiers that modify the callable's behavior (e.g., inline, static).
+        ScaffoldProperties::DeclartionSpecifier declSpec;
+        /// A description of the callable.
+        std::string description;
 
         /**
-         * @brief Constructor for MethodModel.
+         * @brief Constructor for CallableModel.
          *
-         * Initializes a new instance of MethodModel with the specified return type, name, parameters,
+         * Initializes a new instance of CallableModel with the specified return type, name, parameters,
          * declaration specifiers, and an optional description.
          *
-         * @param retType The return type of the method.
-         * @param n The name of the method.
-         * @param params A vector of parameters associated with the method.
-         * @param dC Declaration specifiers that modify the method's behavior (e.g., inline, static).
-         * @param desc Optional description of the method. Defaults to a single space.
+         * @param retType The return type of the callable.
+         * @param n The name of the callable.
+         * @param params A vector of parameters associated with the callable.
+         * @param dC Declaration specifiers that modify the callable's behavior (e.g., inline, static).
+         * @param desc Optional description of the callable. Defaults to a single space.
          */
-        MethodModel(const ScaffoldProperties::DataType retType, const std::string n,
-                    const std::vector<ScaffoldProperties::Parameter> params,
-                    const ScaffoldProperties::DeclartionSpecifier &dC,
-                    const std::string desc = " ")
+        CallableModel(const ScaffoldProperties::DataType retType, std::string n,
+                      std::vector<ScaffoldProperties::Parameter> params,
+                      const ScaffoldProperties::DeclartionSpecifier &dC,
+                      std::string desc = " ")
             : returnType(retType), name(std::move(n)), parameters(std::move(params)),
               declSpec(std::move(dC)), description(std::move(desc))
         {
         }
+    };
+
+    /**
+     * @brief Represents a method in a class.
+     *
+     * Inherits common callable properties from CallableModel.
+     */
+    struct MethodModel : public CallableModel
+    {
+        /**
+         * @brief Inherits the constructor from CallableModel.
+         */
+        using CallableModel::CallableModel;
+    };
+
+    /**
+     * @brief Represents a free function.
+     *
+     * Inherits common callable properties from CallableModel.
+     */
+    struct FunctionModel : public CallableModel
+    {
+        /**
+         * @brief Inherits the constructor from CallableModel.
+         */
+        using CallableModel::CallableModel;
     };
 
     /**
