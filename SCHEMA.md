@@ -501,3 +501,82 @@ _
 
 - **Organization Only:**  
   Folders serve only to organize code files; they do not affect build configurations or carry additional documentation properties.
+
+---
+
+## Library Generation Schema (Updated)
+
+The **library** keyword is used to define a modular library within your project. This element functions similarly to a folder by creating a directory in both the `include` and `src` paths, but it also carries metadata to inform CMake configuration. The library element accepts properties for versioning and dependency management.
+
+### Core Properties
+
+- **name**  
+  A unique identifier for the library, specified as part of the library block’s identifier (e.g., `- library MyLibrary:`).
+
+- **version**  
+  Specifies the version of the library, which can be used by CMake to manage versioning.
+
+- **dependency**  
+  A comma-separated list of dependencies. These can refer to other libraries (that are not nested within this one) or external build features (such as `Boost`, `cpp20`, etc.).
+
+### Scope and Structure
+
+- **Folder Creation:**  
+  Like folders, a library creates a folder with the same name in both the `include` and `src` directories. The internal structure is determined by the nested elements (such as folder, class, or function).
+
+- **Nesting Restriction:**  
+  Libraries **cannot** be nested inside other libraries. If a user attempts to nest a library within another library, it will generate a DSL error. This rule ensures clarity in the generated project structure and avoids confusion in CMake configuration.
+
+### Syntax
+
+- **Start of Library Scope:**  
+  The library block begins with a dash (`-`) followed by the keyword `library` and the library name, ending with a colon.  
+  *Example:*  
+  `- library MyLibrary:`
+
+- **Property Lines:**  
+  Inside the block, properties are defined with the vertical bar (`|`) syntax.  
+  *Examples:*  
+  `| version = 1.0.0`  
+  `| dependency = Boost, cpp20`
+
+- **Nested Scopes:**  
+  The library block can contain folder scopes and other code elements. However, another `library` element cannot appear within this block.
+
+- **End of Library Scope:**  
+  The block is explicitly closed with an underscore (`_`).
+
+### Example Library DSL Snippet
+
+```
+- library MyLibrary:
+| version = 1.0.0
+| dependency = Boost, cpp20
+- folder core:
+  // Code elements declared here (classes, functions, etc.)
+  - class Logger:
+  | // Logger class definition
+  - method log:
+  | return = void
+  | parameters = message:string
+  | // Method implementation
+  _
+  _
+_
+```
+
+#### Explanation
+
+- **Library Declaration:**  
+  The block `- library MyLibrary:` defines a library named *MyLibrary*.
+  
+- **Version and Dependencies:**  
+  The properties `| version = 1.0.0` and `| dependency = Boost, cpp20` provide CMake with the necessary versioning and dependency data.
+  
+- **Folder Generation:**  
+  Similar to a folder declaration, the library creates corresponding directories (`include/MyLibrary` and `src/MyLibrary`), and any nested folder (like `core`) will be subdirectories within those.
+  
+- **Nesting Restriction:**  
+  Attempting to nest another `library` block inside *MyLibrary* will trigger an error. This rule is enforced to maintain a flat library structure and prevent ambiguity in CMake configurations.
+
+---
