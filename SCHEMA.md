@@ -329,3 +329,83 @@ In this snippet:
 - The block begins with `- function doSomething:`, indicating a free function declaration.  
 - Property lines specify the declaration specifiers, return type, parameters, and description.  
 - The block ends with `_`, marking the end of the function scope.
+
+---
+
+## Namespace Generation Schema
+
+The DSL also supports the **namespace** keyword for defining C++ namespaces. A namespace can be either named (e.g., `- namespace MyNamespace:`) or anonymous (e.g., `- namespace:`). It accepts a **description** property and can include nested scopes such as classes, functions, and even other namespaces.
+
+**Important:** If a **method** is declared directly within a namespace, it will generate an error. Methods must be defined within a class.
+
+### Keyword
+
+- **namespace**  
+  Defines a C++ namespace.  
+  *Named Namespace:*  
+  `- namespace MyNamespace:`  
+  *Anonymous Namespace:*  
+  `- namespace:`
+
+### Properties
+
+- **description**  
+  Provides a human-readable explanation of the namespace’s purpose.
+
+### Nested Scopes
+
+Within a namespace, you may nest:
+- **class** definitions (which can include methods, constructors, etc.)
+- **function** definitions (for free-standing functions)
+- **namespace** definitions (for nested namespaces)
+
+**Error Condition:** Declaring a **method** directly inside a namespace is invalid and will generate an error.
+
+### Examples
+
+#### Named Namespace with Nested Elements
+
+```
+- namespace MyNamespace:
+| description = "Groups related classes and free functions."
+- class MyClass:
+| description = "A sample class within MyNamespace."
+- constructor default:
+| description = "Default constructor for MyClass."
+_
+- function freeFunction:
+| declaration = inline constexpr
+| return = int
+| parameters = param1:int, param2:float
+| description = "A free-standing function in MyNamespace."
+_
+_
+```
+
+#### Nested Namespaces
+
+```
+- namespace OuterNamespace:
+| description = "The outer namespace."
+- namespace InnerNamespace:
+| description = "A nested namespace inside OuterNamespace."
+- function innerFunction:
+| return = void
+| parameters =
+| description = "A function inside InnerNamespace."
+_
+_
+```
+
+#### Anonymous Namespace
+
+```
+- namespace:
+| description = "An anonymous namespace with internal linkage."
+- function helper:
+| return = void
+| parameters =
+| description = "A helper function in an anonymous namespace."
+_
+_
+```

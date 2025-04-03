@@ -4,6 +4,7 @@
 #include "ScaffoldProperties.h"        // Contains type definitions (Types, DataType, etc.)
 #include "PropertiesParser.h"          // For parsing declaration specifiers and data types
 #include <vector>
+#include <deque>
 #include <string_view>
 #include <stdexcept>
 
@@ -15,7 +16,7 @@ using namespace ScaffoldProperties;
 // Test: Valid function block with return type, parameters, and description.
 TEST(CallableParserFunctionTest, ValidFunctionProperties) {
     std::string functionName = "computeValue";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | return = int",
         " | parameters = a:int, b:int",
         " | description = \"Computes a value\""
@@ -42,7 +43,7 @@ TEST(CallableParserFunctionTest, ValidFunctionProperties) {
 // Test: Function block with only a description provided.
 TEST(CallableParserFunctionTest, OnlyDescriptionProvided) {
     std::string functionName = "doNothing";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | description = \"Does nothing\""
     };
 
@@ -61,7 +62,7 @@ TEST(CallableParserFunctionTest, OnlyDescriptionProvided) {
 // Test: Extra whitespace in property lines is trimmed properly.
 TEST(CallableParserFunctionTest, WhitespaceTrimming) {
     std::string functionName = "testFunction";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         "   |  return =   double   ",
         "   |  parameters =  x:int  ,   y:float   ",
         "   |  description =  \" Test function \"   "
@@ -84,7 +85,7 @@ TEST(CallableParserFunctionTest, WhitespaceTrimming) {
 // Test: An unrecognized property should throw a runtime error.
 TEST(CallableParserFunctionTest, UnrecognizedPropertyThrows) {
     std::string functionName = "invalidFunction";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | unknown = value"
     };
 
@@ -96,7 +97,7 @@ TEST(CallableParserFunctionTest, UnrecognizedPropertyThrows) {
 // Test: Return type with a const qualifier is parsed correctly.
 TEST(CallableParserFunctionTest, ReturnTypeWithQualifier) {
     std::string functionName = "computeConst";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | return = const int",
         " | parameters = a:int, b:float",
         " | description = \"Returns a constant int\""
@@ -113,7 +114,7 @@ TEST(CallableParserFunctionTest, ReturnTypeWithQualifier) {
 // Test: Parameter with both const and volatile qualifiers is parsed correctly.
 TEST(CallableParserFunctionTest, ParameterWithMultipleQualifiers) {
     std::string functionName = "complexCompute";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | return = double",
         " | parameters = a: const volatile int, b: volatile float",
         " | description = \"Computes with qualified parameters\""
@@ -138,7 +139,7 @@ TEST(CallableParserFunctionTest, ParameterWithMultipleQualifiers) {
 // Test: Return type with a pointer declarator.
 TEST(CallableParserFunctionTest, ReturnTypeWithPointer) {
     std::string functionName = "getPointer";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | return = int*",
         " | parameters = a:int, b:float",
         " | description = \"Returns a pointer to int\""
@@ -156,7 +157,7 @@ TEST(CallableParserFunctionTest, ReturnTypeWithPointer) {
 // Test: Return type with an lvalue reference.
 TEST(CallableParserFunctionTest, ReturnTypeWithLValueReference) {
     std::string functionName = "getLValueRef";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | return = int&",
         " | parameters = a:int, b:float",
         " | description = \"Returns an lvalue reference to int\""
@@ -174,7 +175,7 @@ TEST(CallableParserFunctionTest, ReturnTypeWithLValueReference) {
 // Test: Return type with an rvalue reference.
 TEST(CallableParserFunctionTest, ReturnTypeWithRValueReference) {
     std::string functionName = "getRValueRef";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | return = int&&",
         " | parameters = a:int, b:float",
         " | description = \"Returns an rvalue reference to int\""
@@ -192,7 +193,7 @@ TEST(CallableParserFunctionTest, ReturnTypeWithRValueReference) {
 // Test: Return type with an array dimension.
 TEST(CallableParserFunctionTest, ReturnTypeWithArray) {
     std::string functionName = "getArray";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | return = int[10]",
         " | parameters = a:int, b:float",
         " | description = \"Returns an array of 10 ints\""
@@ -208,7 +209,7 @@ TEST(CallableParserFunctionTest, ReturnTypeWithArray) {
 // Test: Parameter with a combination of pointer and array declarators.
 TEST(CallableParserFunctionTest, ParameterWithPointerAndArray) {
     std::string functionName = "processData";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | return = void",
         " | parameters = data: int*[5]",
         " | description = \"Parameter with pointer and array dimension\""
@@ -227,7 +228,7 @@ TEST(CallableParserFunctionTest, ParameterWithPointerAndArray) {
 // Test: Declaration specifiers are parsed correctly from the DSL.
 TEST(CallableParserFunctionTest, DeclarationSpecifiersParsed) {
     std::string functionName = "doSomething";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | declaration = static inline constexpr",
         " | return = int",
         " | parameters = a:int, b:float",

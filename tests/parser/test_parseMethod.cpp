@@ -2,7 +2,7 @@
 #include "CallableParser.h"            // Declares parseMethodProperties
 #include "ScaffoldModels.h"          // Contains the MethodModel struct
 #include "ScaffoldProperties.h"      // Contains type definitions (Types, DataType, etc.)
-#include <vector>
+#include <deque>
 #include <string_view>
 #include <stdexcept>
 
@@ -10,9 +10,9 @@ using namespace CallableParser;  // Bring CallableParser functions into scope.
 using namespace ScaffoldProperties;
 
 // Test: Valid method block with return type, parameters, and description.
-TEST(CallableParserTest, ValidMethodProperties) {
+TEST(CallableParserMethodTest, ValidMethodProperties) {
     std::string methodName = "doSomething";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | return = int",
         " | parameters = param1:int, param2:float",
         " | description = \"Performs a calculation\""
@@ -37,9 +37,9 @@ TEST(CallableParserTest, ValidMethodProperties) {
 }
 
 // Test: Method block with only a description provided.
-TEST(CallableParserTest, OnlyDescriptionProvided) {
+TEST(CallableParserMethodTest, OnlyDescriptionProvided) {
     std::string methodName = "doSomethingElse";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | description = \"Just a description\""
     };
 
@@ -56,9 +56,9 @@ TEST(CallableParserTest, OnlyDescriptionProvided) {
 }
 
 // Test: Extra whitespace in property lines is trimmed properly.
-TEST(CallableParserTest, WhitespaceTrimming) {
+TEST(CallableParserMethodTest, WhitespaceTrimming) {
     std::string methodName = "doTest";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         "   |  return =   double   ",
         "   |  parameters =  p1: int  ,   p2 :  float   ",
         "   |  description =  \" Test method \"   "
@@ -79,9 +79,9 @@ TEST(CallableParserTest, WhitespaceTrimming) {
 }
 
 // Test: An unrecognized property should throw a runtime error.
-TEST(CallableParserTest, UnrecognizedPropertyThrows) {
+TEST(CallableParserMethodTest, UnrecognizedPropertyThrows) {
     std::string methodName = "doSomething";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | unknown = value"
     };
 
@@ -91,9 +91,9 @@ TEST(CallableParserTest, UnrecognizedPropertyThrows) {
 }
 
 // Test: Return type with a const qualifier is parsed correctly.
-TEST(CallableParserTest, ReturnTypeWithQualifier) {
+TEST(CallableParserMethodTest, ReturnTypeWithQualifier) {
     std::string methodName = "doConstCalc";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | return = const int",
         " | parameters = param1:int, param2:float",
         " | description = \"Returns a constant int\""
@@ -108,9 +108,9 @@ TEST(CallableParserTest, ReturnTypeWithQualifier) {
 }
 
 // Test: Parameter with both const and volatile qualifiers is parsed correctly.
-TEST(CallableParserTest, ParameterWithMultipleQualifiers) {
+TEST(CallableParserMethodTest, ParameterWithMultipleQualifiers) {
     std::string methodName = "doComplexCalc";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | return = double",
         " | parameters = param1: const volatile int, param2: volatile float",
         " | description = \"Calculates with qualified parameters\""
@@ -133,9 +133,9 @@ TEST(CallableParserTest, ParameterWithMultipleQualifiers) {
 }
 
 // Test: Return type with a single pointer declarator.
-TEST(CallableParserTest, ReturnTypeWithPointer) {
+TEST(CallableParserMethodTest, ReturnTypeWithPointer) {
     std::string methodName = "doPointerCalc";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | return = int*",
         " | parameters = param1:int, param2:float",
         " | description = \"Returns a pointer to int\""
@@ -151,9 +151,9 @@ TEST(CallableParserTest, ReturnTypeWithPointer) {
 }
 
 // Test: Return type with an lvalue reference.
-TEST(CallableParserTest, ReturnTypeWithLValueReference) {
+TEST(CallableParserMethodTest, ReturnTypeWithLValueReference) {
     std::string methodName = "doReferenceCalc";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | return = int&",
         " | parameters = param1:int, param2:float",
         " | description = \"Returns an lvalue reference to int\""
@@ -169,9 +169,9 @@ TEST(CallableParserTest, ReturnTypeWithLValueReference) {
 }
 
 // Test: Return type with an rvalue reference.
-TEST(CallableParserTest, ReturnTypeWithRValueReference) {
+TEST(CallableParserMethodTest, ReturnTypeWithRValueReference) {
     std::string methodName = "doRValueCalc";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | return = int&&",
         " | parameters = param1:int, param2:float",
         " | description = \"Returns an rvalue reference to int\""
@@ -187,9 +187,9 @@ TEST(CallableParserTest, ReturnTypeWithRValueReference) {
 }
 
 // Test: Return type with an array dimension.
-TEST(CallableParserTest, ReturnTypeWithArray) {
+TEST(CallableParserMethodTest, ReturnTypeWithArray) {
     std::string methodName = "doArrayCalc";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | return = int[10]",
         " | parameters = param1:int, param2:float",
         " | description = \"Returns an array of 10 ints\""
@@ -203,9 +203,9 @@ TEST(CallableParserTest, ReturnTypeWithArray) {
 }
 
 // Test: Parameter with a combination of pointer and array declarators.
-TEST(CallableParserTest, ParameterWithPointerAndArray) {
+TEST(CallableParserMethodTest, ParameterWithPointerAndArray) {
     std::string methodName = "doParamTest";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | return = void",
         " | parameters = param1: int*[5]",
         " | description = \"Parameter with pointer and array dimension\""
@@ -222,9 +222,9 @@ TEST(CallableParserTest, ParameterWithPointerAndArray) {
 }
 
 // Test: Declaration specifiers are parsed correctly from the DSL.
-TEST(CallableParserTest, DeclarationSpecifiersParsed) {
+TEST(CallableParserMethodTest, DeclarationSpecifiersParsed) {
     std::string methodName = "doSomething";
-    std::vector<std::string_view> propertyLines = {
+    std::deque<std::string_view> propertyLines = {
         " | declaration = static inline constexpr",
         " | return = int",
         " | parameters = param1:int, param2:float",

@@ -6,7 +6,7 @@ using namespace ClassParser;
 using namespace ScaffoldModels;
 
 TEST(ClassParserTest, ParsesBasicClassWithDescription) {
-    std::vector<std::string_view> lines = {
+    std::deque<std::string_view> lines = {
         "| description = \"A test class\"",
         "_"
     };
@@ -18,7 +18,7 @@ TEST(ClassParserTest, ParsesBasicClassWithDescription) {
 }
 
 TEST(ClassParserTest, ParsesDefaultConstructor) {
-    std::vector<std::string_view> lines = {
+    std::deque<std::string_view> lines = {
         "- constructor default:",
         "| description = \"Default constructor\"",
         "_",
@@ -32,7 +32,7 @@ TEST(ClassParserTest, ParsesDefaultConstructor) {
 }
 
 TEST(ClassParserTest, ParsesCustomConstructorWithParams) {
-    std::vector<std::string_view> lines = {
+    std::deque<std::string_view> lines = {
         "- constructor custom:",
         "| parameters = name:string, id:int",
         "| description = \"Custom constructor\"",
@@ -49,7 +49,7 @@ TEST(ClassParserTest, ParsesCustomConstructorWithParams) {
 }
 
 TEST(ClassParserTest, ParsesDestructor) {
-    std::vector<std::string_view> lines = {
+    std::deque<std::string_view> lines = {
         "- destructor:",
         "| description = \"Cleans up resources\"",
         "_",
@@ -62,7 +62,7 @@ TEST(ClassParserTest, ParsesDestructor) {
 }
 
 TEST(ClassParserTest, ParsesAssignmentOperators) {
-    std::vector<std::string_view> lines = {
+    std::deque<std::string_view> lines = {
         "| assignment = copy, move",
         "_"
     };
@@ -73,7 +73,7 @@ TEST(ClassParserTest, ParsesAssignmentOperators) {
 }
 
 TEST(ClassParserTest, ParsesMemberAccessGroups) {
-    std::vector<std::string_view> lines = {
+    std::deque<std::string_view> lines = {
         "- public:",
         "| members = id:int, name:string",
         "- method setName:",
@@ -99,7 +99,7 @@ TEST(ClassParserTest, ParsesMemberAccessGroups) {
 }
 
 TEST(ClassParserTest, ParsesEmptyClassBlock) {
-    std::vector<std::string_view> lines = { "_" };
+    std::deque<std::string_view> lines = { "_" };
 
     ClassModel cls = parseClassBlock("EmptyClass", lines);
 
@@ -113,7 +113,7 @@ TEST(ClassParserTest, ParsesEmptyClassBlock) {
 }
 
 TEST(ClassParserTest, ThrowsOnInvalidConstructorType) {
-    std::vector<std::string_view> lines = {
+    std::deque<std::string_view> lines = {
         "- constructor funky:",  // invalid type
         "| description = \"Invalid type\"",
         "_",
@@ -124,7 +124,7 @@ TEST(ClassParserTest, ThrowsOnInvalidConstructorType) {
 }
 
 TEST(ClassParserTest, DefaultConstructorWithParamsThrows) {
-    std::vector<std::string_view> lines = {
+    std::deque<std::string_view> lines = {
         "- constructor default:",
         "| parameters = x:int",
         "_",
@@ -135,7 +135,7 @@ TEST(ClassParserTest, DefaultConstructorWithParamsThrows) {
 }
 
 TEST(ClassParserTest, ThrowsOnUnknownProperty) {
-    std::vector<std::string_view> lines = {
+    std::deque<std::string_view> lines = {
         "| nonsense = true",
         "_"
     };
@@ -144,7 +144,7 @@ TEST(ClassParserTest, ThrowsOnUnknownProperty) {
 }
 
 TEST(ClassParserTest, DuplicateDestructorThrows) {
-    std::vector<std::string_view> lines = {
+    std::deque<std::string_view> lines = {
         "- destructor:",
         "| description = \"One\"",
         "_",
@@ -158,7 +158,7 @@ TEST(ClassParserTest, DuplicateDestructorThrows) {
 }
 
 TEST(ClassParserTest, IgnoresTrailingGarbage) {
-    std::vector<std::string_view> lines = {
+    std::deque<std::string_view> lines = {
         "| description = \"Should parse\"",
         "_",
         "not a block",
@@ -170,7 +170,7 @@ TEST(ClassParserTest, IgnoresTrailingGarbage) {
 }
 
 TEST(ClassParserTest, ParsesProtectedSectionCorrectly) {
-    std::vector<std::string_view> lines = {
+    std::deque<std::string_view> lines = {
         "- protected:",
         "| members = counter:uint",
         "- method getCount:",
@@ -187,7 +187,7 @@ TEST(ClassParserTest, ParsesProtectedSectionCorrectly) {
 }
 
 TEST(ClassParserTest, MethodsAndMembersDefaultToPrivate) {
-    std::vector<std::string_view> lines = {
+    std::deque<std::string_view> lines = {
         "| members = value:int",
         "- method doSomething:",
         "| return = void",
@@ -205,7 +205,7 @@ TEST(ClassParserTest, MethodsAndMembersDefaultToPrivate) {
 }
 
 TEST(ClassParserTest, ParsesMultipleMembersAndMethods) {
-    std::vector<std::string_view> lines = {
+    std::deque<std::string_view> lines = {
         "- public:",
         "| members = id:int, name:string, age:int",
         "- method getId:",
@@ -232,16 +232,15 @@ TEST(ClassParserTest, ParsesMultipleMembersAndMethods) {
 }
 
 TEST(ClassParserTest, HandlesExtraWhitespaceAndNewlines) {
-    std::vector<std::string_view> lines = {
+    std::deque<std::string_view> lines = {
         "    |    description    =    \"Whitespace test class\"    ",
-        "    _    ",
         "   -   public:   ",
         "    |   members   =   a:int   ,   b:float   ",
-        "   _   ",
         "   -   method   doSomething   :   ",
         "    |   return   =   void   ",
         "    |   parameters   =    ",
         "    |   description   =   \"Method with extra whitespace\"   ",
+        "   _   ",
         "   _   ",
         "    _   "
     };
@@ -256,7 +255,7 @@ TEST(ClassParserTest, HandlesExtraWhitespaceAndNewlines) {
 }
 
 TEST(ClassParserTest, ThrowsOnInvalidNestedProperty) {
-    std::vector<std::string_view> lines = {
+    std::deque<std::string_view> lines = {
         "- method invalidMethod:",
         "| nonsense = 42",  // invalid property key within a method block
         "| return = void",
@@ -270,7 +269,7 @@ TEST(ClassParserTest, ThrowsOnInvalidNestedProperty) {
 }
 
 TEST(ClassParserTest, ParsesInterleavedClassPropertiesAndBlocks) {
-    std::vector<std::string_view> lines = {
+    std::deque<std::string_view> lines = {
         "| description = \"Interleaved blocks test\"",
         "- method firstMethod:",
         "| return = int",
@@ -302,7 +301,7 @@ TEST(ClassParserTest, ParsesInterleavedClassPropertiesAndBlocks) {
 }
 
 TEST(ClassParserTest, ThrowsOnCompletelyMalformedFile) {
-    std::vector<std::string_view> lines = {
+    std::deque<std::string_view> lines = {
         "This is not valid DSL",
         "Just some random text",
         "Another random line",

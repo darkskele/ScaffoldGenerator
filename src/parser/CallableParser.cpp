@@ -6,7 +6,9 @@
 
 namespace CallableParser
 {
-    ScaffoldModels::CallableModel parseCallableProperties(const std::string &callableName, const std::vector<std::string_view> &propertyLines)
+    // This function consumes property lines from the front of the deque until it is empty.
+    // When a line is processed, it is popped from the deque.
+    ScaffoldModels::CallableModel parseCallableProperties(const std::string &callableName, std::deque<std::string_view>& propertyLines)
     {
         // Initialize default properties:
         // Default return type is 'void'.
@@ -18,21 +20,25 @@ namespace CallableParser
         // Default declaration specifier (no modifiers).
         ScaffoldProperties::DeclartionSpecifier declSpec;
 
-        // Iterate over each property line in the callable block.
-        for (auto line : propertyLines)
+        // Process each property line until the deque is empty.
+        while (!propertyLines.empty())
         {
-            // Trim leading and trailing whitespace.
-            line = ParserUtilities::trim(line);
-            // Skip empty lines or lines not starting with the expected '|' character.
+            std::string_view line = ParserUtilities::trim(propertyLines.front());
+            propertyLines.pop_front(); // Consume the line
+
+            // If we reach an end-of-scope marker, break out.
+            if (line == "_")
+                break;
+
+            // Process only lines that start with the '|' character.
             if (line.empty() || line.front() != '|')
                 continue;
 
-            // Remove the '|' prefix.
+            // Remove the '|' prefix and trim.
             line.remove_prefix(1);
-            // Trim again after removing the prefix.
             line = ParserUtilities::trim(line);
 
-            // Find the '=' separator to split the key and value.
+            // Find the '=' separator to split key and value.
             size_t equalPos = line.find('=');
             if (equalPos == std::string_view::npos)
                 continue;  // Skip lines without a key-value pair.
@@ -41,7 +47,7 @@ namespace CallableParser
             std::string_view key = ParserUtilities::trim(line.substr(0, equalPos));
             std::string_view value = ParserUtilities::trim(line.substr(equalPos + 1));
 
-            // Process recognized keys and update properties accordingly.
+            // Process recognized keys.
             if (key == "return")
             {
                 // Parse the return type.
@@ -54,7 +60,7 @@ namespace CallableParser
             }
             else if (key == "description")
             {
-                // If the description is enclosed in quotes, remove them.
+                // Remove surrounding quotes if present.
                 if (value.size() >= 2 && value.front() == '"' && value.back() == '"')
                 {
                     value.remove_prefix(1);
@@ -69,12 +75,11 @@ namespace CallableParser
             }
             else
             {
-                // If an unrecognized property key is encountered, throw an error.
-                throw std::runtime_error("Unrecognised property in callable block!");
+                throw std::runtime_error("Unrecognised property in callable block: " + std::string(key));
             }
         }
 
-        // Construct and return a CallableModel with the parsed properties.
         return ScaffoldModels::CallableModel(returnType, callableName, params, declSpec, description);
     }
+    
 } // namespace CallableParser

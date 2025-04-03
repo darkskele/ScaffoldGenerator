@@ -244,4 +244,19 @@ namespace ScaffoldModels
         }
     };
 
+    /**
+     * @brief Represents a namespace in the code generation system.
+     *
+     * This struct models a namespace that can contain nested classes and functions.
+     * Additional nested namespaces can be added if necessary.
+     */
+    struct NamespaceModel
+    {
+        std::string name;                ///< The name of the namespace.
+        std::string description;         ///< A description of what the namespace represents.
+        std::vector<ClassModel> classes;      ///< A list of classes defined within this namespace.
+        std::vector<FunctionModel> functions; ///< A list of functions defined within this namespace.
+        std::vector<NamespaceModel> namespaces; ///< A list of nested namespaces.
+    };
+
 } // namespace ScaffoldModels

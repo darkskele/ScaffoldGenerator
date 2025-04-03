@@ -3,283 +3,267 @@
 #include "PropertiesParser.h"
 #include "CallableParser.h"
 #include "SpecialMemberFunctionParser.h"
-
 #include <stdexcept>
 #include <unordered_set>
 #include <optional>
+#include <deque>
 
 namespace ClassParser
 {
-    using namespace ScaffoldModels;
-    using namespace ScaffoldProperties;
-
     /**
-     * @brief Parses the `assignment=` flag into copy/move assignment booleans.
+     * @brief Processes a top-level property line in a class DSL block.
      *
-     * Splits the value string by commas and sets the corresponding boolean flags.
+     * This static helper function parses a property line (which is expected to start with
+     * the '|' character) by splitting it into a key-value pair. It updates the provided
+     * class-level properties—such as description, assignment flags, or member lists—based
+     * on the current access specifier.
+     *
+     * @param line The DSL property line (starting with '|') to be processed.
+     * @param description A reference to the class description string to update.
+     * @param hasCopyAssignment A reference to the flag indicating whether copy assignment is enabled.
+     * @param hasMoveAssignment A reference to the flag indicating whether move assignment is enabled.
+     * @param constructors A reference to the vector of constructors to be updated.
+     * @param publicMembers A reference to the vector of public data members.
+     * @param privateMembers A reference to the vector of private data members.
+     * @param protectedMembers A reference to the vector of protected data members.
+     * @param currentAccess The current access specifier in effect for subsequent declarations.
+     *
+     * @throws std::runtime_error if an unrecognized property key is encountered.
      */
-    void parseAssignmentFlags(std::string_view value, bool &copy, bool &move)
+    static void processTopLevelProperty(std::string_view line,
+                                        std::string &description,
+                                        bool &hasCopyAssignment,
+                                        bool &hasMoveAssignment,
+                                        std::vector<ScaffoldModels::Constructor> &constructors,
+                                        std::vector<ScaffoldProperties::Parameter> &publicMembers,
+                                        std::vector<ScaffoldProperties::Parameter> &privateMembers,
+                                        std::vector<ScaffoldProperties::Parameter> &protectedMembers,
+                                        Access currentAccess)
     {
-        auto tokens = ParserUtilities::split(value, ',');
-        for (auto tok : tokens)
+        // Remove leading '|' if present and trim.
+        if (!line.empty() && line.front() == '|')
         {
-            tok = ParserUtilities::trim(tok);
-            if (tok == "copy")
-                copy = true;
-            else if (tok == "move")
-                move = true;
-            else
-                throw std::runtime_error("Unknown assignment type: " + std::string(tok));
+            line.remove_prefix(1);
+            line = ParserUtilities::trim(line);
+        }
+        size_t eqPos = line.find('=');
+        if (eqPos == std::string_view::npos)
+            return; // Ignore if not a valid key=value pair.
+
+        std::string_view key = ParserUtilities::trim(line.substr(0, eqPos));
+        std::string_view value = ParserUtilities::trim(line.substr(eqPos + 1));
+
+        if (key == "description")
+        {
+            if (value.size() >= 2 && value.front() == '"' && value.back() == '"')
+            {
+                value.remove_prefix(1);
+                value.remove_suffix(1);
+            }
+            description = std::string(ParserUtilities::trim(value));
+        }
+        else if (key == "constructors")
+        {
+            // Expect comma-separated constructor types.
+            for (auto typeStr : ParserUtilities::split(value, ','))
+            {
+                typeStr = ParserUtilities::trim(typeStr);
+                ScaffoldModels::ConstructorType type;
+                if (typeStr == "default")
+                    type = ScaffoldModels::ConstructorType::DEFAULT;
+                else if (typeStr == "copy")
+                    type = ScaffoldModels::ConstructorType::COPY;
+                else if (typeStr == "move")
+                    type = ScaffoldModels::ConstructorType::MOVE;
+                else
+                    throw std::runtime_error("Unknown constructor type: " + std::string(typeStr));
+                constructors.emplace_back(type, std::vector<ScaffoldProperties::Parameter>{}, "");
+            }
+        }
+        else if (key == "assignment")
+        {
+            auto tokens = ParserUtilities::split(value, ',');
+            for (auto tok : tokens)
+            {
+                tok = ParserUtilities::trim(tok);
+                if (tok == "copy")
+                    hasCopyAssignment = true;
+                else if (tok == "move")
+                    hasMoveAssignment = true;
+                else
+                    throw std::runtime_error("Unknown assignment type: " + std::string(tok));
+            }
+        }
+        else if (key == "members")
+        {
+            std::vector<ScaffoldProperties::Parameter> parsed = PropertiesParser::parseParameters(value);
+            switch (currentAccess)
+            {
+            case Access::Public:
+                publicMembers.insert(publicMembers.end(), parsed.begin(), parsed.end());
+                break;
+            case Access::Private:
+                privateMembers.insert(privateMembers.end(), parsed.begin(), parsed.end());
+                break;
+            case Access::Protected:
+                protectedMembers.insert(protectedMembers.end(), parsed.begin(), parsed.end());
+                break;
+            default:
+                // If no access is set, default to private.
+                privateMembers.insert(privateMembers.end(), parsed.begin(), parsed.end());
+                break;
+            }
+        }
+        else
+        {
+            throw std::runtime_error("Unknown class-level property: " + std::string(key));
         }
     }
 
-    // This function reads the DSL lines that define a class according to the scaffolder schema.
-    // It processes top-level properties (like description, constructors, assignment, and members)
-    // as well as nested blocks (methods, constructors, destructor) and access specifiers.
-    ClassModel parseClassBlock(const std::string &className, const std::vector<std::string_view> &lines)
+    /**
+     * @brief Parses a class block from the DSL using a consume-as-you-go approach.
+     *
+     * This function processes DSL lines from the provided deque, consuming each line as it is handled.
+     * It supports top-level properties, nested blocks for methods, constructors, and destructors,
+     * as well as access specifier sections. If no valid DSL content is found, an error is thrown.
+     */
+    ScaffoldModels::ClassModel parseClassBlock(const std::string &className, std::deque<std::string_view> &lines)
     {
         std::string description;
         bool hasCopyAssignment = false;
         bool hasMoveAssignment = false;
-        std::vector<Constructor> constructors;
-        std::optional<Destructor> destructor;
+        std::vector<ScaffoldModels::Constructor> constructors;
+        std::optional<ScaffoldModels::Destructor> destructor;
 
-        std::vector<MethodModel> publicMethods, privateMethods, protectedMethods;
-        std::vector<Parameter> publicMembers, privateMembers, protectedMembers;
+        std::vector<ScaffoldModels::MethodModel> publicMethods, privateMethods, protectedMethods;
+        std::vector<ScaffoldProperties::Parameter> publicMembers, privateMembers, protectedMembers;
 
-        // Enum for tracking the current access specifier. Defaults to Private.
-        enum class Access
-        {
-            Private,
-            Public,
-            Protected
-        };
-        Access currentAccess = Access::Private;
+        // Start with no access specifier; defaults will be private.
+        Access currentAccess = Access::None;
 
-        // Variables for tracking nested block state
-        std::string currentKeyword;                // e.g., "method", "constructor", "destructor"
-        std::string blockIdentifier;               // identifier for the nested block (like method name)
-        std::vector<std::string_view> blockBuffer; // buffer to hold properties within a nested block
-
-        // Lambda to flush the current block buffer and add the parsed element to the corresponding container.
-        auto flush = [&](const std::vector<std::string_view> &buffer)
-        {
-            if (currentKeyword == "method")
-            {
-                // Delegate method properties parsing to CallableParser.
-                MethodModel method = CallableParser::parseMethodProperties(blockIdentifier, buffer);
-                // Add method to the correct access group.
-                switch (currentAccess)
-                {
-                case Access::Public:
-                    publicMethods.push_back(method);
-                    break;
-                case Access::Private:
-                    privateMethods.push_back(method);
-                    break;
-                case Access::Protected:
-                    protectedMethods.push_back(method);
-                    break;
-                }
-            }
-            else if (currentKeyword == "constructor")
-            {
-                if (blockIdentifier.empty())
-                    throw std::runtime_error("Missing constructor identifier.");
-                // Delegate custom constructor parsing.
-                constructors.emplace_back(
-                    SpecialMemberFunctionParser::parseConstructorProperties(blockIdentifier, buffer));
-            }
-            else if (currentKeyword == "destructor")
-            {
-                // Only one destructor is allowed.
-                if (destructor.has_value())
-                    throw std::runtime_error("Only one destructor is allowed per class.");
-                destructor = SpecialMemberFunctionParser::parseDestructorProperties(buffer);
-            }
-
-            // Clear state for the next block.
-            currentKeyword.clear();
-            blockIdentifier.clear();
-        };
-
-        // Flag to indicate whether any valid DSL content was encountered.
         bool validContentFound = false;
 
-        // Process each line of the DSL input.
-        for (auto line : lines)
+        while (!lines.empty())
         {
-            // Trim leading and trailing whitespace.
-            line = ParserUtilities::trim(line);
+            std::string_view line = ParserUtilities::trim(lines.front());
+            lines.pop_front(); // Consume the line
+
             if (line.empty())
                 continue;
 
-            if (line.starts_with("- "))
+            if (line == "_")
             {
-                // Mark that we've seen valid DSL content.
+                // If we are inside an access specifier, an "_" terminates that section.
+                if (currentAccess != Access::None)
+                {
+                    currentAccess = Access::None;
+                    continue; // Do not break out of the class block.
+                }
+                else
+                {
+                    // Otherwise, this is the end of the class block.
+                    validContentFound = true;
+                    break;
+                }
+            }
+            else if (line.starts_with("- "))
+            {
                 validContentFound = true;
-
-                // Flush any pending nested block before starting a new block.
-                ParserUtilities::flushBlock(blockBuffer, flush);
-
-                // Remove the DSL block marker "- " and trim any extra spaces.
-                line.remove_prefix(2);
-                line = ParserUtilities::trim(line); // Extra trim to handle extra whitespace
-
-                // Handle header lines which may indicate access specifiers or nested blocks.
-                // Check for a trailing colon and remove it.
-                auto colonPos = line.find(':');
-                if (colonPos != std::string_view::npos)
-                    line = line.substr(0, colonPos); // Remove trailing colon
-
-                // Determine if this is a simple token (like "public") or a nested block (like "method doSomething").
-                auto spacePos = line.find(' ');
+                // Process header line.
+                line.remove_prefix(2); // Remove "- " marker.
+                line = ParserUtilities::trim(line);
+                // Remove trailing colon if present.
+                if (!line.empty() && line.back() == ':')
+                {
+                    line.remove_suffix(1);
+                    line = ParserUtilities::trim(line);
+                }
+                // Determine if header is a simple token (access specifier) or a nested block.
+                size_t spacePos = line.find(' ');
                 if (spacePos == std::string_view::npos)
                 {
                     std::string token = std::string(ParserUtilities::trim(line));
-
-                    // Check if the token represents an access specifier.
                     if (token == "public")
                         currentAccess = Access::Public;
                     else if (token == "private")
                         currentAccess = Access::Private;
                     else if (token == "protected")
                         currentAccess = Access::Protected;
-                    // Check if it is a valid block type such as "destructor".
                     else if (token == "destructor")
                     {
-                        currentKeyword = token;
-                        blockIdentifier.clear();
+                        if (destructor.has_value())
+                            throw std::runtime_error("Only one destructor is allowed per class.");
+                        // Delegate to SpecialMemberFunctionParser; it will consume lines until its end marker.
+                        destructor = SpecialMemberFunctionParser::parseDestructorProperties(lines);
                     }
                     else
                     {
-                        // Unrecognized token in a header should throw an error.
                         throw std::runtime_error("Unknown access or block type: " + token);
-                    }
-
-                    // Reset nested block state for access specifiers.
-                    if (token == "public" || token == "private" || token == "protected")
-                    {
-                        currentKeyword.clear();
-                        blockIdentifier.clear();
                     }
                 }
                 else
                 {
-                    // This is a nested block header (e.g., "method doSomething" or "constructor custom").
-                    currentKeyword = std::string(ParserUtilities::trim(line.substr(0, spacePos)));
-                    blockIdentifier = std::string(ParserUtilities::trim(line.substr(spacePos + 1)));
+                    // Extract keyword and identifier.
+                    std::string keyword = std::string(ParserUtilities::trim(line.substr(0, spacePos)));
+                    std::string identifier = std::string(ParserUtilities::trim(line.substr(spacePos + 1)));
+                    // Remove trailing colon from identifier if present.
+                    if (!identifier.empty() && identifier.back() == ':')
+                        identifier.pop_back();
 
-                    // Remove any trailing colon from the identifier.
-                    if (!blockIdentifier.empty() && blockIdentifier.back() == ':')
-                        blockIdentifier.pop_back();
-                }
-            }
-            else if (line == "_")
-            {
-                // Mark valid content and flush the current nested block.
-                validContentFound = true;
-                ParserUtilities::flushBlock(blockBuffer, flush);
-            }
-            else if (line.starts_with("|"))
-            {
-                // Mark valid content and process a property line.
-                validContentFound = true;
-                if (currentKeyword.empty())
-                {
-                    // Remove the leading '|' and trim whitespace.
-                    line.remove_prefix(1);
-                    line = ParserUtilities::trim(line);
-
-                    // Process top-level class properties.
-                    size_t eqPos = line.find('=');
-                    if (eqPos == std::string_view::npos)
-                        continue; // Ignore if not a valid key=value pair
-
-                    std::string_view key = ParserUtilities::trim(line.substr(0, eqPos));
-                    std::string_view value = ParserUtilities::trim(line.substr(eqPos + 1));
-
-                    if (key == "description")
+                    if (keyword == "method")
                     {
-                        // Remove surrounding quotes from description.
-                        if (value.size() >= 2 && value.front() == '"' && value.back() == '"')
-                        {
-                            value.remove_prefix(1);
-                            value.remove_suffix(1);
-                        }
-                        description = std::string(ParserUtilities::trim(value));
-                    }
-                    else if (key == "constructors")
-                    {
-                        // Parse comma-separated list of constructor types.
-                        for (auto typeStr : ParserUtilities::split(value, ','))
-                        {
-                            typeStr = ParserUtilities::trim(typeStr);
-                            ConstructorType type;
-                            if (typeStr == "default")
-                                type = ConstructorType::DEFAULT;
-                            else if (typeStr == "copy")
-                                type = ConstructorType::COPY;
-                            else if (typeStr == "move")
-                                type = ConstructorType::MOVE;
-                            else
-                                throw std::runtime_error("Unknown constructor type: " + std::string(typeStr));
-
-                            constructors.emplace_back(type, std::vector<Parameter>{}, "");
-                        }
-                    }
-                    else if (key == "assignment")
-                    {
-                        // Parse assignment operators.
-                        parseAssignmentFlags(value, hasCopyAssignment, hasMoveAssignment);
-                    }
-                    else if (key == "members")
-                    {
-                        // Parse members into the current access group.
-                        std::vector<Parameter> parsed = PropertiesParser::parseParameters(value);
+                        // Delegate to CallableParser to parse the method block.
+                        ScaffoldModels::MethodModel method = CallableParser::parseMethodProperties(identifier, lines);
                         switch (currentAccess)
                         {
                         case Access::Public:
-                            publicMembers.insert(publicMembers.end(), parsed.begin(), parsed.end());
-                            break;
-                        case Access::Private:
-                            privateMembers.insert(privateMembers.end(), parsed.begin(), parsed.end());
+                            publicMethods.push_back(method);
                             break;
                         case Access::Protected:
-                            protectedMembers.insert(protectedMembers.end(), parsed.begin(), parsed.end());
+                            protectedMethods.push_back(method);
+                            break;
+                        default:
+                            // If no access specifier is currently set, default to private.
+                            privateMethods.push_back(method);
                             break;
                         }
                     }
+                    else if (keyword == "constructor")
+                    {
+                        if (identifier.empty())
+                            throw std::runtime_error("Missing constructor identifier.");
+                        ScaffoldModels::Constructor ctor = SpecialMemberFunctionParser::parseConstructorProperties(identifier, lines);
+                        constructors.push_back(ctor);
+                    }
                     else
                     {
-                        // Unknown top-level property leads to an error.
-                        throw std::runtime_error("Unknown class-level property: " + std::string(key));
+                        throw std::runtime_error("Unknown nested block keyword in class: " + keyword);
                     }
                 }
-                else
-                {
-                    // Inside a nested block: queue the property line for later processing.
-                    blockBuffer.push_back(line);
-                }
+            }
+            else if (line.starts_with("|"))
+            {
+                validContentFound = true;
+                // Process a top-level property.
+                processTopLevelProperty(line, description, hasCopyAssignment, hasMoveAssignment,
+                                        constructors, publicMembers, privateMembers, protectedMembers,
+                                        currentAccess);
             }
             else
             {
-                // For lines that do not match any expected DSL marker:
-                // If no valid DSL content has been seen yet, throw an error.
-                // Otherwise, ignore trailing garbage.
+                // If no DSL marker is recognized and no valid content has been seen yet, throw an error.
                 if (!validContentFound)
                 {
                     throw std::runtime_error("Malformed DSL file: unexpected line '" + std::string(line) + "'");
                 }
-                // Trailing garbage is ignored.
+                // Otherwise, ignore trailing garbage.
             }
-        }
+        } // end while
 
-        // Flush any remaining buffered nested block properties.
-        ParserUtilities::flushBlock(blockBuffer, flush);
+        if (!validContentFound)
+            throw std::runtime_error("Malformed DSL file: no valid DSL content found.");
 
-        // Return a fully constructed ClassModel from the parsed data.
-        return ClassModel(
+        return ScaffoldModels::ClassModel(
             className,
             description,
             constructors,
@@ -293,5 +277,5 @@ namespace ClassParser
             hasCopyAssignment,
             hasMoveAssignment);
     }
-
+    
 } // namespace ClassParser
