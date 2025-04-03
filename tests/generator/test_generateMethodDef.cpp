@@ -1,14 +1,14 @@
 #include "gtest/gtest.h"
 #include "CallableGenerator.h"
-#include "ScaffoldModels.h"
-#include "ScaffoldProperties.h"
+#include "CallableModels.h"
+#include "PropertiesModels.h"
 #include "PropertiesGenerator.h"
 #include "PropertiesParser.h"
 #include <vector>
 #include <string>
 
-using namespace ScaffoldProperties;
-using namespace ScaffoldModels;
+using namespace PropertiesModels;
+using namespace CallableModels;
 
 // ----- Method Definition Generation Tests ----- //
 

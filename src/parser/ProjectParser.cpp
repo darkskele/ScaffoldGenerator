@@ -5,6 +5,9 @@
 #include "CallableParser.h"
 #include "NamespaceParser.h"
 #include "ParserUtilities.h"
+#include "CallableModels.h"
+#include "ClassModels.h"
+
 #include <sstream>
 #include <stdexcept>
 #include <deque>
@@ -14,7 +17,7 @@
 
 namespace ProjectParser
 {
-    ScaffoldModels::ProjectModel parseProjectBlock(const std::string &projectName, std::deque<std::string_view> &lines)
+    CodeGroupModels::ProjectModel parseProjectBlock(const std::string &projectName, std::deque<std::string_view> &lines)
     {
         // Project-specific properties.
         std::string version;
@@ -60,11 +63,11 @@ namespace ProjectParser
         }
 
         // The remainder of the project block contains nested DSL elements.
-        std::vector<ScaffoldModels::FolderModel> subFolders;
-        std::vector<ScaffoldModels::ClassModel> classFiles;
-        std::vector<ScaffoldModels::NamespaceModel> namespaceFiles;
-        std::vector<ScaffoldModels::FunctionModel> functionFiles;
-        std::vector<ScaffoldModels::LibraryModel> libraries;
+        std::vector<CodeGroupModels::FolderModel> subFolders;
+        std::vector<ClassModels::ClassModel> classFiles;
+        std::vector<CodeGroupModels::NamespaceModel> namespaceFiles;
+        std::vector<CallableModels::FunctionModel> functionFiles;
+        std::vector<CodeGroupModels::LibraryModel> libraries;
 
         bool validContentFound = false;
 
@@ -169,7 +172,8 @@ namespace ProjectParser
             throw std::runtime_error("Malformed DSL file: no valid content found in project block");
 
         // Construct and return the ProjectModel.
-        return ScaffoldModels::ProjectModel(projectName, version, dependencies, libraries,
-                                            subFolders, classFiles, namespaceFiles, functionFiles);
+        return CodeGroupModels::ProjectModel(projectName, version, dependencies, libraries,
+                                             subFolders, classFiles, namespaceFiles, functionFiles);
     }
-}
+
+} // namespace ProjectParser

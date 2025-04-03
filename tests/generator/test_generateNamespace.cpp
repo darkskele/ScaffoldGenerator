@@ -1,6 +1,6 @@
 #include "NamespaceGenerator.h"
-#include "ScaffoldModels.h"
-#include "ScaffoldProperties.h"
+#include "CodeGroupModels.h"
+#include "PropertiesModels.h"
 #include "GeneratorUtilities.h"  // for dataTypeToString, if needed
 #include "ClassGenerator.h"
 #include "CallableGenerator.h"
@@ -10,8 +10,8 @@
 #include <sstream>
 
 using namespace NamespaceGenerator;
-using namespace ScaffoldModels;
-using namespace ScaffoldProperties;
+using namespace CodeGroupModels;
+using namespace PropertiesModels;
 
 
 

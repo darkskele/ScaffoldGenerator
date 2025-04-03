@@ -6,44 +6,55 @@
 
 namespace SpecialMemberGenerator
 {
-    std::string generateConstructorDeclaration(const std::string &className, const ScaffoldModels::Constructor &ctor)
+    std::string generateConstructorDeclaration(const std::string &className, const ClassModels::Constructor &ctor)
     {
+        // Create an output string stream to build the constructor declaration.
         std::ostringstream oss;
+
+        // Begin the constructor declaration with the class name and an opening parenthesis.
         oss << "    " << className << "(";
 
-        if (ctor.type == ScaffoldModels::ConstructorType::CUSTOM)
+        // Check the constructor type to determine the appropriate declaration.
+        if (ctor.type == ClassModels::ConstructorType::CUSTOM)
         {
+            // For custom constructors, generate the parameter list and close the declaration.
             oss << PropertiesGenerator::generateParameterList(ctor.parameters) << ");\n";
         }
-        else if (ctor.type == ScaffoldModels::ConstructorType::COPY)
+        else if (ctor.type == ClassModels::ConstructorType::COPY)
         {
+            // For copy constructors, use a const reference to another instance.
             oss << "const " << className << "& other);\n";
         }
-        else if (ctor.type == ScaffoldModels::ConstructorType::MOVE)
+        else if (ctor.type == ClassModels::ConstructorType::MOVE)
         {
+            // For move constructors, use an rvalue reference and mark the constructor as noexcept.
             oss << className << "&& other) noexcept;\n";
         }
-        else if (ctor.type == ScaffoldModels::ConstructorType::DEFAULT)
+        else if (ctor.type == ClassModels::ConstructorType::DEFAULT)
         {
+            // For default constructors, close the declaration with a default specifier.
             oss << ") = default;\n";
+            // Additionally, generate defaulted copy and move constructors.
             oss << "    " << className << "(const " << className << "&) = default;\n";
             oss << "    " << className << "(" << className << "&&) = default;\n";
         }
         else
         {
+            // If the constructor type is unrecognized, throw a runtime error.
             throw std::runtime_error("Unrecognised constructor type!");
         }
 
+        // Return the complete constructor declaration as a string.
         return oss.str();
     }
 
-    std::string generateConstructorDefinition(const std::string &className, const ScaffoldModels::Constructor &ctor,
-                                              const std::vector<ScaffoldProperties::Parameter> publicMembers,
-                                              const std::vector<ScaffoldProperties::Parameter> privateMembers,
-                                              const std::vector<ScaffoldProperties::Parameter> protectedMembers)
+    std::string generateConstructorDefinition(const std::string &className, const ClassModels::Constructor &ctor,
+                                              const std::vector<PropertiesModels::Parameter> publicMembers,
+                                              const std::vector<PropertiesModels::Parameter> privateMembers,
+                                              const std::vector<PropertiesModels::Parameter> protectedMembers)
     {
         // For DEFAULT constructor, no out-of-line definition is needed.
-        if (ctor.type == ScaffoldModels::ConstructorType::DEFAULT)
+        if (ctor.type == ClassModels::ConstructorType::DEFAULT)
         {
             return ""; // or a comment string if you prefer to generate something
         }
@@ -51,15 +62,15 @@ namespace SpecialMemberGenerator
         std::ostringstream oss;
         oss << className << "::" << className << "(";
 
-        if (ctor.type == ScaffoldModels::ConstructorType::CUSTOM)
+        if (ctor.type == ClassModels::ConstructorType::CUSTOM)
         {
             oss << PropertiesGenerator::generateParameterList(ctor.parameters) << ")";
         }
-        else if (ctor.type == ScaffoldModels::ConstructorType::COPY)
+        else if (ctor.type == ClassModels::ConstructorType::COPY)
         {
             oss << "const " << className << "& other)";
         }
-        else if (ctor.type == ScaffoldModels::ConstructorType::MOVE)
+        else if (ctor.type == ClassModels::ConstructorType::MOVE)
         {
             oss << className << "&& other) noexcept";
         }
@@ -71,7 +82,7 @@ namespace SpecialMemberGenerator
         // Begin the initializer list.
         std::ostringstream initList;
         bool firstInit = true;
-        std::vector<std::vector<ScaffoldProperties::Parameter>> memberScopes = {publicMembers, privateMembers, protectedMembers};
+        std::vector<std::vector<PropertiesModels::Parameter>> memberScopes = {publicMembers, privateMembers, protectedMembers};
         for (const auto &scope : memberScopes)
         {
             for (const auto &p : scope)
@@ -93,7 +104,7 @@ namespace SpecialMemberGenerator
         return oss.str();
     }
 
-    std::string generateDestructorDeclaration(const std::string& className)
+    std::string generateDestructorDeclaration(const std::string &className)
     {
         std::ostringstream oss;
         // Build the destructor declaration.
@@ -103,14 +114,14 @@ namespace SpecialMemberGenerator
         return oss.str();
     }
 
-    std::string generateDestructorDefinition(const std::string& className)
+    std::string generateDestructorDefinition(const std::string &className)
     {
         // For default destructors, no out-of-line definition is needed.
         // Return an empty string as a placeholder.
         return "";
     }
 
-    std::string generateMoveAssignmentDeclaration(const std::string& className)
+    std::string generateMoveAssignmentDeclaration(const std::string &className)
     {
         std::ostringstream oss;
         // Build move assignment operator declaration.
@@ -120,7 +131,7 @@ namespace SpecialMemberGenerator
         return oss.str();
     }
 
-    std::string generateMoveAssignmentDefinition(const std::string& className)
+    std::string generateMoveAssignmentDefinition(const std::string &className)
     {
         std::ostringstream oss;
         // Start constructing the move assignment operator definition.
@@ -134,7 +145,7 @@ namespace SpecialMemberGenerator
         return oss.str();
     }
 
-    std::string generateCopyAssignmentDeclaration(const std::string& className)
+    std::string generateCopyAssignmentDeclaration(const std::string &className)
     {
         std::ostringstream oss;
         // Build copy assignment operator declaration.
@@ -144,7 +155,7 @@ namespace SpecialMemberGenerator
         return oss.str();
     }
 
-    std::string generateCopyAssignmentDefinition(const std::string& className)
+    std::string generateCopyAssignmentDefinition(const std::string &className)
     {
         std::ostringstream oss;
         // Start constructing the copy assignment operator definition.

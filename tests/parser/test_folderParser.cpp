@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
 #include "FolderParser.h"
-#include "ScaffoldModels.h"  // Provides FolderModel and related models.
+#include "CodeGroupModels.h"  // Provides FolderModel and related models.
 #include <string_view>
 #include <deque>
 
 using namespace FolderParser;
-using namespace ScaffoldModels;
+using namespace CodeGroupModels;
 
 TEST(FolderParserTest, ParsesEmptyFolderBlock) {
     // A folder block with no content (only the end marker).

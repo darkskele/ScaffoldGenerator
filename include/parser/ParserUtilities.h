@@ -63,4 +63,5 @@ namespace ParserUtilities
      * @param handler A function that accepts the buffered block.
      */
     void flushBlock(std::vector<std::string_view> &buffer, const std::function<void(const std::vector<std::string_view> &)> &handler);
+
 } // namespace ParserUtilities

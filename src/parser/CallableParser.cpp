@@ -1,24 +1,25 @@
 #include "CallableParser.h"
-#include "ScaffoldProperties.h"
+#include "PropertiesModels.h"
 #include "ParserUtilities.h"
 #include "PropertiesParser.h"
+
 #include <stdexcept>
 
 namespace CallableParser
 {
     // This function consumes property lines from the front of the deque until it is empty.
     // When a line is processed, it is popped from the deque.
-    ScaffoldModels::CallableModel parseCallableProperties(const std::string &callableName, std::deque<std::string_view>& propertyLines)
+    CallableModels::CallableModel parseCallableProperties(const std::string &callableName, std::deque<std::string_view> &propertyLines)
     {
         // Initialize default properties:
         // Default return type is 'void'.
-        ScaffoldProperties::DataType returnType = PropertiesParser::parseDataType("void");
+        PropertiesModels::DataType returnType = PropertiesParser::parseDataType("void");
         // Default parameter list is empty.
-        std::vector<ScaffoldProperties::Parameter> params;
+        std::vector<PropertiesModels::Parameter> params;
         // Default description is empty.
         std::string description;
         // Default declaration specifier (no modifiers).
-        ScaffoldProperties::DeclartionSpecifier declSpec;
+        PropertiesModels::DeclartionSpecifier declSpec;
 
         // Process each property line until the deque is empty.
         while (!propertyLines.empty())
@@ -41,7 +42,7 @@ namespace CallableParser
             // Find the '=' separator to split key and value.
             size_t equalPos = line.find('=');
             if (equalPos == std::string_view::npos)
-                continue;  // Skip lines without a key-value pair.
+                continue; // Skip lines without a key-value pair.
 
             // Extract and trim the key and value.
             std::string_view key = ParserUtilities::trim(line.substr(0, equalPos));
@@ -79,7 +80,7 @@ namespace CallableParser
             }
         }
 
-        return ScaffoldModels::CallableModel(returnType, callableName, params, declSpec, description);
+        return CallableModels::CallableModel(returnType, callableName, params, declSpec, description);
     }
-    
+
 } // namespace CallableParser

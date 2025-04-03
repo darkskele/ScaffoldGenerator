@@ -11,7 +11,8 @@
 
 #pragma once
 
-#include "ScaffoldModels.h"
+#include "CodeGroupModels.h"
+
 #include <string>
 #include <string_view>
 #include <deque>
@@ -42,10 +43,11 @@ namespace NamespaceParser
      *
      * @param nsName Optional name for the namespace; if not provided, an anonymous namespace is assumed.
      * @param lines A deque of DSL lines representing the namespace block. Lines are consumed as they are processed.
-     * @return ScaffoldModels::NamespaceModel The parsed namespace model.
+     * @return CodeGroupModels::NamespaceModel The parsed namespace model.
      *
      * @throws std::runtime_error on malformed input or unknown keywords.
      */
-    ScaffoldModels::NamespaceModel parseNamespaceBlock(const std::optional<std::string>& nsName,
-                                                         std::deque<std::string_view>& lines);
-}
+    CodeGroupModels::NamespaceModel parseNamespaceBlock(const std::optional<std::string> &nsName,
+                                                        std::deque<std::string_view> &lines);
+
+} // namespace NamespaceParser

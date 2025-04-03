@@ -18,7 +18,8 @@
 
 #pragma once
 
-#include "ScaffoldModels.h"
+#include "CallableModels.h"
+
 #include <string>
 
 /**
@@ -34,7 +35,7 @@
  *     - The method declaration generator indents the output for inclusion within a class.
  *     - The method definition generator qualifies the function name with the owning class name.
  *
- * @sa ScaffoldModels, PropertiesGenerator, GeneratorUtilities
+ * @sa CallableModels, PropertiesGenerator, GeneratorUtilities
  */
 namespace CallableGenerator
 {
@@ -55,7 +56,7 @@ namespace CallableGenerator
      *
      * @throws std::runtime_error If any property of the callable is invalid.
      */
-    std::string generateCallableDeclaration(const ScaffoldModels::CallableModel &callable);
+    std::string generateCallableDeclaration(const CallableModels::CallableModel &callable);
 
     /**
      * @brief Generates a callable definition string.
@@ -69,7 +70,7 @@ namespace CallableGenerator
      *
      * @throws std::runtime_error If any property of the callable is invalid.
      */
-    std::string generateCallableDefinition(const ScaffoldModels::CallableModel &callable);
+    std::string generateCallableDefinition(const CallableModels::CallableModel &callable);
 
     //--------------------------------------------------------------------------
     // Free Function Generators (aliasing the base generators)
@@ -85,7 +86,7 @@ namespace CallableGenerator
      *
      * @throws std::runtime_error If any property of the function is invalid.
      */
-    inline std::string generateFunctionDeclaration(const ScaffoldModels::FunctionModel &func)
+    inline std::string generateFunctionDeclaration(const CallableModels::FunctionModel &func)
     {
         return generateCallableDeclaration(func);
     }
@@ -100,7 +101,7 @@ namespace CallableGenerator
      *
      * @throws std::runtime_error If any property of the function is invalid.
      */
-    inline std::string generateFunctionDefinition(const ScaffoldModels::FunctionModel &func)
+    inline std::string generateFunctionDefinition(const CallableModels::FunctionModel &func)
     {
         return generateCallableDefinition(func);
     }
@@ -121,7 +122,7 @@ namespace CallableGenerator
      *
      * @throws std::runtime_error If any property of the method is invalid.
      */
-    std::string generateMethodDeclaration(const ScaffoldModels::MethodModel &method);
+    std::string generateMethodDeclaration(const CallableModels::MethodModel &method);
 
     /**
      * @brief Generates a method definition string with class qualification.
@@ -136,5 +137,6 @@ namespace CallableGenerator
      *
      * @throws std::runtime_error If any property of the method is invalid.
      */
-    std::string generateMethodDefinition(const std::string &className, const ScaffoldModels::MethodModel &method);
-}
+    std::string generateMethodDefinition(const std::string &className, const CallableModels::MethodModel &method);
+
+} // namespace CallableGenerator

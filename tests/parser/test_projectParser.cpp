@@ -2,12 +2,12 @@
 #include "ProjectParser.h"
 #include "LibraryParser.h"
 #include "FolderParser.h"
-#include "ScaffoldModels.h"  // Provides ProjectModel, LibraryModel, FolderModel, etc.
+#include "CodeGroupModels.h"  // Provides ProjectModel, LibraryModel, FolderModel, etc.
 #include <string_view>
 #include <deque>
 
 using namespace ProjectParser;
-using namespace ScaffoldModels;
+using namespace CodeGroupModels;
 
 TEST(ProjectParserTest, ParsesEmptyProjectBlock) {
     // A project block with only properties and no nested content.

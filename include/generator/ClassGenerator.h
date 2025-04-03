@@ -5,7 +5,8 @@
 
 #pragma once
 
-#include "ScaffoldModels.h"
+#include "ClassModels.h"
+
 #include <string>
 
 /**
@@ -25,7 +26,7 @@ namespace ClassGenerator
      * @param cl The ClassModel containing all DSL class data.
      * @return A string containing the C++ class declaration.
      */
-    std::string generateClassDeclaration(const ScaffoldModels::ClassModel& cl);
+    std::string generateClassDeclaration(const ClassModels::ClassModel &cl);
 
     /**
      * @brief Generates the C++ class definition from a ClassModel.
@@ -37,5 +38,6 @@ namespace ClassGenerator
      * @param cl The ClassModel containing all DSL class data.
      * @return A string containing the C++ class definition.
      */
-    std::string generateClassDefinition(const ScaffoldModels::ClassModel& cl);
-}
+    std::string generateClassDefinition(const ClassModels::ClassModel &cl);
+
+} // namespace ClassGenerator

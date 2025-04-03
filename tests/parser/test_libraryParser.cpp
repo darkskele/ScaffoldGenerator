@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
 #include "LibraryParser.h"
-#include "ScaffoldModels.h"  // Provides LibraryModel (which inherits from FolderModel) and related models.
+#include "CodeGroupModels.h"  // Provides LibraryModel (which inherits from FolderModel) and related models.
 #include <string_view>
 #include <deque>
 
 using namespace LibraryParser;
-using namespace ScaffoldModels;
+using namespace CodeGroupModels;
 
 TEST(LibraryParserTest, ParsesEmptyLibraryBlock) {
     // A library block with only properties and no nested content.

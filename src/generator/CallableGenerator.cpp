@@ -1,6 +1,8 @@
 #include "CallableGenerator.h"
 #include "PropertiesGenerator.h"
 #include "GeneratorUtilities.h"
+#include "CallableModels.h"
+
 #include <sstream>
 #include <format>
 #include <stdexcept>
@@ -11,7 +13,7 @@ namespace CallableGenerator
     // Base Generators (operate on CallableModel)
     //--------------------------------------------------------------------------
 
-    std::string generateCallableDeclaration(const ScaffoldModels::CallableModel &callable)
+    std::string generateCallableDeclaration(const CallableModels::CallableModel &callable)
     {
         // Convert the callable's return type to its string representation.
         std::string returnTypeStr = GeneratorUtilities::dataTypeToString(callable.returnType);
@@ -36,7 +38,7 @@ namespace CallableGenerator
         return result;
     }
 
-    std::string generateCallableDefinition(const ScaffoldModels::CallableModel &callable)
+    std::string generateCallableDefinition(const CallableModels::CallableModel &callable)
     {
         // Convert the callable's return type to its string representation.
         std::string returnTypeStr = GeneratorUtilities::dataTypeToString(callable.returnType);
@@ -64,7 +66,7 @@ namespace CallableGenerator
     // Method Generators (wrap the base generators)
     //--------------------------------------------------------------------------
 
-    std::string generateMethodDeclaration(const ScaffoldModels::MethodModel &method)
+    std::string generateMethodDeclaration(const CallableModels::MethodModel &method)
     {
         // Generate the free callable declaration using the base generator.
         std::string decl = generateCallableDeclaration(method);
@@ -73,7 +75,7 @@ namespace CallableGenerator
         return GeneratorUtilities::indentCode(decl);
     }
 
-    std::string generateMethodDefinition(const std::string &className, const ScaffoldModels::MethodModel &method)
+    std::string generateMethodDefinition(const std::string &className, const CallableModels::MethodModel &method)
     {
         // Instead of directly using the base definition, rebuild the definition so that the function
         // name is qualified with the owning class name.
@@ -94,4 +96,5 @@ namespace CallableGenerator
                                              body);
         return definition;
     }
-}
+
+} // namespace CallableGenerator

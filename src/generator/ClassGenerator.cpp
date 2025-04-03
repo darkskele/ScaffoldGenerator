@@ -2,10 +2,16 @@
 #include "SpecialMemberGenerator.h"
 #include "CallableGenerator.h"
 #include "GeneratorUtilities.h"
+
 #include <sstream>
 #include <format>
 
-// Anonymous namespace for helper functions.
+/**
+ * @brief Anonymous namespace for internal helper functions.
+ *
+ * This anonymous namespace contains helper functions that are intended for internal use within the translation unit.
+ * The functions provided here assist with code generation tasks, such as generating method definitions for classes.
+ */
 namespace
 {
     /**
@@ -16,10 +22,10 @@ namespace
      * @param methods The vector of MethodModel objects.
      * @param oss The output stream to append the definitions.
      */
-    void classMethodDefinitionGenerator(const std::vector<ScaffoldModels::MethodModel>& methods, 
-                                        const std::string& className, std::ostringstream& oss)
+    void classMethodDefinitionGenerator(const std::vector<CallableModels::MethodModel> &methods,
+                                        const std::string &className, std::ostringstream &oss)
     {
-        for (const auto& meth : methods)
+        for (const auto &meth : methods)
         {
             // Generate the definition for each method and append a newline.
             oss << CallableGenerator::generateMethodDefinition(className, meth) << "\n";
@@ -29,7 +35,7 @@ namespace
 
 namespace ClassGenerator
 {
-    std::string generateClassDeclaration(const ScaffoldModels::ClassModel& cl)
+    std::string generateClassDeclaration(const ClassModels::ClassModel &cl)
     {
         std::ostringstream oss;
         // Generate Doxygen-style class comment.
@@ -38,7 +44,7 @@ namespace ClassGenerator
         oss << "class " << cl.name << " {\npublic:\n";
 
         // Generate constructor declarations.
-        for (const auto& ctor : cl.constructors)
+        for (const auto &ctor : cl.constructors)
         {
             oss << SpecialMemberGenerator::generateConstructorDeclaration(cl.name, ctor);
         }
@@ -62,12 +68,12 @@ namespace ClassGenerator
         }
 
         // Generate declarations for public methods.
-        for (const auto& meth : cl.publicMethods)
+        for (const auto &meth : cl.publicMethods)
         {
             oss << CallableGenerator::generateMethodDeclaration(meth);
         }
         // Generate declarations for public members.
-        for (const auto& mem : cl.publicMembers)
+        for (const auto &mem : cl.publicMembers)
         {
             oss << std::format("    {} {};\n", GeneratorUtilities::dataTypeToString(mem.type), mem.name);
         }
@@ -76,11 +82,11 @@ namespace ClassGenerator
         if (!cl.privateMembers.empty() || !cl.privateMethods.empty())
         {
             oss << "private:\n";
-            for (const auto& meth : cl.privateMethods)
+            for (const auto &meth : cl.privateMethods)
             {
                 oss << CallableGenerator::generateMethodDeclaration(meth);
             }
-            for (const auto& mem : cl.privateMembers)
+            for (const auto &mem : cl.privateMembers)
             {
                 oss << std::format("    {} {};\n", GeneratorUtilities::dataTypeToString(mem.type), mem.name);
             }
@@ -90,11 +96,11 @@ namespace ClassGenerator
         if (!cl.protectedMembers.empty() || !cl.protectedMethods.empty())
         {
             oss << "protected:\n";
-            for (const auto& meth : cl.protectedMethods)
+            for (const auto &meth : cl.protectedMethods)
             {
                 oss << CallableGenerator::generateMethodDeclaration(meth);
             }
-            for (const auto& mem : cl.protectedMembers)
+            for (const auto &mem : cl.protectedMembers)
             {
                 oss << std::format("    {} {};\n", GeneratorUtilities::dataTypeToString(mem.type), mem.name);
             }
@@ -105,16 +111,16 @@ namespace ClassGenerator
         return oss.str();
     }
 
-    std::string generateClassDefinition(const ScaffoldModels::ClassModel& cl)
+    std::string generateClassDefinition(const ClassModels::ClassModel &cl)
     {
         std::ostringstream oss;
 
         // Generate definitions for constructors.
-        for (const auto& ctor : cl.constructors)
+        for (const auto &ctor : cl.constructors)
         {
             // Generate out-of-line constructor definition.
             std::string def = SpecialMemberGenerator::generateConstructorDefinition(cl.name, ctor,
-                cl.publicMembers, cl.privateMembers, cl.protectedMembers);
+                                                                                    cl.publicMembers, cl.privateMembers, cl.protectedMembers);
             if (!def.empty())
             {
                 oss << def << "\n";
@@ -162,4 +168,5 @@ namespace ClassGenerator
 
         return oss.str();
     }
-}
+
+} // namespace ClassGenerator

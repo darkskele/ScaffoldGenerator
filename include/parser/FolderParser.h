@@ -9,39 +9,39 @@
  * function blocks encountered in the folder are grouped together into a single file.
  */
 
- #pragma once
+#pragma once
 
- #include "ScaffoldModels.h"   // Contains FolderModel and related models.
- #include <deque>
- #include <string_view>
- #include <string>
- 
- /**
-  * @namespace FolderParser
-  * @brief Contains functions to parse folder blocks from the scaffolder DSL.
-  *
-  * The FolderParser namespace provides functionality to process folder blocks in the DSL.
-  * A folder block starts with a header line using the `folder` keyword and is terminated by
-  * an underscore (`_`). It can include nested folder blocks, class blocks, namespace blocks,
-  * or free function blocks. In this implementation, all free function blocks are collected into
-  * a single vector, which will be output as one file.
-  */
- namespace FolderParser
- {
-     /**
-      * @brief Parses a folder block from the DSL.
-      *
-      * This function processes the lines representing a folder block from the DSL.
-      * A folder block starts with a header line using the `folder` keyword and is terminated
-      * by an underscore (`_`). The block may contain nested folder blocks, class blocks, namespace
-      * blocks, or free function blocks. All free function blocks encountered are grouped together
-      * into a single vector.
-      *
-      * @param folderName The identifier for the folder.
-      * @param lines A deque of DSL lines to be parsed.
-      * @return A FolderModel representing the parsed folder and its contained files.
-      * @throws std::runtime_error if the DSL is malformed.
-      */
-     ScaffoldModels::FolderModel parseFolderBlock(const std::string &folderName, std::deque<std::string_view>& lines);
- }
- 
+#include "CodeGroupModels.h" // Contains FolderModel and related models.
+
+#include <deque>
+#include <string_view>
+#include <string>
+
+/**
+ * @namespace FolderParser
+ * @brief Contains functions to parse folder blocks from the scaffolder DSL.
+ *
+ * The FolderParser namespace provides functionality to process folder blocks in the DSL.
+ * A folder block starts with a header line using the `folder` keyword and is terminated by
+ * an underscore (`_`). It can include nested folder blocks, class blocks, namespace blocks,
+ * or free function blocks. In this implementation, all free function blocks are collected into
+ * a single vector, which will be output as one file.
+ */
+namespace FolderParser
+{
+    /**
+     * @brief Parses a folder block from the DSL.
+     *
+     * This function processes the lines representing a folder block from the DSL.
+     * A folder block starts with a header line using the `folder` keyword and is terminated
+     * by an underscore (`_`). The block may contain nested folder blocks, class blocks, namespace
+     * blocks, or free function blocks. All free function blocks encountered are grouped together
+     * into a single vector.
+     *
+     * @param folderName The identifier for the folder.
+     * @param lines A deque of DSL lines to be parsed.
+     * @return A FolderModel representing the parsed folder and its contained files.
+     * @throws std::runtime_error if the DSL is malformed.
+     */
+    CodeGroupModels::FolderModel parseFolderBlock(const std::string &folderName, std::deque<std::string_view> &lines);
+}

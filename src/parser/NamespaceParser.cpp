@@ -2,19 +2,22 @@
 #include "ParserUtilities.h"
 #include "ClassParser.h"
 #include "CallableParser.h"
+#include "ClassModels.h"
+#include "CallableModels.h"
+
 #include <stdexcept>
 #include <deque>
 #include <optional>
 
 namespace NamespaceParser
 {
-    ScaffoldModels::NamespaceModel parseNamespaceBlock(const std::optional<std::string>& nsName,
-                                                         std::deque<std::string_view>& lines)
+    CodeGroupModels::NamespaceModel parseNamespaceBlock(const std::optional<std::string> &nsName,
+                                                        std::deque<std::string_view> &lines)
     {
         std::string description;
-        std::vector<ScaffoldModels::ClassModel> classes;
-        std::vector<ScaffoldModels::FunctionModel> functions;
-        std::vector<ScaffoldModels::NamespaceModel> nestedNamespaces;
+        std::vector<ClassModels::ClassModel> classes;
+        std::vector<CallableModels::FunctionModel> functions;
+        std::vector<CodeGroupModels::NamespaceModel> nestedNamespaces;
         bool validContentFound = false;
 
         while (!lines.empty())
@@ -31,7 +34,7 @@ namespace NamespaceParser
                 validContentFound = true;
                 break;
             }
-            else if (!line.empty() && line.front() == '-') 
+            else if (!line.empty() && line.front() == '-')
             {
                 // Process a header line.
                 line.remove_prefix(1); // Remove the '-' (ignoring any spaces)
@@ -121,7 +124,7 @@ namespace NamespaceParser
         if (!validContentFound)
             throw std::runtime_error("Malformed DSL file: no valid DSL content found in namespace block");
 
-        return ScaffoldModels::NamespaceModel{ nsName.value_or(""), description, classes, functions, nestedNamespaces };
+        return CodeGroupModels::NamespaceModel{nsName.value_or(""), description, classes, functions, nestedNamespaces};
     }
 
 } // namespace NamespaceParser

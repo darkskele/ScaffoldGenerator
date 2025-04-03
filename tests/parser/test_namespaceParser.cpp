@@ -1,13 +1,13 @@
 #include <gtest/gtest.h>
 #include "NamespaceParser.h"
-#include "ScaffoldModels.h"  // Provides definitions for NamespaceModel, ClassModel, FunctionModel, etc.
+#include "CodeGroupModels.h" 
 #include <string_view>
 #include <optional>
 #include <vector>
 #include <deque>
 
 using namespace NamespaceParser;
-using namespace ScaffoldModels;
+using namespace CodeGroupModels;
 
 TEST(NamespaceParserTest, ParsesBasicNamespaceWithDescription) {
     std::deque<std::string_view> lines = {

@@ -1,12 +1,13 @@
 #include "PropertiesParser.h"
 #include "ParserUtilities.h"
+
 #include <stdexcept>
 #include <cctype>
 
 namespace PropertiesParser
 {
     // Parse a data type from the provided string view.
-    ScaffoldProperties::DataType parseDataType(std::string_view typeStr)
+    PropertiesModels::DataType parseDataType(std::string_view typeStr)
     {
         // Trim whitespace from the input.
         typeStr = ParserUtilities::trim(typeStr);
@@ -19,40 +20,40 @@ namespace PropertiesParser
 
         // Compare the remaining string against known type names.
         if (typeStr == "void")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::VOID, quals, decl);
+            return PropertiesModels::DataType(PropertiesModels::Types::VOID, quals, decl);
         else if (typeStr == "int")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::INT, quals, decl);
+            return PropertiesModels::DataType(PropertiesModels::Types::INT, quals, decl);
         else if (typeStr == "uint")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::UINT, quals, decl);
+            return PropertiesModels::DataType(PropertiesModels::Types::UINT, quals, decl);
         else if (typeStr == "long")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::LONG, quals, decl);
+            return PropertiesModels::DataType(PropertiesModels::Types::LONG, quals, decl);
         else if (typeStr == "ulong")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::ULONG, quals, decl);
+            return PropertiesModels::DataType(PropertiesModels::Types::ULONG, quals, decl);
         else if (typeStr == "longlong")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::LONGLONG, quals, decl);
+            return PropertiesModels::DataType(PropertiesModels::Types::LONGLONG, quals, decl);
         else if (typeStr == "ulonglong")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::ULONGLONG, quals, decl);
+            return PropertiesModels::DataType(PropertiesModels::Types::ULONGLONG, quals, decl);
         else if (typeStr == "float")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::FLOAT, quals, decl);
+            return PropertiesModels::DataType(PropertiesModels::Types::FLOAT, quals, decl);
         else if (typeStr == "double")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::DOUBLE, quals, decl);
+            return PropertiesModels::DataType(PropertiesModels::Types::DOUBLE, quals, decl);
         else if (typeStr == "bool")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::BOOL, quals, decl);
+            return PropertiesModels::DataType(PropertiesModels::Types::BOOL, quals, decl);
         else if (typeStr == "string")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::STRING, quals, decl);
+            return PropertiesModels::DataType(PropertiesModels::Types::STRING, quals, decl);
         else if (typeStr == "char")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::CHAR, quals, decl);
+            return PropertiesModels::DataType(PropertiesModels::Types::CHAR, quals, decl);
         else if (typeStr == "auto")
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::AUTO, quals, decl);
+            return PropertiesModels::DataType(PropertiesModels::Types::AUTO, quals, decl);
         else
             // If no known type matches, treat it as a custom type.
-            return ScaffoldProperties::DataType(ScaffoldProperties::Types::CUSTOM, std::string(typeStr), quals, decl);
+            return PropertiesModels::DataType(PropertiesModels::Types::CUSTOM, std::string(typeStr), quals, decl);
     }
 
     // Parse type qualifiers from the provided string view.
-    ScaffoldProperties::TypeQualifier parseTypeQualifier(std::string_view& qualStr)
+    PropertiesModels::TypeQualifier parseTypeQualifier(std::string_view &qualStr)
     {
-        using namespace ScaffoldProperties;
+        using namespace PropertiesModels;
         // Start with no qualifiers.
         TypeQualifier quals = TypeQualifier::NONE;
 
@@ -88,9 +89,9 @@ namespace PropertiesParser
     }
 
     // Parse type declarators from the provided string view.
-    ScaffoldProperties::TypeDeclarator parseTypeDeclarator(std::string_view& typeStr)
+    PropertiesModels::TypeDeclarator parseTypeDeclarator(std::string_view &typeStr)
     {
-        using namespace ScaffoldProperties;
+        using namespace PropertiesModels;
         // Initialize an empty TypeDeclarator.
         TypeDeclarator tD;
 
@@ -165,9 +166,9 @@ namespace PropertiesParser
     }
 
     // Parse a comma-separated list of parameters from the provided string view.
-    std::vector<ScaffoldProperties::Parameter> parseParameters(std::string_view paramStr)
+    std::vector<PropertiesModels::Parameter> parseParameters(std::string_view paramStr)
     {
-        std::vector<ScaffoldProperties::Parameter> params;
+        std::vector<PropertiesModels::Parameter> params;
         // Trim whitespace from the entire parameter string.
         paramStr = ParserUtilities::trim(paramStr);
 
@@ -207,16 +208,16 @@ namespace PropertiesParser
             std::string_view paramType = ParserUtilities::trim(token.substr(colonPos + 1));
 
             // Create a Parameter object and add it to the list.
-            params.emplace_back(ScaffoldProperties::Parameter(parseDataType(paramType), std::string(paramName)));
+            params.emplace_back(PropertiesModels::Parameter(parseDataType(paramType), std::string(paramName)));
         }
 
         return params;
     }
 
     // Parse declaration specifiers from the provided string view.
-    ScaffoldProperties::DeclartionSpecifier parseDeclarationSpecifier(std::string_view declStr)
+    PropertiesModels::DeclartionSpecifier parseDeclarationSpecifier(std::string_view declStr)
     {
-        using namespace ScaffoldProperties;
+        using namespace PropertiesModels;
         // Initialize an empty declaration specifier.
         DeclartionSpecifier decl{};
         // Trim whitespace from the input.
