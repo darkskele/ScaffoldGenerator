@@ -346,4 +346,48 @@ namespace ScaffoldModels
         }
     };
 
+    /**
+     * @brief Represents a project in the scaffolding DSL.
+     *
+     * Inherits from FolderModel, so a ProjectModel creates a folder in the project root.
+     * It includes versioning and dependency management for CMake configuration,
+     * and additionally holds a collection of libraries.
+     */
+    struct ProjectModel : public FolderModel
+    {
+        /// The version of the project.
+        std::string version;
+        /// A vector of dependencies required by the project.
+        std::vector<std::string> dependencies;
+        /// A vector of libraries that are part of the project.
+        std::vector<LibraryModel> libraries;
+
+        /**
+         * @brief Constructs a new ProjectModel.
+         *
+         * @param name The name of the project. This is also used as the folder name.
+         * @param version The version of the project.
+         * @param dependencies A vector of dependencies required by the project.
+         * @param libraries A vector of LibraryModel instances that are part of the project.
+         * @param subFolders Optional subfolder models nested inside the project.
+         * @param classFiles Optional class models that generate individual files.
+         * @param namespaceFiles Optional namespace models that generate individual files.
+         * @param functionFiles Optional free function models; the vector represents a file containing functions.
+         */
+        ProjectModel(std::string name,
+                     std::string version,
+                     std::vector<std::string> dependencies,
+                     std::vector<LibraryModel> libraries,
+                     const std::vector<FolderModel> &subFolders = {},
+                     const std::vector<ClassModel> &classFiles = {},
+                     const std::vector<NamespaceModel> &namespaceFiles = {},
+                     const std::vector<FunctionModel> &functionFiles = {})
+            : FolderModel(std::move(name), subFolders, classFiles, namespaceFiles, functionFiles),
+              version(std::move(version)),
+              dependencies(std::move(dependencies)),
+              libraries(std::move(libraries))
+        {
+        }
+    };
+
 } // namespace ScaffoldModels
