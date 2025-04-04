@@ -44,17 +44,40 @@ namespace CodeGroupModels
     };
 
     /**
+     * @brief Base model for directory-based code groups.
+     *
+     * This structure serves as the common base for DSL elements that correspond to directories
+     * (i.e. folders, libraries, and projects). It contains properties shared among these models.
+     */
+    struct DirectoryBaseModel
+    {
+        std::string name; /**< The name of the directory-based code group. */
+
+        /**
+         * @brief Virtual destructor to enable safe polymorphic behavior.
+         */
+        virtual ~DirectoryBaseModel() = default;
+
+        /**
+         * @brief Constructs a new DirectoryBaseModel.
+         *
+         * @param name The name of the code group.
+         */
+        DirectoryBaseModel(std::string name)
+            : name(std::move(name))
+        {
+        }
+    };
+
+    /**
      * @brief Represents a folder in the project structure.
      *
      * A folder serves as a container for files and is created in both the include and src directories.
      * The folder's nesting within the DSL determines its relative placement in the generated file system.
      * Each DSL element declared within the folder is assumed to generate its own file.
      */
-    struct FolderModel
+    struct FolderModel : public DirectoryBaseModel
     {
-        /// The name of the folder.
-        std::string name;
-
         /// Subfolders contained within this folder.
         std::vector<FolderModel> subFolders;
 
@@ -81,7 +104,7 @@ namespace CodeGroupModels
                     const std::vector<ClassModels::ClassModel> &classFiles = {},
                     const std::vector<NamespaceModel> &namespaceFiles = {},
                     const std::vector<CallableModels::FunctionModel> &functionFile = {})
-            : name(std::move(name)),
+            : DirectoryBaseModel(std::move(name)),
               subFolders(subFolders),
               classFiles(classFiles),
               namespaceFiles(namespaceFiles),

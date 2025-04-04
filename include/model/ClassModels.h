@@ -66,8 +66,8 @@ namespace ClassModels
      */
     struct Constructor : public SpecialMemberFunction
     {
-        const ConstructorType type;                                /**< The type of constructor */
-        const std::vector<PropertiesModels::Parameter> parameters; /**< Constructor parameters (empty for default, copy, or move) */
+        ConstructorType type;                                /**< The type of constructor */
+        std::vector<PropertiesModels::Parameter> parameters; /**< Constructor parameters (empty for default, copy, or move) */
 
         /**
          * @brief Constructor for the Constructor model.
@@ -115,23 +115,23 @@ namespace ClassModels
      */
     struct ClassModel
     {
-        const std::string name; /**< Name of the class */
+        std::string name; /**< Name of the class */
 
-        const std::string description; /**< Doxygen-style description of the class */
+        std::string description; /**< Doxygen-style description of the class */
 
-        const std::vector<Constructor> constructors; /**< All defined constructors, including default/copy/move/custom */
-        const std::optional<Destructor> destructor;  /**< Optional destructor if defined in the DSL */
+        std::vector<Constructor> constructors; /**< All defined constructors, including default/copy/move/custom */
+        std::optional<Destructor> destructor;  /**< Optional destructor if defined in the DSL */
 
-        const std::vector<CallableModels::MethodModel> publicMethods;    /**< All public methods */
-        const std::vector<CallableModels::MethodModel> privateMethods;   /**< All private methods */
-        const std::vector<CallableModels::MethodModel> protectedMethods; /**< All protected methods */
+        std::vector<CallableModels::MethodModel> publicMethods;    /**< All public methods */
+        std::vector<CallableModels::MethodModel> privateMethods;   /**< All private methods */
+        std::vector<CallableModels::MethodModel> protectedMethods; /**< All protected methods */
 
-        const std::vector<PropertiesModels::Parameter> publicMembers;    /**< Public data members (for simplicity, same struct as params) */
-        const std::vector<PropertiesModels::Parameter> privateMembers;   /**< Private data members */
-        const std::vector<PropertiesModels::Parameter> protectedMembers; /**< Protected data members */
+        std::vector<PropertiesModels::Parameter> publicMembers;    /**< Public data members (for simplicity, same struct as params) */
+        std::vector<PropertiesModels::Parameter> privateMembers;   /**< Private data members */
+        std::vector<PropertiesModels::Parameter> protectedMembers; /**< Protected data members */
 
-        const bool hasCopyAssignment; /**< True if copy assignment operator should be generated */
-        const bool hasMoveAssignment; /**< True if move assignment operator should be generated */
+        bool hasCopyAssignment; /**< True if copy assignment operator should be generated */
+        bool hasMoveAssignment; /**< True if move assignment operator should be generated */
 
         /**
          * @brief Constructor for ClassModel.

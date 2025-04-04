@@ -8,6 +8,8 @@
 #include "CallableModels.h"
 #include "PropertiesModels.h"
 
+using namespace FileNodeGenerator;
+
 // Helper function to create a minimal ClassModels::ClassModel.
 ClassModels::ClassModel createTestClassModel(const std::string &className) {
     return ClassModels::ClassModel(

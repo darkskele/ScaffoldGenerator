@@ -12,44 +12,12 @@
 
 #pragma once
 
+#include "ClassModels.h"
+#include "CodeGroupModels.h"
+#include "CallableModels.h"
+
 #include <string>
-
-/**
- * @struct GeneratedFiles
- * @brief Holds the generated header and source file contents along with the base file path.
- */
-struct GeneratedFiles
-{
-    std::string headerContent; ///< Generated header file content.
-    std::string sourceContent; ///< Generated source file content.
-    std::string baseFilePath;  ///< Base relative file path (e.g., "MyProject/core/TestClass").
-};
-
-/**
- * @class IGeneratedFile
- * @brief Interface for file nodes that generate code files.
- *
- * This interface defines a method for generating both header and source file contents,
- * as well as for retrieving the base file path.
- */
-class IGeneratedFile
-{
-public:
-    virtual ~IGeneratedFile() = default;
-    /**
-     * @brief Generates both header and source file contents.
-     *
-     * @return A GeneratedFiles struct containing the generated header content,
-     *         source content, and the base file path.
-     */
-    virtual GeneratedFiles generateFiles() const = 0;
-    /**
-     * @brief Retrieves the base relative file path.
-     *
-     * @return The base file path as a std::string.
-     */
-    virtual std::string getBasePath() const = 0;
-};
+#include <concepts>
 
 /**
  * @namespace FileNodeGenerator
@@ -63,15 +31,70 @@ namespace FileNodeGenerator
 {
 
     /**
+     * @struct GeneratedFiles
+     * @brief Holds the generated header and source file contents along with the base file path.
+     */
+    struct GeneratedFiles
+    {
+        std::string headerContent; ///< Generated header file content.
+        std::string sourceContent; ///< Generated source file content.
+        std::string baseFilePath;  ///< Base relative file path (e.g., "MyProject/core/TestClass").
+    };
+
+    /**
+     * @class IGeneratedFile
+     * @brief Interface for file nodes that generate code files.
+     *
+     * This interface defines a method for generating both header and source file contents,
+     * as well as for retrieving the base file path.
+     */
+    class IGeneratedFile
+    {
+    public:
+        virtual ~IGeneratedFile() = default;
+        /**
+         * @brief Generates both header and source file contents.
+         *
+         * @return A GeneratedFiles struct containing the generated header content,
+         *         source content, and the base file path.
+         */
+        virtual GeneratedFiles generateFiles() const = 0;
+        /**
+         * @brief Retrieves the base relative file path.
+         *
+         * @return The base file path as a std::string.
+         */
+        virtual std::string getBasePath() const = 0;
+    };
+
+    /**
+     * @brief Concept that restricts file node types to those that represent actual files.
+     *
+     * A valid file node type must be one of:
+     * - ClassModels::ClassModel
+     * - CodeGroupModels::NamespaceModel
+     * - std::vector<CallableModels::FunctionModel>
+     *
+     * Used to ensure only these types can be passed into FileNode for code generation.
+     *
+     * @tparam T The DSL type to test.
+     */
+    template <typename T>
+    concept ValidFileNodeType =
+        std::same_as<T, ClassModels::ClassModel> ||
+        std::same_as<T, CodeGroupModels::NamespaceModel> ||
+        std::same_as<T, std::vector<CallableModels::FunctionModel>>;
+
+    /**
      * @brief Templated FileNode class for generating code files.
      *
      * The FileNode class wraps a DSL object (content) and generates both header and source file
      * contents using specialized generator functions. The final file path is computed by combining
      * the provided base path with the file name.
      *
-     * @tparam T The type of the DSL object used for code generation.
+     * @tparam T The type of the DSL object used for code generation. Must satisfy the ValidFileNodeType concept.
      */
-    template <typename T>
+    template <ValidFileNodeType T>
     class FileNode : public IGeneratedFile
     {
     public:
