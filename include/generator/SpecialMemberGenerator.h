@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "ScaffoldModels.h"
+#include "ClassModels.h"
 
 /**
  * @namespace SpecialMemberGenerator
@@ -26,7 +26,7 @@ namespace SpecialMemberGenerator
      *
      * @exception std::runtime_error if an unrecognised constructor type is provided.
      */
-    std::string generateConstructorDeclaration(const std::string& className, const ScaffoldModels::Constructor &ctor);
+    std::string generateConstructorDeclaration(const std::string &className, const ClassModels::Constructor &ctor);
 
     /**
      * @brief Generates the constructor definition for a class.
@@ -47,10 +47,10 @@ namespace SpecialMemberGenerator
      *
      * @exception std::runtime_error if an unrecognised constructor type is provided.
      */
-    std::string generateConstructorDefinition(const std::string& className, const ScaffoldModels::Constructor &ctor,
-        const std::vector<ScaffoldProperties::Parameter> publicMembers,
-        const std::vector<ScaffoldProperties::Parameter> privateMembers,
-        const std::vector<ScaffoldProperties::Parameter> protectedMembers);
+    std::string generateConstructorDefinition(const std::string &className, const ClassModels::Constructor &ctor,
+                                              const std::vector<PropertiesModels::Parameter> publicMembers,
+                                              const std::vector<PropertiesModels::Parameter> privateMembers,
+                                              const std::vector<PropertiesModels::Parameter> protectedMembers);
 
     /**
      * @brief Generates the destructor declaration.
@@ -62,7 +62,7 @@ namespace SpecialMemberGenerator
      * @param className The name of the class.
      * @return A string containing the destructor declaration.
      */
-    std::string generateDestructorDeclaration(const std::string& className);
+    std::string generateDestructorDeclaration(const std::string &className);
 
     /**
      * @brief Generates the destructor definition.
@@ -73,7 +73,7 @@ namespace SpecialMemberGenerator
      * @param className The name of the class.
      * @return A string containing the destructor definition (empty for default destructors).
      */
-    std::string generateDestructorDefinition(const std::string& className);
+    std::string generateDestructorDefinition(const std::string &className);
 
     /**
      * @brief Generates the move assignment operator declaration.
@@ -85,7 +85,7 @@ namespace SpecialMemberGenerator
      * @param className The name of the class.
      * @return A string containing the move assignment operator declaration.
      */
-    std::string generateMoveAssignmentDeclaration(const std::string& className);
+    std::string generateMoveAssignmentDeclaration(const std::string &className);
 
     /**
      * @brief Generates the move assignment operator definition.
@@ -100,7 +100,7 @@ namespace SpecialMemberGenerator
      * @param className The name of the class.
      * @return A string containing the move assignment operator definition.
      */
-    std::string generateMoveAssignmentDefinition(const std::string& className);
+    std::string generateMoveAssignmentDefinition(const std::string &className);
 
     /**
      * @brief Generates the copy assignment operator declaration.
@@ -112,7 +112,7 @@ namespace SpecialMemberGenerator
      * @param className The name of the class.
      * @return A string containing the copy assignment operator declaration.
      */
-    std::string generateCopyAssignmentDeclaration(const std::string& className);
+    std::string generateCopyAssignmentDeclaration(const std::string &className);
 
     /**
      * @brief Generates the copy assignment operator definition.
@@ -127,6 +127,6 @@ namespace SpecialMemberGenerator
      * @param className The name of the class.
      * @return A string containing the copy assignment operator definition.
      */
-    std::string generateCopyAssignmentDefinition(const std::string& className);
+    std::string generateCopyAssignmentDefinition(const std::string &className);
 
 } // namespace SpecialMemberGenerator

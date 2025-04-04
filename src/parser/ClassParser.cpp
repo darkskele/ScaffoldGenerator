@@ -3,6 +3,8 @@
 #include "PropertiesParser.h"
 #include "CallableParser.h"
 #include "SpecialMemberFunctionParser.h"
+#include "CallableModels.h"
+
 #include <stdexcept>
 #include <unordered_set>
 #include <optional>
@@ -34,10 +36,10 @@ namespace ClassParser
                                         std::string &description,
                                         bool &hasCopyAssignment,
                                         bool &hasMoveAssignment,
-                                        std::vector<ScaffoldModels::Constructor> &constructors,
-                                        std::vector<ScaffoldProperties::Parameter> &publicMembers,
-                                        std::vector<ScaffoldProperties::Parameter> &privateMembers,
-                                        std::vector<ScaffoldProperties::Parameter> &protectedMembers,
+                                        std::vector<ClassModels::Constructor> &constructors,
+                                        std::vector<PropertiesModels::Parameter> &publicMembers,
+                                        std::vector<PropertiesModels::Parameter> &privateMembers,
+                                        std::vector<PropertiesModels::Parameter> &protectedMembers,
                                         Access currentAccess)
     {
         // Remove leading '|' if present and trim.
@@ -68,16 +70,16 @@ namespace ClassParser
             for (auto typeStr : ParserUtilities::split(value, ','))
             {
                 typeStr = ParserUtilities::trim(typeStr);
-                ScaffoldModels::ConstructorType type;
+                ClassModels::ConstructorType type;
                 if (typeStr == "default")
-                    type = ScaffoldModels::ConstructorType::DEFAULT;
+                    type = ClassModels::ConstructorType::DEFAULT;
                 else if (typeStr == "copy")
-                    type = ScaffoldModels::ConstructorType::COPY;
+                    type = ClassModels::ConstructorType::COPY;
                 else if (typeStr == "move")
-                    type = ScaffoldModels::ConstructorType::MOVE;
+                    type = ClassModels::ConstructorType::MOVE;
                 else
                     throw std::runtime_error("Unknown constructor type: " + std::string(typeStr));
-                constructors.emplace_back(type, std::vector<ScaffoldProperties::Parameter>{}, "");
+                constructors.emplace_back(type, std::vector<PropertiesModels::Parameter>{}, "");
             }
         }
         else if (key == "assignment")
@@ -96,7 +98,7 @@ namespace ClassParser
         }
         else if (key == "members")
         {
-            std::vector<ScaffoldProperties::Parameter> parsed = PropertiesParser::parseParameters(value);
+            std::vector<PropertiesModels::Parameter> parsed = PropertiesParser::parseParameters(value);
             switch (currentAccess)
             {
             case Access::Public:
@@ -127,16 +129,16 @@ namespace ClassParser
      * It supports top-level properties, nested blocks for methods, constructors, and destructors,
      * as well as access specifier sections. If no valid DSL content is found, an error is thrown.
      */
-    ScaffoldModels::ClassModel parseClassBlock(const std::string &className, std::deque<std::string_view> &lines)
+    ClassModels::ClassModel parseClassBlock(const std::string &className, std::deque<std::string_view> &lines)
     {
         std::string description;
         bool hasCopyAssignment = false;
         bool hasMoveAssignment = false;
-        std::vector<ScaffoldModels::Constructor> constructors;
-        std::optional<ScaffoldModels::Destructor> destructor;
+        std::vector<ClassModels::Constructor> constructors;
+        std::optional<ClassModels::Destructor> destructor;
 
-        std::vector<ScaffoldModels::MethodModel> publicMethods, privateMethods, protectedMethods;
-        std::vector<ScaffoldProperties::Parameter> publicMembers, privateMembers, protectedMembers;
+        std::vector<CallableModels::MethodModel> publicMethods, privateMethods, protectedMethods;
+        std::vector<PropertiesModels::Parameter> publicMembers, privateMembers, protectedMembers;
 
         // Start with no access specifier; defaults will be private.
         Access currentAccess = Access::None;
@@ -213,7 +215,7 @@ namespace ClassParser
                     if (keyword == "method")
                     {
                         // Delegate to CallableParser to parse the method block.
-                        ScaffoldModels::MethodModel method = CallableParser::parseMethodProperties(identifier, lines);
+                        CallableModels::MethodModel method = CallableParser::parseMethodProperties(identifier, lines);
                         switch (currentAccess)
                         {
                         case Access::Public:
@@ -232,7 +234,7 @@ namespace ClassParser
                     {
                         if (identifier.empty())
                             throw std::runtime_error("Missing constructor identifier.");
-                        ScaffoldModels::Constructor ctor = SpecialMemberFunctionParser::parseConstructorProperties(identifier, lines);
+                        ClassModels::Constructor ctor = SpecialMemberFunctionParser::parseConstructorProperties(identifier, lines);
                         constructors.push_back(ctor);
                     }
                     else
@@ -263,7 +265,7 @@ namespace ClassParser
         if (!validContentFound)
             throw std::runtime_error("Malformed DSL file: no valid DSL content found.");
 
-        return ScaffoldModels::ClassModel(
+        return ClassModels::ClassModel(
             className,
             description,
             constructors,
@@ -277,5 +279,5 @@ namespace ClassParser
             hasCopyAssignment,
             hasMoveAssignment);
     }
-    
+
 } // namespace ClassParser

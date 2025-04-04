@@ -1,30 +1,30 @@
 #include "SpecialMemberFunctionParser.h"
 #include "ParserUtilities.h"
 #include "PropertiesParser.h"
-#include "ScaffoldModels.h"
+
 #include <stdexcept>
 #include <string>
 
 namespace SpecialMemberFunctionParser
 {
-    ScaffoldModels::Constructor parseConstructorProperties(const std::string &constructorIdentifier,
-                                                             std::deque<std::string_view>& propertyLines)
+    ClassModels::Constructor parseConstructorProperties(const std::string &constructorIdentifier,
+                                                        std::deque<std::string_view> &propertyLines)
     {
         // Map the string identifier to an enum value representing the constructor type.
-        ScaffoldModels::ConstructorType type;
+        ClassModels::ConstructorType type;
         if (constructorIdentifier == "default")
-            type = ScaffoldModels::ConstructorType::DEFAULT;
+            type = ClassModels::ConstructorType::DEFAULT;
         else if (constructorIdentifier == "copy")
-            type = ScaffoldModels::ConstructorType::COPY;
+            type = ClassModels::ConstructorType::COPY;
         else if (constructorIdentifier == "move")
-            type = ScaffoldModels::ConstructorType::MOVE;
+            type = ClassModels::ConstructorType::MOVE;
         else if (constructorIdentifier == "custom")
-            type = ScaffoldModels::ConstructorType::CUSTOM;
+            type = ClassModels::ConstructorType::CUSTOM;
         else
             throw std::runtime_error("Unknown constructor type: " + constructorIdentifier);
 
         // Prepare containers for parsed parameters and description.
-        std::vector<ScaffoldProperties::Parameter> parameters;
+        std::vector<PropertiesModels::Parameter> parameters;
         std::string description;
 
         // Consume property lines until an end-of-scope marker ("_") is reached.
@@ -47,7 +47,7 @@ namespace SpecialMemberFunctionParser
             // Find the '=' separator to split the key and value.
             size_t equalPos = line.find('=');
             if (equalPos == std::string_view::npos)
-                continue;  // Skip malformed lines.
+                continue; // Skip malformed lines.
 
             std::string_view key = ParserUtilities::trim(line.substr(0, equalPos));
             std::string_view value = ParserUtilities::trim(line.substr(equalPos + 1));
@@ -74,18 +74,19 @@ namespace SpecialMemberFunctionParser
         }
 
         // For standard (non-custom) constructors, parameters are not allowed.
-        if ((type == ScaffoldModels::ConstructorType::DEFAULT ||
-             type == ScaffoldModels::ConstructorType::COPY ||
-             type == ScaffoldModels::ConstructorType::MOVE) && !parameters.empty())
+        if ((type == ClassModels::ConstructorType::DEFAULT ||
+             type == ClassModels::ConstructorType::COPY ||
+             type == ClassModels::ConstructorType::MOVE) &&
+            !parameters.empty())
         {
             throw std::runtime_error("Constructor type '" + constructorIdentifier + "' should not have parameters.");
         }
 
         // Return a fully constructed Constructor model.
-        return ScaffoldModels::Constructor(type, parameters, description);
+        return ClassModels::Constructor(type, parameters, description);
     }
 
-    ScaffoldModels::Destructor parseDestructorProperties(std::deque<std::string_view>& propertyLines)
+    ClassModels::Destructor parseDestructorProperties(std::deque<std::string_view> &propertyLines)
     {
         // Destructors only support an optional description.
         std::string description;
@@ -127,6 +128,7 @@ namespace SpecialMemberFunctionParser
             }
         }
 
-        return ScaffoldModels::Destructor(description);
+        return ClassModels::Destructor(description);
     }
-}
+
+} // namespace SpecialMemberFunctionParser

@@ -3,7 +3,7 @@
 #include <string_view>
 
 using namespace ClassParser;
-using namespace ScaffoldModels;
+using namespace ClassModels;
 
 TEST(ClassParserTest, ParsesBasicClassWithDescription) {
     std::deque<std::string_view> lines = {

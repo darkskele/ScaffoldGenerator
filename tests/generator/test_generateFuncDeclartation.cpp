@@ -1,14 +1,14 @@
 #include "gtest/gtest.h"
 #include "CallableGenerator.h"
-#include "ScaffoldModels.h"
-#include "ScaffoldProperties.h"
+#include "CallableModels.h"
+#include "PropertiesModels.h"
 #include "PropertiesParser.h"
 #include <vector>
 #include <string>
 #include <string_view>
 
-using namespace ScaffoldProperties;
-using namespace ScaffoldModels;
+using namespace PropertiesModels;
+using namespace CallableModels;
 
 // ----- Free Function Declaration Generation Tests ----- //
 

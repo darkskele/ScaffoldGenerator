@@ -1,13 +1,13 @@
 #include "gtest/gtest.h"
 #include "CallableParser.h"            // Declares parseMethodProperties
-#include "ScaffoldModels.h"          // Contains the MethodModel struct
-#include "ScaffoldProperties.h"      // Contains type definitions (Types, DataType, etc.)
+#include "CallableModels.h"          // Contains the MethodModel struct
+#include "PropertiesModels.h"      // Contains type definitions (Types, DataType, etc.)
 #include <deque>
 #include <string_view>
 #include <stdexcept>
 
 using namespace CallableParser;  // Bring CallableParser functions into scope.
-using namespace ScaffoldProperties;
+using namespace PropertiesModels;
 
 // Test: Valid method block with return type, parameters, and description.
 TEST(CallableParserMethodTest, ValidMethodProperties) {

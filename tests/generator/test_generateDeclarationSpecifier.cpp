@@ -1,9 +1,9 @@
 #include "gtest/gtest.h"
 #include "PropertiesGenerator.h"
-#include "ScaffoldProperties.h"
+#include "PropertiesModels.h"
 #include <string>
 
-using namespace ScaffoldProperties;
+using namespace PropertiesModels;
 
 // Test with no specifiers set; expected result is an empty string.
 TEST(GenerateDeclarationSpecifierTest, EmptySpecifier) {

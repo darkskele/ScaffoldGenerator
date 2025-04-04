@@ -9,7 +9,8 @@
 
 #pragma once
 
-#include "ScaffoldModels.h"
+#include "ClassModels.h"
+
 #include <string>
 #include <string_view>
 #include <deque>
@@ -63,12 +64,12 @@ namespace ClassParser
      *
      * @throws std::runtime_error on malformed input or unknown keywords.
      *
-     * @see ScaffoldModels::ClassModel
+     * @see ClassModels::ClassModel
      * @see CallableParser
      * @see SpecialMemberFunctionParser
      */
-    ScaffoldModels::ClassModel parseClassBlock(
+    ClassModels::ClassModel parseClassBlock(
         const std::string &className,
         std::deque<std::string_view> &classBlockLines);
-        
+
 } // namespace ClassParser

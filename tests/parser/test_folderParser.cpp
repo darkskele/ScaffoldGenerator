@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
 #include "FolderParser.h"
-#include "ScaffoldModels.h"  // Provides FolderModel and related models.
+#include "CodeGroupModels.h"  // Provides FolderModel and related models.
 #include <string_view>
 #include <deque>
 
 using namespace FolderParser;
-using namespace ScaffoldModels;
+using namespace CodeGroupModels;
 
 TEST(FolderParserTest, ParsesEmptyFolderBlock) {
     // A folder block with no content (only the end marker).
@@ -16,7 +16,7 @@ TEST(FolderParserTest, ParsesEmptyFolderBlock) {
     EXPECT_TRUE(folder.subFolders.empty());
     EXPECT_TRUE(folder.classFiles.empty());
     EXPECT_TRUE(folder.namespaceFiles.empty());
-    EXPECT_TRUE(folder.functionFiles.empty());
+    EXPECT_TRUE(folder.functionFile.empty());
 }
 
 TEST(FolderParserTest, ParsesFolderWithNestedClass) {
@@ -34,7 +34,7 @@ TEST(FolderParserTest, ParsesFolderWithNestedClass) {
     EXPECT_EQ(folder.classFiles[0].name, "MyClass");
     EXPECT_TRUE(folder.subFolders.empty());
     EXPECT_TRUE(folder.namespaceFiles.empty());
-    EXPECT_TRUE(folder.functionFiles.empty());
+    EXPECT_TRUE(folder.functionFile.empty());
 }
 
 TEST(FolderParserTest, ParsesFolderWithNestedNamespace) {
@@ -73,9 +73,9 @@ TEST(FolderParserTest, ParsesFolderWithFunctionGroup) {
     FolderModel folder = parseFolderBlock("FolderWithFunctions", lines);
     EXPECT_EQ(folder.name, "FolderWithFunctions");
     // All free functions should now be in a single vector.
-    ASSERT_EQ(folder.functionFiles.size(), 2);
-    EXPECT_EQ(folder.functionFiles[0].name, "funcOne");
-    EXPECT_EQ(folder.functionFiles[1].name, "funcTwo");
+    ASSERT_EQ(folder.functionFile.size(), 2);
+    EXPECT_EQ(folder.functionFile[0].name, "funcOne");
+    EXPECT_EQ(folder.functionFile[1].name, "funcTwo");
 }
 
 TEST(FolderParserTest, ParsesFolderWithNestedFolder) {
@@ -176,8 +176,8 @@ TEST(FolderParserTest, ParsesMixedNestedContentInFolder) {
     FolderModel folder = parseFolderBlock("MixedFolder", lines);
     EXPECT_EQ(folder.name, "MixedFolder");
     // One free function.
-    ASSERT_EQ(folder.functionFiles.size(), 1);
-    EXPECT_EQ(folder.functionFiles[0].name, "freeFunc1");
+    ASSERT_EQ(folder.functionFile.size(), 1);
+    EXPECT_EQ(folder.functionFile[0].name, "freeFunc1");
     // One class.
     ASSERT_EQ(folder.classFiles.size(), 1);
     EXPECT_EQ(folder.classFiles[0].name, "TestClass");

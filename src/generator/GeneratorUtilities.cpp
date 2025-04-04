@@ -1,4 +1,5 @@
 #include "GeneratorUtilities.h"
+
 #include <stdexcept>
 #include <string>
 #include <sstream>
@@ -25,17 +26,17 @@ namespace
      *
      * @note Designed for efficiency using simple concatenation and minimal temporary allocations.
      */
-    std::string typeQualifierToString(const ScaffoldProperties::TypeQualifier &tQ)
+    std::string typeQualifierToString(const PropertiesModels::TypeQualifier &tQ)
     {
-        using Qualifier = ScaffoldProperties::TypeQualifier;
+        using Qualifier = PropertiesModels::TypeQualifier;
         std::string result;
 
         // Append 'const' qualifier if present.
-        if (ScaffoldProperties::hasQualifier(tQ, Qualifier::CONST))
+        if (PropertiesModels::hasQualifier(tQ, Qualifier::CONST))
             result += "const ";
 
         // Append 'volatile' qualifier if present.
-        if (ScaffoldProperties::hasQualifier(tQ, Qualifier::VOLATILE))
+        if (PropertiesModels::hasQualifier(tQ, Qualifier::VOLATILE))
             result += "volatile ";
 
         return result;
@@ -56,7 +57,7 @@ namespace
      * @note The function processes pointers first, followed by reference symbols, and finally appends
      *       any array dimensions, ensuring optimal performance and adherence to C++ syntax rules.
      */
-    std::string typeDeclaratorToString(const ScaffoldProperties::TypeDeclarator &tD)
+    std::string typeDeclaratorToString(const PropertiesModels::TypeDeclarator &tD)
     {
         std::string result;
 
@@ -88,12 +89,12 @@ namespace
 
 namespace GeneratorUtilities
 {
-    // This function processes a DataType object defined in the ScaffoldProperties namespace,
+    // This function processes a DataType object defined in the PropertiesModels namespace,
     // combining type qualifiers, the base type, and type declarators into a cohesive string.
     // It supports built-in types, custom types, and compound types with qualifiers and modifiers.
-    std::string dataTypeToString(const ScaffoldProperties::DataType &dt)
+    std::string dataTypeToString(const PropertiesModels::DataType &dt)
     {
-        using Type = ScaffoldProperties::Types;
+        using Type = PropertiesModels::Types;
 
         // Convert type qualifiers and declarator to their string representations.
         std::string quals = typeQualifierToString(dt.qualifiers);
@@ -167,4 +168,5 @@ namespace GeneratorUtilities
         // Return the complete indented code as a string.
         return oss.str();
     }
+
 } // namespace GeneratorUtilities

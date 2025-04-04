@@ -9,7 +9,8 @@
 
 #pragma once
 
-#include "ScaffoldModels.h"
+#include "CodeGroupModels.h"
+
 #include <string>
 
 /**
@@ -23,7 +24,7 @@
  *  - Generating the namespace definition (implementation), including out-of-line definitions
  *    for nested classes and functions by delegating to the appropriate generators.
  *
- * @see ScaffoldModels::NamespaceModel
+ * @see CodeGroupModels::NamespaceModel
  * @see ClassGenerator
  * @see CallableGenerator
  */
@@ -40,7 +41,7 @@ namespace NamespaceGenerator
      * @param ns The NamespaceModel containing the DSL namespace data.
      * @return A string containing the complete C++ namespace declaration.
      */
-    std::string generateNamespaceDeclaration(const ScaffoldModels::NamespaceModel &ns);
+    std::string generateNamespaceDeclaration(const CodeGroupModels::NamespaceModel &ns);
 
     /**
      * @brief Generates the C++ namespace definition from a NamespaceModel.
@@ -52,6 +53,6 @@ namespace NamespaceGenerator
      * @param ns The NamespaceModel containing the DSL namespace data.
      * @return A string containing the complete C++ namespace definition.
      */
-    std::string generateNamespaceDefinition(const ScaffoldModels::NamespaceModel &ns);
+    std::string generateNamespaceDefinition(const CodeGroupModels::NamespaceModel &ns);
 
 } // namespace NamespaceGenerator

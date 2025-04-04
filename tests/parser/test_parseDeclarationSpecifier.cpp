@@ -1,10 +1,10 @@
 #include "gtest/gtest.h"
 #include "PropertiesParser.h"      // Declares parseDeclarationSpecifier
-#include "ScaffoldProperties.h"    // Contains DeclartionSpecifier definition
+#include "PropertiesModels.h"    // Contains DeclartionSpecifier definition
 #include "ParserUtilities.h"       // For trimming if needed
 #include <string_view>
 
-using namespace ScaffoldProperties;
+using namespace PropertiesModels;
 using namespace PropertiesParser;
 
 // Test: When given an empty string, no declaration specifiers should be set.

@@ -1,12 +1,13 @@
 #include "PropertiesGenerator.h"
 #include "GeneratorUtilities.h"
+
 #include <format>
 
 namespace PropertiesGenerator
 {
     // This function iterates over the provided vector of parameters and builds a formatted string where
     // each parameter is represented as "type name". Parameters are separated by a comma and a space.
-    std::string generateParameterList(const std::vector<ScaffoldProperties::Parameter> &params)
+    std::string generateParameterList(const std::vector<PropertiesModels::Parameter> &params)
     {
         std::string result; // Final string to accumulate the parameter list
         bool first = true;  // Flag to avoid inserting a comma before the first parameter
@@ -31,7 +32,7 @@ namespace PropertiesGenerator
     // This function checks the fields of the provided declaration specifier object and collects each active
     // specifier (such as static, inline, constexpr) into a vector of strings. It then concatenates these
     // specifiers into a single space-separated string.
-    std::string generateDeclarationSpecifier(const ScaffoldProperties::DeclartionSpecifier &dS)
+    std::string generateDeclarationSpecifier(const PropertiesModels::DeclartionSpecifier &dS)
     {
         std::vector<std::string> specifiers; // Temporary vector to hold each individual specifier
 

@@ -1,4 +1,5 @@
 #include "ParserUtilities.h"
+
 #include <cctype> // for std::isspace
 
 namespace ParserUtilities
@@ -39,5 +40,5 @@ namespace ParserUtilities
 
         return tokens;
     }
-    
+
 } // namespace ParserUtilities

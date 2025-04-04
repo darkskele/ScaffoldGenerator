@@ -2,11 +2,12 @@
 #include "ClassGenerator.h"
 #include "CallableGenerator.h"
 #include "GeneratorUtilities.h"
+
 #include <sstream>
 
 namespace NamespaceGenerator
 {
-    std::string generateNamespaceDeclaration(const ScaffoldModels::NamespaceModel &ns)
+    std::string generateNamespaceDeclaration(const CodeGroupModels::NamespaceModel &ns)
     {
         std::ostringstream oss;
 
@@ -52,7 +53,7 @@ namespace NamespaceGenerator
         return oss.str();
     }
 
-    std::string generateNamespaceDefinition(const ScaffoldModels::NamespaceModel &ns)
+    std::string generateNamespaceDefinition(const CodeGroupModels::NamespaceModel &ns)
     {
         std::ostringstream oss;
 

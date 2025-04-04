@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "SpecialMemberGenerator.h"
-#include "ScaffoldModels.h"
-#include "ScaffoldProperties.h"
+#include "ClassModels.h"
+#include "PropertiesModels.h"
 #include "PropertiesGenerator.h"
 #include <stdexcept>
 #include <vector>
@@ -10,14 +10,14 @@ TEST(SpecialMemberGeneratorDeclarationTest, CustomConstructorWithParameters) {
     // Arrange: Create a custom constructor with a non-empty parameter list.
     std::string className = "MyClass";
     // Correctly construct parameters using DataType and Parameter constructors.
-    std::vector<ScaffoldProperties::Parameter> params = {
-        ScaffoldProperties::Parameter(
-            ScaffoldProperties::DataType(ScaffoldProperties::Types::INT), "x"),
-        ScaffoldProperties::Parameter(
-            ScaffoldProperties::DataType(ScaffoldProperties::Types::FLOAT), "y")
+    std::vector<PropertiesModels::Parameter> params = {
+        PropertiesModels::Parameter(
+            PropertiesModels::DataType(PropertiesModels::Types::INT), "x"),
+        PropertiesModels::Parameter(
+            PropertiesModels::DataType(PropertiesModels::Types::FLOAT), "y")
     };
     // Create a custom constructor model with the above parameters.
-    ScaffoldModels::Constructor ctor(ScaffoldModels::ConstructorType::CUSTOM, params, "Custom constructor");
+    ClassModels::Constructor ctor(ClassModels::ConstructorType::CUSTOM, params, "Custom constructor");
 
     // Act: Generate the constructor declaration.
     std::string declaration = SpecialMemberGenerator::generateConstructorDeclaration(className, ctor);
@@ -31,8 +31,8 @@ TEST(SpecialMemberGeneratorDeclarationTest, CustomConstructorWithParameters) {
 TEST(SpecialMemberGeneratorDeclarationTest, CustomConstructorWithEmptyParameterList) {
     // Arrange: Create a custom constructor with an empty parameter list.
     std::string className = "MyClass";
-    std::vector<ScaffoldProperties::Parameter> emptyParams; // No parameters provided.
-    ScaffoldModels::Constructor ctor(ScaffoldModels::ConstructorType::CUSTOM, emptyParams, "Custom constructor");
+    std::vector<PropertiesModels::Parameter> emptyParams; // No parameters provided.
+    ClassModels::Constructor ctor(ClassModels::ConstructorType::CUSTOM, emptyParams, "Custom constructor");
 
     // Act: Generate the constructor declaration.
     std::string declaration = SpecialMemberGenerator::generateConstructorDeclaration(className, ctor);
@@ -46,7 +46,7 @@ TEST(SpecialMemberGeneratorDeclarationTest, CustomConstructorWithEmptyParameterL
 TEST(SpecialMemberGeneratorDeclarationTest, CopyConstructorDeclaration) {
     // Arrange: Create a copy constructor model. Parameters are not used for copy constructors.
     std::string className = "MyClass";
-    ScaffoldModels::Constructor ctor(ScaffoldModels::ConstructorType::COPY, {}, "Copy constructor");
+    ClassModels::Constructor ctor(ClassModels::ConstructorType::COPY, {}, "Copy constructor");
 
     // Act: Generate the copy constructor declaration.
     std::string declaration = SpecialMemberGenerator::generateConstructorDeclaration(className, ctor);
@@ -59,7 +59,7 @@ TEST(SpecialMemberGeneratorDeclarationTest, CopyConstructorDeclaration) {
 TEST(SpecialMemberGeneratorDeclarationTest, MoveConstructorDeclaration) {
     // Arrange: Create a move constructor model. Parameters are not used for move constructors.
     std::string className = "MyClass";
-    ScaffoldModels::Constructor ctor(ScaffoldModels::ConstructorType::MOVE, {}, "Move constructor");
+    ClassModels::Constructor ctor(ClassModels::ConstructorType::MOVE, {}, "Move constructor");
 
     // Act: Generate the move constructor declaration.
     std::string declaration = SpecialMemberGenerator::generateConstructorDeclaration(className, ctor);
@@ -73,7 +73,7 @@ TEST(SpecialMemberGeneratorDeclarationTest, DefaultConstructorDeclaration) {
     // Arrange: Create a default constructor model.
     std::string className = "MyClass";
     // For default constructors, parameters are ignored.
-    ScaffoldModels::Constructor ctor(ScaffoldModels::ConstructorType::DEFAULT, {}, "Default constructor");
+    ClassModels::Constructor ctor(ClassModels::ConstructorType::DEFAULT, {}, "Default constructor");
 
     // Act: Generate the default constructor declaration.
     std::string declaration = SpecialMemberGenerator::generateConstructorDeclaration(className, ctor);
@@ -89,7 +89,7 @@ TEST(SpecialMemberGeneratorDeclarationTest, DefaultConstructorDeclaration) {
 TEST(SpecialMemberGeneratorDeclarationTest, ThrowsOnUnknownConstructorType) {
     // Arrange: Create a constructor model with an invalid type (cast an out-of-range integer).
     std::string className = "MyClass";
-    ScaffoldModels::Constructor invalidCtor(static_cast<ScaffoldModels::ConstructorType>(999), {}, "Invalid constructor");
+    ClassModels::Constructor invalidCtor(static_cast<ClassModels::ConstructorType>(999), {}, "Invalid constructor");
 
     // Act & Assert: The generator should throw a runtime_error for an unrecognised constructor type.
     EXPECT_THROW(

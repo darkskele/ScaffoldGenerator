@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "CallableParser.h"            // Declares parseFunctionProperties
-#include "ScaffoldModels.h"            // Contains the FunctionModel struct and base CallableModel
-#include "ScaffoldProperties.h"        // Contains type definitions (Types, DataType, etc.)
+#include "CallableModels.h"            // Contains the FunctionModel struct and base CallableModel
+#include "PropertiesModels.h"        // Contains type definitions (Types, DataType, etc.)
 #include "PropertiesParser.h"          // For parsing declaration specifiers and data types
 #include <vector>
 #include <deque>
@@ -9,7 +9,7 @@
 #include <stdexcept>
 
 using namespace CallableParser;  // Bring CallableParser functions into scope.
-using namespace ScaffoldProperties;
+using namespace PropertiesModels;
 
 // ----- Function Definition Parsing Tests ----- //
 

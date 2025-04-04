@@ -1,13 +1,13 @@
 #include "SpecialMemberFunctionParser.h"
-#include "ScaffoldProperties.h"
-#include "ScaffoldModels.h"
+#include "PropertiesModels.h"
+#include "ClassModels.h"
 #include <gtest/gtest.h>
 #include <deque>
 #include <string_view>
 
 using namespace SpecialMemberFunctionParser;
-using namespace ScaffoldModels;
-using namespace ScaffoldProperties;
+using namespace ClassModels;
+using namespace PropertiesModels;
 
 TEST(ConstructorParserTest, ParsesDefaultConstructorWithDescription) {
     std::deque<std::string_view> lines = {

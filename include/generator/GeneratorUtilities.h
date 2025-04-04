@@ -10,12 +10,13 @@
  *       use in high-performance contexts.
  */
 
- #pragma once
+#pragma once
 
- #include "ScaffoldProperties.h"
- #include <string>
- 
- /**
+#include "PropertiesModels.h"
+
+#include <string>
+
+/**
  * @namespace GeneratorUtilities
  * @brief Provides utility functions for converting scaffold property data types to their string representations.
  *
@@ -26,27 +27,27 @@
  * @note The functions declared within are pure, exception-safe, and optimized for high-performance contexts.
  */
 
- namespace GeneratorUtilities
- {
-     /**
-      * @brief Converts a DataType object to its corresponding string representation.
-      *
-      * This function processes a DataType object defined in the ScaffoldProperties namespace,
-      * combining type qualifiers, the base type, and type declarators into a cohesive string.
-      * It supports built-in types, custom types, and compound types with qualifiers and modifiers.
-      *
-      * @param dt A constant reference to the DataType object to convert.
-      * @return A std::string representing the full type (including qualifiers and declarators).
-      *
-      * @throws std::runtime_error If the DataType is unrecognized or if a custom type is specified without a name.
-      *
-      * @example
-      * @code
-      * ScaffoldProperties::DataType dt = ...;
-      * std::string typeStr = GeneratorUtilities::dataTypeToString(dt);
-      * @endcode
-      */
-     std::string dataTypeToString(const ScaffoldProperties::DataType &dt);
+namespace GeneratorUtilities
+{
+    /**
+     * @brief Converts a DataType object to its corresponding string representation.
+     *
+     * This function processes a DataType object defined in the PropertiesModels namespace,
+     * combining type qualifiers, the base type, and type declarators into a cohesive string.
+     * It supports built-in types, custom types, and compound types with qualifiers and modifiers.
+     *
+     * @param dt A constant reference to the DataType object to convert.
+     * @return A std::string representing the full type (including qualifiers and declarators).
+     *
+     * @throws std::runtime_error If the DataType is unrecognized or if a custom type is specified without a name.
+     *
+     * @example
+     * @code
+     * PropertiesModels::DataType dt = ...;
+     * std::string typeStr = GeneratorUtilities::dataTypeToString(dt);
+     * @endcode
+     */
+    std::string dataTypeToString(const PropertiesModels::DataType &dt);
 
     /**
      * @brief Indents every line in the provided code block.
@@ -60,5 +61,4 @@
      */
     std::string indentCode(const std::string &code, int indentLevel = 4);
 
- } // namespace GeneratorUtilities
- 
+} // namespace GeneratorUtilities

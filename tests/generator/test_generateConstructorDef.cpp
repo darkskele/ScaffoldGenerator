@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "SpecialMemberGenerator.h"
-#include "ScaffoldModels.h"
-#include "ScaffoldProperties.h"
+#include "ClassModels.h"
+#include "PropertiesModels.h"
 #include "PropertiesGenerator.h"
 #include <stdexcept>
 #include <vector>
@@ -9,23 +9,23 @@
 TEST(SpecialMemberGeneratorDefinitionTest, CustomConstructorDefinitionWithMembers) {
     // Arrange: Create a custom constructor with parameters.
     std::string className = "MyClass";
-    std::vector<ScaffoldProperties::Parameter> customParams = {
+    std::vector<PropertiesModels::Parameter> customParams = {
         // Construct parameters using the DataType and Parameter constructors.
-        ScaffoldProperties::Parameter(ScaffoldProperties::DataType(ScaffoldProperties::Types::INT), "param1"),
-        ScaffoldProperties::Parameter(ScaffoldProperties::DataType(ScaffoldProperties::Types::FLOAT), "param2")
+        PropertiesModels::Parameter(PropertiesModels::DataType(PropertiesModels::Types::INT), "param1"),
+        PropertiesModels::Parameter(PropertiesModels::DataType(PropertiesModels::Types::FLOAT), "param2")
     };
     // Create a custom constructor model.
-    ScaffoldModels::Constructor ctor(ScaffoldModels::ConstructorType::CUSTOM, customParams, "Custom constructor");
+    ClassModels::Constructor ctor(ClassModels::ConstructorType::CUSTOM, customParams, "Custom constructor");
 
     // Provide member parameters to be initialized in the initializer list.
-    std::vector<ScaffoldProperties::Parameter> publicMembers = {
-        ScaffoldProperties::Parameter(ScaffoldProperties::DataType(ScaffoldProperties::Types::INT), "a")
+    std::vector<PropertiesModels::Parameter> publicMembers = {
+        PropertiesModels::Parameter(PropertiesModels::DataType(PropertiesModels::Types::INT), "a")
     };
-    std::vector<ScaffoldProperties::Parameter> privateMembers = {
-        ScaffoldProperties::Parameter(ScaffoldProperties::DataType(ScaffoldProperties::Types::INT), "b")
+    std::vector<PropertiesModels::Parameter> privateMembers = {
+        PropertiesModels::Parameter(PropertiesModels::DataType(PropertiesModels::Types::INT), "b")
     };
-    std::vector<ScaffoldProperties::Parameter> protectedMembers = {
-        ScaffoldProperties::Parameter(ScaffoldProperties::DataType(ScaffoldProperties::Types::INT), "c")
+    std::vector<PropertiesModels::Parameter> protectedMembers = {
+        PropertiesModels::Parameter(PropertiesModels::DataType(PropertiesModels::Types::INT), "c")
     };
 
     // Act: Generate the constructor definition.
@@ -45,14 +45,14 @@ TEST(SpecialMemberGeneratorDefinitionTest, CustomConstructorDefinitionWithMember
 TEST(SpecialMemberGeneratorDefinitionTest, CopyConstructorDefinitionWithMembers) {
     // Arrange: Create a copy constructor model.
     std::string className = "MyClass";
-    ScaffoldModels::Constructor ctor(ScaffoldModels::ConstructorType::COPY, {}, "Copy constructor");
+    ClassModels::Constructor ctor(ClassModels::ConstructorType::COPY, {}, "Copy constructor");
 
     // Provide a single public member for initialization.
-    std::vector<ScaffoldProperties::Parameter> publicMembers = {
-        ScaffoldProperties::Parameter(ScaffoldProperties::DataType(ScaffoldProperties::Types::INT), "x")
+    std::vector<PropertiesModels::Parameter> publicMembers = {
+        PropertiesModels::Parameter(PropertiesModels::DataType(PropertiesModels::Types::INT), "x")
     };
-    std::vector<ScaffoldProperties::Parameter> privateMembers; // empty
-    std::vector<ScaffoldProperties::Parameter> protectedMembers; // empty
+    std::vector<PropertiesModels::Parameter> privateMembers; // empty
+    std::vector<PropertiesModels::Parameter> protectedMembers; // empty
 
     // Act: Generate the copy constructor definition.
     std::string def = SpecialMemberGenerator::generateConstructorDefinition(className, ctor,
@@ -67,14 +67,14 @@ TEST(SpecialMemberGeneratorDefinitionTest, CopyConstructorDefinitionWithMembers)
 TEST(SpecialMemberGeneratorDefinitionTest, MoveConstructorDefinitionWithMembers) {
     // Arrange: Create a move constructor model.
     std::string className = "MyClass";
-    ScaffoldModels::Constructor ctor(ScaffoldModels::ConstructorType::MOVE, {}, "Move constructor");
+    ClassModels::Constructor ctor(ClassModels::ConstructorType::MOVE, {}, "Move constructor");
 
     // Provide a single public member for initialization.
-    std::vector<ScaffoldProperties::Parameter> publicMembers = {
-        ScaffoldProperties::Parameter(ScaffoldProperties::DataType(ScaffoldProperties::Types::INT), "x")
+    std::vector<PropertiesModels::Parameter> publicMembers = {
+        PropertiesModels::Parameter(PropertiesModels::DataType(PropertiesModels::Types::INT), "x")
     };
-    std::vector<ScaffoldProperties::Parameter> privateMembers; // empty
-    std::vector<ScaffoldProperties::Parameter> protectedMembers; // empty
+    std::vector<PropertiesModels::Parameter> privateMembers; // empty
+    std::vector<PropertiesModels::Parameter> protectedMembers; // empty
 
     // Act: Generate the move constructor definition.
     std::string def = SpecialMemberGenerator::generateConstructorDefinition(className, ctor,
@@ -89,13 +89,13 @@ TEST(SpecialMemberGeneratorDefinitionTest, MoveConstructorDefinitionWithMembers)
 TEST(SpecialMemberGeneratorDefinitionTest, DefaultConstructorDefinitionReturnsEmpty) {
     // Arrange: Create a default constructor model.
     std::string className = "MyClass";
-    ScaffoldModels::Constructor ctor(ScaffoldModels::ConstructorType::DEFAULT, {}, "Default constructor");
+    ClassModels::Constructor ctor(ClassModels::ConstructorType::DEFAULT, {}, "Default constructor");
 
     // For default constructors, the out-of-line definition is auto-generated by the compiler.
     // Provide empty member lists.
-    std::vector<ScaffoldProperties::Parameter> publicMembers;
-    std::vector<ScaffoldProperties::Parameter> privateMembers;
-    std::vector<ScaffoldProperties::Parameter> protectedMembers;
+    std::vector<PropertiesModels::Parameter> publicMembers;
+    std::vector<PropertiesModels::Parameter> privateMembers;
+    std::vector<PropertiesModels::Parameter> protectedMembers;
 
     // Act: Generate the constructor definition.
     std::string def = SpecialMemberGenerator::generateConstructorDefinition(className, ctor,
@@ -108,11 +108,11 @@ TEST(SpecialMemberGeneratorDefinitionTest, DefaultConstructorDefinitionReturnsEm
 TEST(SpecialMemberGeneratorDefinitionTest, ThrowsOnUnknownConstructorType) {
     // Arrange: Create a constructor model with an invalid constructor type.
     std::string className = "MyClass";
-    ScaffoldModels::Constructor invalidCtor(static_cast<ScaffoldModels::ConstructorType>(999), {}, "Invalid constructor");
+    ClassModels::Constructor invalidCtor(static_cast<ClassModels::ConstructorType>(999), {}, "Invalid constructor");
 
-    std::vector<ScaffoldProperties::Parameter> publicMembers;
-    std::vector<ScaffoldProperties::Parameter> privateMembers;
-    std::vector<ScaffoldProperties::Parameter> protectedMembers;
+    std::vector<PropertiesModels::Parameter> publicMembers;
+    std::vector<PropertiesModels::Parameter> privateMembers;
+    std::vector<PropertiesModels::Parameter> protectedMembers;
 
     // Act & Assert: Expect a runtime_error to be thrown for the unrecognised constructor type.
     EXPECT_THROW(

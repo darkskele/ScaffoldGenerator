@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include "PropertiesParser.h"      // Declares parseParameters
-#include "ScaffoldProperties.h"    // Contains the Parameter struct and Types enum
+#include "PropertiesModels.h"    // Contains the Parameter struct and Types enum
 #include <stdexcept>
 #include <vector>
 #include <string_view>
@@ -14,11 +14,11 @@ TEST(ParseParametersTest, ParsesMultipleParameters) {
     EXPECT_EQ(params.size(), 2);
 
     EXPECT_EQ(params[0].name, "param1");
-    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::INT);
+    EXPECT_EQ(params[0].type.type, PropertiesModels::Types::INT);
     EXPECT_FALSE(params[0].type.customType.has_value());
 
     EXPECT_EQ(params[1].name, "param2");
-    EXPECT_EQ(params[1].type.type, ScaffoldProperties::Types::FLOAT);
+    EXPECT_EQ(params[1].type.type, PropertiesModels::Types::FLOAT);
     EXPECT_FALSE(params[1].type.customType.has_value());
 }
 
@@ -29,10 +29,10 @@ TEST(ParseParametersTest, HandlesWhitespace) {
     EXPECT_EQ(params.size(), 2);
 
     EXPECT_EQ(params[0].name, "param1");
-    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::INT);
+    EXPECT_EQ(params[0].type.type, PropertiesModels::Types::INT);
 
     EXPECT_EQ(params[1].name, "param2");
-    EXPECT_EQ(params[1].type.type, ScaffoldProperties::Types::FLOAT);
+    EXPECT_EQ(params[1].type.type, PropertiesModels::Types::FLOAT);
 }
 
 // Test: A single parameter is parsed correctly.
@@ -41,7 +41,7 @@ TEST(ParseParametersTest, SingleParameter) {
     auto params = parseParameters(input);
     ASSERT_EQ(params.size(), 1);
     EXPECT_EQ(params[0].name, "param1");
-    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::BOOL);
+    EXPECT_EQ(params[0].type.type, PropertiesModels::Types::BOOL);
 }
 
 // Test: Empty input returns an empty parameter vector.
@@ -74,9 +74,9 @@ TEST(ParseParametersTest, RecognizesConstParameter) {
     auto params = parseParameters(input);
     ASSERT_EQ(params.size(), 1);
     EXPECT_EQ(params[0].name, "param1");
-    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::INT);
-    EXPECT_TRUE(ScaffoldProperties::hasQualifier(params[0].type.qualifiers, ScaffoldProperties::TypeQualifier::CONST));
-    EXPECT_FALSE(ScaffoldProperties::hasQualifier(params[0].type.qualifiers, ScaffoldProperties::TypeQualifier::VOLATILE));
+    EXPECT_EQ(params[0].type.type, PropertiesModels::Types::INT);
+    EXPECT_TRUE(PropertiesModels::hasQualifier(params[0].type.qualifiers, PropertiesModels::TypeQualifier::CONST));
+    EXPECT_FALSE(PropertiesModels::hasQualifier(params[0].type.qualifiers, PropertiesModels::TypeQualifier::VOLATILE));
 }
 
 // Test: Recognizes a parameter with a volatile qualifier.
@@ -85,9 +85,9 @@ TEST(ParseParametersTest, RecognizesVolatileParameter) {
     auto params = parseParameters(input);
     ASSERT_EQ(params.size(), 1);
     EXPECT_EQ(params[0].name, "param1");
-    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::FLOAT);
-    EXPECT_TRUE(ScaffoldProperties::hasQualifier(params[0].type.qualifiers, ScaffoldProperties::TypeQualifier::VOLATILE));
-    EXPECT_FALSE(ScaffoldProperties::hasQualifier(params[0].type.qualifiers, ScaffoldProperties::TypeQualifier::CONST));
+    EXPECT_EQ(params[0].type.type, PropertiesModels::Types::FLOAT);
+    EXPECT_TRUE(PropertiesModels::hasQualifier(params[0].type.qualifiers, PropertiesModels::TypeQualifier::VOLATILE));
+    EXPECT_FALSE(PropertiesModels::hasQualifier(params[0].type.qualifiers, PropertiesModels::TypeQualifier::CONST));
 }
 
 // Test: Recognizes a parameter with both const and volatile qualifiers.
@@ -96,9 +96,9 @@ TEST(ParseParametersTest, RecognizesConstVolatileParameter) {
     auto params = parseParameters(input);
     ASSERT_EQ(params.size(), 1);
     EXPECT_EQ(params[0].name, "param1");
-    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::DOUBLE);
-    EXPECT_TRUE(ScaffoldProperties::hasQualifier(params[0].type.qualifiers, ScaffoldProperties::TypeQualifier::CONST));
-    EXPECT_TRUE(ScaffoldProperties::hasQualifier(params[0].type.qualifiers, ScaffoldProperties::TypeQualifier::VOLATILE));
+    EXPECT_EQ(params[0].type.type, PropertiesModels::Types::DOUBLE);
+    EXPECT_TRUE(PropertiesModels::hasQualifier(params[0].type.qualifiers, PropertiesModels::TypeQualifier::CONST));
+    EXPECT_TRUE(PropertiesModels::hasQualifier(params[0].type.qualifiers, PropertiesModels::TypeQualifier::VOLATILE));
 }
 
 // Test: Recognizes a parameter with a single pointer.
@@ -107,7 +107,7 @@ TEST(ParseParametersTest, RecognizesPointerParameter) {
     auto params = parseParameters(input);
     ASSERT_EQ(params.size(), 1);
     EXPECT_EQ(params[0].name, "param1");
-    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::INT);
+    EXPECT_EQ(params[0].type.type, PropertiesModels::Types::INT);
     EXPECT_EQ(params[0].type.typeDecl.ptrCount, 1);
     EXPECT_FALSE(params[0].type.typeDecl.isLValReference);
     EXPECT_FALSE(params[0].type.typeDecl.isRValReference);
@@ -120,7 +120,7 @@ TEST(ParseParametersTest, RecognizesMultiplePointersParameter) {
     auto params = parseParameters(input);
     ASSERT_EQ(params.size(), 1);
     EXPECT_EQ(params[0].name, "param1");
-    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::INT);
+    EXPECT_EQ(params[0].type.type, PropertiesModels::Types::INT);
     EXPECT_EQ(params[0].type.typeDecl.ptrCount, 3);
     EXPECT_FALSE(params[0].type.typeDecl.isLValReference);
     EXPECT_FALSE(params[0].type.typeDecl.isRValReference);
@@ -133,7 +133,7 @@ TEST(ParseParametersTest, RecognizesLValueReferenceParameter) {
     auto params = parseParameters(input);
     ASSERT_EQ(params.size(), 1);
     EXPECT_EQ(params[0].name, "param1");
-    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::INT);
+    EXPECT_EQ(params[0].type.type, PropertiesModels::Types::INT);
     EXPECT_TRUE(params[0].type.typeDecl.isLValReference);
     EXPECT_FALSE(params[0].type.typeDecl.isRValReference);
     EXPECT_EQ(params[0].type.typeDecl.ptrCount, 0);
@@ -146,7 +146,7 @@ TEST(ParseParametersTest, RecognizesRValueReferenceParameter) {
     auto params = parseParameters(input);
     ASSERT_EQ(params.size(), 1);
     EXPECT_EQ(params[0].name, "param1");
-    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::INT);
+    EXPECT_EQ(params[0].type.type, PropertiesModels::Types::INT);
     EXPECT_TRUE(params[0].type.typeDecl.isRValReference);
     EXPECT_FALSE(params[0].type.typeDecl.isLValReference);
     EXPECT_EQ(params[0].type.typeDecl.ptrCount, 0);
@@ -159,7 +159,7 @@ TEST(ParseParametersTest, RecognizesPointerAndLValueReferenceParameter) {
     auto params = parseParameters(input);
     ASSERT_EQ(params.size(), 1);
     EXPECT_EQ(params[0].name, "param1");
-    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::INT);
+    EXPECT_EQ(params[0].type.type, PropertiesModels::Types::INT);
     EXPECT_EQ(params[0].type.typeDecl.ptrCount, 1);
     EXPECT_TRUE(params[0].type.typeDecl.isLValReference);
     EXPECT_FALSE(params[0].type.typeDecl.isRValReference);
@@ -172,7 +172,7 @@ TEST(ParseParametersTest, RecognizesArrayParameter) {
     auto params = parseParameters(input);
     ASSERT_EQ(params.size(), 1);
     EXPECT_EQ(params[0].name, "param1");
-    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::INT);
+    EXPECT_EQ(params[0].type.type, PropertiesModels::Types::INT);
     EXPECT_EQ(params[0].type.typeDecl.ptrCount, 0);
     EXPECT_FALSE(params[0].type.typeDecl.isLValReference);
     EXPECT_FALSE(params[0].type.typeDecl.isRValReference);
@@ -186,7 +186,7 @@ TEST(ParseParametersTest, RecognizesPointerAndArrayParameter) {
     auto params = parseParameters(input);
     ASSERT_EQ(params.size(), 1);
     EXPECT_EQ(params[0].name, "param1");
-    EXPECT_EQ(params[0].type.type, ScaffoldProperties::Types::INT);
+    EXPECT_EQ(params[0].type.type, PropertiesModels::Types::INT);
     EXPECT_EQ(params[0].type.typeDecl.ptrCount, 1);
     EXPECT_FALSE(params[0].type.typeDecl.isLValReference);
     EXPECT_FALSE(params[0].type.typeDecl.isRValReference);

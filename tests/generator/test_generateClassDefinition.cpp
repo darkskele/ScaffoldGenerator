@@ -1,28 +1,28 @@
 #include <gtest/gtest.h>
 #include "ClassGenerator.h"
-#include "ScaffoldModels.h"
-#include "ScaffoldProperties.h"
+#include "ClassModels.h"
+#include "PropertiesModels.h"
 #include <string>
 #include <vector>
 #include <optional>
 
 // Helper functions to create empty vectors.
-inline std::vector<ScaffoldModels::MethodModel> makeEmptyMethods() {
-    return std::vector<ScaffoldModels::MethodModel>{};
+inline std::vector<CallableModels::MethodModel> makeEmptyMethods() {
+    return std::vector<CallableModels::MethodModel>{};
 }
 
-inline std::vector<ScaffoldProperties::Parameter> makeEmptyMembers() {
-    return std::vector<ScaffoldProperties::Parameter>{};
+inline std::vector<PropertiesModels::Parameter> makeEmptyMembers() {
+    return std::vector<PropertiesModels::Parameter>{};
 }
 
-inline std::vector<ScaffoldModels::Constructor> makeEmptyCtors() {
-    return std::vector<ScaffoldModels::Constructor>{};
+inline std::vector<ClassModels::Constructor> makeEmptyCtors() {
+    return std::vector<ClassModels::Constructor>{};
 }
 
 // Test: Minimal class definition should produce an empty string.
 TEST(ClassGeneratorDefinitionTest, MinimalClassDefinition)
 {
-    ScaffoldModels::ClassModel cl(
+    ClassModels::ClassModel cl(
         "EmptyClass",             // name
         "",                       // description
         makeEmptyCtors(),         // constructors
@@ -46,24 +46,24 @@ TEST(ClassGeneratorDefinitionTest, MinimalClassDefinition)
 TEST(ClassGeneratorDefinitionTest, PublicClassWithMembersMethodsAndConstructors)
 {
     // Create one custom constructor with one parameter.
-    ScaffoldProperties::Parameter param(
-        ScaffoldProperties::DataType(ScaffoldProperties::Types::INT), "id");
-    std::vector<ScaffoldModels::Constructor> ctors = {
-        ScaffoldModels::Constructor(ScaffoldModels::ConstructorType::CUSTOM, { param }, "Custom constructor")
+    PropertiesModels::Parameter param(
+        PropertiesModels::DataType(PropertiesModels::Types::INT), "id");
+    std::vector<ClassModels::Constructor> ctors = {
+        ClassModels::Constructor(ClassModels::ConstructorType::CUSTOM, { param }, "Custom constructor")
     };
 
     // Create one public method.
-    ScaffoldModels::MethodModel pubMethod(
-        ScaffoldProperties::DataType(ScaffoldProperties::Types::VOID),
+    CallableModels::MethodModel pubMethod(
+        PropertiesModels::DataType(PropertiesModels::Types::VOID),
         "publicMethod",
-        std::vector<ScaffoldProperties::Parameter>{},
-        ScaffoldProperties::DeclartionSpecifier(),
+        std::vector<PropertiesModels::Parameter>{},
+        PropertiesModels::DeclartionSpecifier(),
         "Public method"
     );
-    std::vector<ScaffoldModels::MethodModel> pubMethods = { pubMethod };
+    std::vector<CallableModels::MethodModel> pubMethods = { pubMethod };
 
     // No destructor or assignments.
-    ScaffoldModels::ClassModel cl(
+    ClassModels::ClassModel cl(
         "TestClass",                // name
         "Test class",               // description
         ctors,                      // constructors
@@ -96,9 +96,9 @@ void TestClass::publicMethod() {
 // Test: Class with destructor and both assignment operators.
 TEST(ClassGeneratorDefinitionTest, ClassWithDestructorAndAssignments)
 {
-    ScaffoldModels::Destructor dtor("Default destructor");
+    ClassModels::Destructor dtor("Default destructor");
     // When assignment flags are true, definitions for both assignments are generated.
-    ScaffoldModels::ClassModel cl(
+    ClassModels::ClassModel cl(
         "DestructClass",
         "Class with destructor and assignments",
         makeEmptyCtors(),         // no constructors
@@ -133,36 +133,36 @@ DestructClass& DestructClass::operator=(DestructClass&& other) noexcept {
 TEST(ClassGeneratorDefinitionTest, ClassWithPrivateAndProtectedSections)
 {
     // Public: one method.
-    ScaffoldModels::MethodModel pubMethod(
-        ScaffoldProperties::DataType(ScaffoldProperties::Types::VOID),
+    CallableModels::MethodModel pubMethod(
+        PropertiesModels::DataType(PropertiesModels::Types::VOID),
         "publicMethod",
-        std::vector<ScaffoldProperties::Parameter>{},
-        ScaffoldProperties::DeclartionSpecifier(),
+        std::vector<PropertiesModels::Parameter>{},
+        PropertiesModels::DeclartionSpecifier(),
         "Public method"
     );
-    std::vector<ScaffoldModels::MethodModel> pubMethods = { pubMethod };
+    std::vector<CallableModels::MethodModel> pubMethods = { pubMethod };
 
     // Private: one method.
-    ScaffoldModels::MethodModel privMethod(
-        ScaffoldProperties::DataType(ScaffoldProperties::Types::VOID),
+    CallableModels::MethodModel privMethod(
+        PropertiesModels::DataType(PropertiesModels::Types::VOID),
         "privateMethod",
-        std::vector<ScaffoldProperties::Parameter>{},
-        ScaffoldProperties::DeclartionSpecifier(),
+        std::vector<PropertiesModels::Parameter>{},
+        PropertiesModels::DeclartionSpecifier(),
         "Private method"
     );
-    std::vector<ScaffoldModels::MethodModel> privMethods = { privMethod };
+    std::vector<CallableModels::MethodModel> privMethods = { privMethod };
 
     // Protected: one method.
-    ScaffoldModels::MethodModel protMethod(
-        ScaffoldProperties::DataType(ScaffoldProperties::Types::VOID),
+    CallableModels::MethodModel protMethod(
+        PropertiesModels::DataType(PropertiesModels::Types::VOID),
         "protectedMethod",
-        std::vector<ScaffoldProperties::Parameter>{},
-        ScaffoldProperties::DeclartionSpecifier(),
+        std::vector<PropertiesModels::Parameter>{},
+        PropertiesModels::DeclartionSpecifier(),
         "Protected method"
     );
-    std::vector<ScaffoldModels::MethodModel> protMethods = { protMethod };
+    std::vector<CallableModels::MethodModel> protMethods = { protMethod };
 
-    ScaffoldModels::ClassModel cl(
+    ClassModels::ClassModel cl(
         "ComplexClass",
         "A class with private and protected methods",
         makeEmptyCtors(),        // no constructors
@@ -201,46 +201,46 @@ TEST(ClassGeneratorDefinitionTest, ClassWithAllSectionsAndSpacing)
 {
     // Arrange:
     // Public: one custom constructor, one public method, one public member.
-    ScaffoldProperties::Parameter ctorParam(
-        ScaffoldProperties::DataType(ScaffoldProperties::Types::INT), "id");
-    std::vector<ScaffoldModels::Constructor> ctors = {
-        ScaffoldModels::Constructor(ScaffoldModels::ConstructorType::CUSTOM, { ctorParam }, "Custom constructor")
+    PropertiesModels::Parameter ctorParam(
+        PropertiesModels::DataType(PropertiesModels::Types::INT), "id");
+    std::vector<ClassModels::Constructor> ctors = {
+        ClassModels::Constructor(ClassModels::ConstructorType::CUSTOM, { ctorParam }, "Custom constructor")
     };
 
-    ScaffoldModels::MethodModel pubMethod(
-        ScaffoldProperties::DataType(ScaffoldProperties::Types::VOID),
+    CallableModels::MethodModel pubMethod(
+        PropertiesModels::DataType(PropertiesModels::Types::VOID),
         "publicMethod",
-        std::vector<ScaffoldProperties::Parameter>{},
-        ScaffoldProperties::DeclartionSpecifier(),
+        std::vector<PropertiesModels::Parameter>{},
+        PropertiesModels::DeclartionSpecifier(),
         "Public method"
     );
-    ScaffoldProperties::Parameter pubMember(
-        ScaffoldProperties::DataType(ScaffoldProperties::Types::FLOAT), "value");
+    PropertiesModels::Parameter pubMember(
+        PropertiesModels::DataType(PropertiesModels::Types::FLOAT), "value");
 
     // Private: one method.
-    ScaffoldModels::MethodModel privMethod(
-        ScaffoldProperties::DataType(ScaffoldProperties::Types::VOID),
+    CallableModels::MethodModel privMethod(
+        PropertiesModels::DataType(PropertiesModels::Types::VOID),
         "privateHelper",
-        std::vector<ScaffoldProperties::Parameter>{},
-        ScaffoldProperties::DeclartionSpecifier(),
+        std::vector<PropertiesModels::Parameter>{},
+        PropertiesModels::DeclartionSpecifier(),
         "Private helper"
     );
 
     // Protected: one member.
-    ScaffoldProperties::Parameter protMember(
-        ScaffoldProperties::DataType(ScaffoldProperties::Types::INT), "counter");
+    PropertiesModels::Parameter protMember(
+        PropertiesModels::DataType(PropertiesModels::Types::INT), "counter");
 
-    ScaffoldModels::ClassModel cl(
+    ClassModels::ClassModel cl(
         "FullClass",
         "Fully featured class",
         ctors,
-        ScaffoldModels::Destructor("Default destructor"),
-        std::vector<ScaffoldModels::MethodModel>{ pubMethod },
-        std::vector<ScaffoldModels::MethodModel>{ privMethod },
+        ClassModels::Destructor("Default destructor"),
+        std::vector<CallableModels::MethodModel>{ pubMethod },
+        std::vector<CallableModels::MethodModel>{ privMethod },
         makeEmptyMethods(),  // no protected methods
-        std::vector<ScaffoldProperties::Parameter>{ pubMember },
+        std::vector<PropertiesModels::Parameter>{ pubMember },
         makeEmptyMembers(),  // no private members
-        std::vector<ScaffoldProperties::Parameter>{ protMember },
+        std::vector<PropertiesModels::Parameter>{ protMember },
         true,
         true
     );
