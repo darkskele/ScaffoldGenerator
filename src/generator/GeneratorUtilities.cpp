@@ -169,4 +169,14 @@ namespace GeneratorUtilities
         return oss.str();
     }
 
+    std::string removeRootPrefix(const std::string &path)
+    {
+        const std::string rootPrefix = "ROOT/";
+        if (path.rfind(rootPrefix, 0) == 0)
+        { // Check if path starts with "ROOT/"
+            return path.substr(rootPrefix.length());
+        }
+        return path;
+    }
+
 } // namespace GeneratorUtilities

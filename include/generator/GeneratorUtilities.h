@@ -61,4 +61,15 @@ namespace GeneratorUtilities
      */
     std::string indentCode(const std::string &code, int indentLevel = 4);
 
+    /**
+     * @brief Removes the "ROOT/" prefix from a file path if it exists.
+     *
+     * This utility function checks if the provided path begins with "ROOT/" and, if so,
+     * returns a new string with the prefix removed. Otherwise, the original path is returned.
+     *
+     * @param path The original file path, potentially starting with "ROOT/".
+     * @return A new string with the "ROOT/" prefix removed if present, or the original path otherwise.
+     */
+    std::string removeRootPrefix(const std::string &path);
+
 } // namespace GeneratorUtilities

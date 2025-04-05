@@ -1,10 +1,10 @@
 - project MyProject:
 | version = 1.0.0
-| dependency = Boost, cpp20
+| dependency = Boost::boost
 
   - library CoreLib:
   | version = 1.2.3
-  | dependency = cpp20
+  | dependency = Boost::boost
   
     - folder Utils:
       - function helperFunction:

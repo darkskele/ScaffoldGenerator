@@ -32,12 +32,12 @@ namespace PropertiesGenerator
     // This function checks the fields of the provided declaration specifier object and collects each active
     // specifier (such as static, inline, constexpr) into a vector of strings. It then concatenates these
     // specifiers into a single space-separated string.
-    std::string generateDeclarationSpecifier(const PropertiesModels::DeclartionSpecifier &dS)
+    std::string generateDeclarationSpecifier(const PropertiesModels::DeclartionSpecifier &dS, const bool def)
     {
         std::vector<std::string> specifiers; // Temporary vector to hold each individual specifier
 
         // Check for 'static' specifier and add if applicable.
-        if (dS.isStatic)
+        if (dS.isStatic && !def)
             specifiers.push_back("static");
 
         // Check for 'inline' specifier and add if applicable.

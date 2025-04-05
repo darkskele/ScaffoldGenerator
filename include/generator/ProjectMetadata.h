@@ -5,8 +5,7 @@
  * This header defines custom metadata structures that capture information about the project’s
  * directory layout and the libraries defined within the DSL. Each library’s metadata includes
  * its relative path in the directory tree, its name, whether it is a top-level library (i.e. the
- * project-level library), and its dependencies. This metadata is used during CMake file generation
- * to correctly link libraries and set up dependencies.
+ * project-level library), its dependencies, and a list of subdirectories for CMake file generation.
  *
  * @note This metadata is built during the directory tree construction phase.
  */
@@ -15,6 +14,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 /**
  * @namespace ProjectMetadata
@@ -22,9 +22,8 @@
  *
  * The ProjectMetadata namespace defines data structures that capture information about the
  * overall project and its libraries, including each library’s relative path, name, whether it is
- * a top-level library, and its dependency list. This metadata is used during CMake file generation
- * to correctly configure and link libraries, ensuring that project-level dependencies are handled
- * appropriately.
+ * a top-level library, its dependency list, and the set of subdirectories that may need to be
+ * included during CMake file generation.
  *
  * @note The metadata structures in this namespace are constructed during the directory tree building
  * phase from the parsed DSL.
@@ -37,17 +36,36 @@ namespace ProjectMetadata
      *
      * This structure captures the essential information for a library defined in the DSL,
      * including its relative path (in the directory tree), its name, whether it is a top-level library,
-     * and a list of dependencies.
+     * its dependencies, and the nested folder structure needed for CMake generation.
      */
     struct LibraryMetadata
     {
-        std::string relativePath;              ///< The relative path where the library is located.
-        std::string name;                      ///< The name of the library.
-        bool isProjLevel;                      ///< True if the library is at the project (top) level.
-        std::vector<std::string> dependencies; ///< A list of dependencies for the library.
+        std::string relativePath;                ///< The relative path where the library is located.
+        std::string name;                        ///< The name of the library.
+        bool isProjLevel;                        ///< True if the library is at the project (top) level.
+        std::vector<std::string> dependencies;   ///< A list of dependencies for the library.
+        std::vector<std::string> subDirectories; ///< A list of nested folders for CMake file generation.
+
+        /**
+         * @brief Default constructor for LibraryMetadata.
+         *
+         * This constructor initializes the library metadata with default values.
+         * It sets the relative path and name to empty strings, the isProjLevel flag to false,
+         * and leaves both the dependencies and subDirectories vectors empty.
+         */
+        LibraryMetadata()
+            : relativePath(""),
+              name(""),
+              isProjLevel(false),
+              dependencies(),
+              subDirectories()
+        {
+        }
 
         /**
          * @brief Constructs a new LibraryMetadata object.
+         *
+         * The subDirectories vector is automatically initialized with the provided relativePath.
          *
          * @param relativePath The relative directory path for the library.
          * @param name The name of the library.
@@ -55,7 +73,11 @@ namespace ProjectMetadata
          * @param dependencies A vector of dependencies for the library.
          */
         LibraryMetadata(std::string relativePath, std::string name, bool isProjLevel, std::vector<std::string> dependencies)
-            : relativePath(std::move(relativePath)), name(std::move(name)), isProjLevel(isProjLevel), dependencies(std::move(dependencies))
+            : relativePath(std::move(relativePath)),
+              name(std::move(name)),
+              isProjLevel(isProjLevel),
+              dependencies(std::move(dependencies)),
+              subDirectories({this->relativePath})
         {
         }
     };
@@ -63,21 +85,11 @@ namespace ProjectMetadata
     /**
      * @brief Represents overall project metadata.
      *
-     * This structure aggregates project-wide information.
+     * This structure aggregates project-wide information, mapping library names to their metadata.
      */
     struct ProjMetadata
     {
-        std::vector<LibraryMetadata> libraries; ///< Metadata for each library in the project.
-
-        /**
-         * @brief Constructs a new ProjMetadata object.
-         *
-         * @param libraries A vector of LibraryMetadata objects representing each library.
-         */
-        ProjMetadata(std::vector<LibraryMetadata> libraries)
-            : libraries(std::move(libraries))
-        {
-        }
+        std::unordered_map<std::string, LibraryMetadata> libraries; ///< Metadata for each library in the project.
     };
 
 } // namespace ProjectMetadata

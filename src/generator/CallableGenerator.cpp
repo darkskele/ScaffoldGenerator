@@ -63,11 +63,20 @@ namespace CallableGenerator
         std::string paramList = PropertiesGenerator::generateParameterList(callable.parameters);
 
         // Retrieve declaration specifiers.
-        std::string declSpec = PropertiesGenerator::generateDeclarationSpecifier(callable.declSpec);
+        std::string declSpec = PropertiesGenerator::generateDeclarationSpecifier(callable.declSpec, true);
 
         // Define a default body that signals unimplemented functionality.
-        std::string body = "// TODO: Implement " + callable.name + " logic.\n";
-        body += "    throw std::runtime_error(\"Not implemented\");";
+        std::string body = "// TODO: Implement " + callable.name + " logic.";
+        // constexpr methods/functions cannot throw errors
+        if(!declSpec.contains("constexpr"))
+        {
+            body += "\n    throw std::runtime_error(\"Not implemented\");";
+        }
+        else
+        {
+            // constexpr methods/functions must return something
+            body += "\n    return" + (!returnTypeStr.contains("void") ? " " + returnTypeStr + "()" : "") + ";";
+        }
 
         // Construct the free callable definition.
         // Inline methods do not get defined in cpp file
@@ -104,10 +113,19 @@ namespace CallableGenerator
         // name is qualified with the owning class name.
         std::string returnTypeStr = GeneratorUtilities::dataTypeToString(method.returnType);
         std::string paramList = PropertiesGenerator::generateParameterList(method.parameters);
-        std::string declSpec = PropertiesGenerator::generateDeclarationSpecifier(method.declSpec);
+        std::string declSpec = PropertiesGenerator::generateDeclarationSpecifier(method.declSpec, true);
         // Construct body of method with TODO
-        std::string body = "// TODO: Implement " + method.name + " logic.\n";
-        body += "    throw std::runtime_error(\"Not implemented\");";
+        std::string body = "// TODO: Implement " + method.name + " logic.";
+        // constexpr methods/functions cannot throw errors
+        if(!declSpec.contains("constexpr"))
+        {
+            body += "\n    throw std::runtime_error(\"Not implemented\");";
+        }
+        else
+        {
+            // constexpr methods/functions must return something
+            body += "\n    return" + (!returnTypeStr.contains("void") ? " " + returnTypeStr + "()" : "") + ";";
+        }
 
         // Construct the fully qualified method name.
         std::string qualifiedName = className + "::" + method.name;

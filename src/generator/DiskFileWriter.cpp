@@ -1,4 +1,5 @@
 #include "DiskFileWriter.h"
+#include "GeneratorUtilities.h"
 
 #include <filesystem>
 #include <fstream>
@@ -9,31 +10,11 @@
  *
  * This anonymous namespace contains static helper functions used internally by the DiskFileWriter
  * implementation. These functions are not visible outside this translation unit. They include:
- * - @ref removeRootPrefix: Removes the "ROOT/" prefix from a file path.
  * - @ref constructFullPath: Constructs a full file path under the generatedOutputs directory.
  * - @ref ensureDirectoryExists: Ensures that the directory for a given file path exists, creating it if necessary.
  */
 namespace
 {
-    /**
-     * @brief Removes the "ROOT/" prefix from a file path if it exists.
-     *
-     * This utility function checks if the provided path begins with "ROOT/" and, if so,
-     * returns a new string with the prefix removed. Otherwise, the original path is returned.
-     *
-     * @param path The original file path, potentially starting with "ROOT/".
-     * @return A new string with the "ROOT/" prefix removed if present, or the original path otherwise.
-     */
-    static std::string removeRootPrefix(const std::string &path)
-    {
-        const std::string rootPrefix = "ROOT/";
-        if (path.rfind(rootPrefix, 0) == 0)
-        { // Check if path starts with "ROOT/"
-            return path.substr(rootPrefix.length());
-        }
-        return path;
-    }
-
     /**
      * @brief Constructs the full file path for a generated file.
      *
@@ -51,7 +32,7 @@ namespace
                                                    const std::string &filePath, const std::string &extension)
     {
         // Remove the ROOT prefix.
-        std::string cleanedPath = removeRootPrefix(filePath);
+        std::string cleanedPath = GeneratorUtilities::removeRootPrefix(filePath);
         // Append the file extension.
         std::filesystem::path relativePath = cleanedPath + extension;
         // Build the full path: current_path()/<outputFolder>/subfolder/relativePath.
@@ -131,6 +112,9 @@ namespace GeneratedFileWriter
 
         // Write the content to the file.
         file << content;
+
+        // Close file
+        file.close();
     }
 
     void DiskFileWriter::writeSourceFile(const std::string &filePath, const std::string &content)
@@ -153,6 +137,72 @@ namespace GeneratedFileWriter
         file << "#include \"" << headerPath.filename().string() << "\"\n\n";
         // Write the content to the file.
         file << content;
+        
+        // Close file
+        file.close();
+    }
+
+    void DiskFileWriter::writeCmakeLists(const std::string& cmakeListsTxt) const
+    {
+        // Construct full path for the CmakeLists.txt at root
+        std::filesystem::path fullPath =  std::filesystem::current_path() / this->outputFolder / "CMakeLists.txt";
+        // Ensure the target directory exists.
+        ensureDirectoryExists(fullPath);
+
+        // Open the file for writing.
+        std::ofstream file(fullPath);
+        if (!file)
+        {
+            std::cerr << "Error opening file for writing: " << fullPath << std::endl;
+            return;
+        }
+
+        // Write the content to the file.
+        file << cmakeListsTxt;
+        
+        // Close file
+        file.close();
+    }
+
+    void DiskFileWriter::writeMain() const
+    {
+        // Construct file path to src/main.cpp
+        std::filesystem::path fullPath =  std::filesystem::current_path() / this->outputFolder / "src" / "main.cpp";
+
+        // Ensure the target directory exists.
+        ensureDirectoryExists(fullPath);
+
+        // Open the file for writing.
+        std::ofstream file(fullPath);
+        if (!file)
+        {
+            std::cerr << "Error opening file for writing: " << fullPath << std::endl;
+            return;
+        }
+
+        // Barebones main.cpp
+        // Write the Doxygen file header
+        file << "/**\n";
+        file << " * @file main.cpp\n";
+        file << " * @brief Main point of entry for the scaffolded project.\n";
+        file << " */\n\n";
+        file << "#include <iostream>\n\n";
+        file << "/**\n";
+        file << " * @brief Main.\n";
+        file << " * @param argc Number of command line arguments.\n";
+        file << " * @param argv Array of command line argument strings.\n";
+        file << " * @return int Returns 0 on success, or 1 on error.\n";
+        file << " */\n";
+
+        // Write the main.cpp and print a hello world message
+        file << "int main(int argc, char *argv[])\n";
+        file << "{\n";
+        file << "    std::cout << \"Hello, world!\" << std::endl;\n";
+        file << "    return 0;\n";
+        file << "}\n";
+
+        // Close file
+        file.close();
     }
 
 } // namespace GeneratedFileWriter
