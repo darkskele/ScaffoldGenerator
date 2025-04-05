@@ -18,6 +18,29 @@ This project aims to create an automated generator for C++ project scaffolds. Th
    - Generates project directories and code skeletons (headers and source files with placeholder implementations).
    - Emphasizes modern C++ best practices (C++20+), with a focus on templates and robust type management.
 
+## Using via CLI
+
+The Project Scaffolder can also be run directly from the command line. The basic command syntax is as follows:
+
+```bash
+scaffolder <input_path> [--output-folder <output_path>]
+```
+
+- **input_path**: This is the path to a `.scaff` file or a directory containing `.scaff` files.
+  - If a file is provided, it will be parsed directly.
+  - If a directory is provided, the tool will search for the first `.scaff` file (alphabetically).  
+    **Note:** An error is thrown if the directory does not contain any `.scaff` file.
+- **--output-folder**: (Optional) Specifies the folder where the generated project files will be written. If omitted, a default output folder is used.
+
+### Error Handling
+
+- The CLI tool performs error checking and will throw an error if:
+  - The provided input path does not exist.
+  - The input path is a directory and no `.scaff` file is found.
+  - Any required operation (like file reading or writing) fails.
+
+This ensures that users are informed immediately of any issues with the provided paths or file structure.
+
 ## Goals
 
 - **Automate Repetitive Tasks:**  

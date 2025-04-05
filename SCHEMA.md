@@ -266,7 +266,7 @@ The following sections provide details for each DSL keyword, ordered by broadnes
   | constructors = default, copy, move
   | assignment = copy, move
   - private:
-  | members = int id, string name
+  | members = int:id, string:name
   - constructor custom:
   | parameters = int param1, string param2
   | description = "Custom constructor"

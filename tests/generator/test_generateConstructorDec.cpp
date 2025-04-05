@@ -38,7 +38,6 @@ TEST(SpecialMemberGeneratorDeclarationTest, CustomConstructorWithEmptyParameterL
     std::string declaration = SpecialMemberGenerator::generateConstructorDeclaration(className, ctor);
 
     // Assert: When no parameters are provided, the generated declaration should reflect an empty parameter list.
-    // Here, we assume that PropertiesGenerator::generateParameterList returns an empty string when given an empty vector.
     std::string expected = "    MyClass(" + PropertiesGenerator::generateParameterList(emptyParams) + ");\n";
     EXPECT_EQ(declaration, expected);
 }
