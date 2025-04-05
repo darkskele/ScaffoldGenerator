@@ -232,6 +232,9 @@ int main(int argc, char *argv[])
 
         // Generate main file
         diskWriter.writeMain();
+
+        // Generate vscode Jsons
+        diskWriter.writeVsCodeJsons(BuildToolGenerator::generateVscodeJSONs(projModel.name));
     }
     catch (const std::exception &ex)
     {

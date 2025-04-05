@@ -200,4 +200,59 @@ namespace BuildToolGenerator
         return cmakeFile.str();
     }
 
+    std::pair<std::string, std::string> generateVscodeJSONs(const std::string &projectName)
+    {
+        // Build the launch.json configuration using an ostringstream.
+        std::ostringstream launchOss;
+        launchOss << "{\n"
+                  << "    \"version\": \"0.2.0\",\n"
+                  << "    \"configurations\": [\n"
+                  << "        {\n"
+                  << "            \"name\": \"Debug " << projectName << "\",\n"
+                  << "            \"type\": \"cppdbg\",\n"
+                  << "            \"request\": \"launch\",\n"
+                  << "            \"program\": \"${workspaceFolder}/build-" << projectName << "/" << projectName << "\",\n"
+                  << "            \"args\": [],\n"
+                  << "            \"stopAtEntry\": false,\n"
+                  << "            \"cwd\": \"${workspaceFolder}/build-" << projectName << "\",\n"
+                  << "            \"environment\": [],\n"
+                  << "            \"externalConsole\": false,\n"
+                  << "            \"MIMode\": \"gdb\",\n"
+                  << "            \"preLaunchTask\": \"Build and Run " << projectName << "\"\n"
+                  << "        }\n"
+                  << "    ]\n"
+                  << "}";
+
+        // Build the tasks.json configuration using another ostringstream.
+        std::ostringstream tasksOss;
+        tasksOss << "{\n";
+        tasksOss << "    \"version\": \"2.0.0\",\n";
+        tasksOss << "    \"tasks\": [\n";
+        tasksOss << "        {\n";
+        tasksOss << "            \"label\": \"Build and Run " << projectName << "\",\n";
+        tasksOss << "            \"type\": \"shell\",\n";
+        tasksOss << "            \"command\": \"/bin/bash\",\n";
+        tasksOss << "            \"args\": [\n";
+        tasksOss << "                \"-c\",\n";
+        tasksOss << "                \"mkdir -p build-" << projectName << " && cd build-" << projectName << " && cmake -DCMAKE_BUILD_TYPE=Debug .. && cmake --build . --target " << projectName << " -- -j$(nproc)\"\n";
+        tasksOss << "            ],\n";
+        tasksOss << "            \"group\": {\n";
+        tasksOss << "                \"kind\": \"build\",\n";
+        tasksOss << "                \"isDefault\": true\n";
+        tasksOss << "            },\n";
+        tasksOss << "            \"presentation\": {\n";
+        tasksOss << "                \"reveal\": \"always\",\n";
+        tasksOss << "                \"panel\": \"shared\"\n";
+        tasksOss << "            },\n";
+        tasksOss << "            \"problemMatcher\": [\n";
+        tasksOss << "                \"$gcc\"\n";
+        tasksOss << "            ]\n";
+        tasksOss << "        }\n";
+        tasksOss << "    ]\n";
+        tasksOss << "}";
+
+        // Return a pair where the first element is launch.json and the second is tasks.json.
+        return {launchOss.str(), tasksOss.str()};
+    }
+
 } // namespace BuildToolGenerator

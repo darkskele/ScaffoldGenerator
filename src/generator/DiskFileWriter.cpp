@@ -137,15 +137,15 @@ namespace GeneratedFileWriter
         file << "#include \"" << headerPath.filename().string() << "\"\n\n";
         // Write the content to the file.
         file << content;
-        
+
         // Close file
         file.close();
     }
 
-    void DiskFileWriter::writeCmakeLists(const std::string& cmakeListsTxt) const
+    void DiskFileWriter::writeCmakeLists(const std::string &cmakeListsTxt) const
     {
         // Construct full path for the CmakeLists.txt at root
-        std::filesystem::path fullPath =  std::filesystem::current_path() / this->outputFolder / "CMakeLists.txt";
+        std::filesystem::path fullPath = std::filesystem::current_path() / this->outputFolder / "CMakeLists.txt";
         // Ensure the target directory exists.
         ensureDirectoryExists(fullPath);
 
@@ -159,7 +159,7 @@ namespace GeneratedFileWriter
 
         // Write the content to the file.
         file << cmakeListsTxt;
-        
+
         // Close file
         file.close();
     }
@@ -167,7 +167,7 @@ namespace GeneratedFileWriter
     void DiskFileWriter::writeMain() const
     {
         // Construct file path to src/main.cpp
-        std::filesystem::path fullPath =  std::filesystem::current_path() / this->outputFolder / "src" / "main.cpp";
+        std::filesystem::path fullPath = std::filesystem::current_path() / this->outputFolder / "src" / "main.cpp";
 
         // Ensure the target directory exists.
         ensureDirectoryExists(fullPath);
@@ -203,6 +203,43 @@ namespace GeneratedFileWriter
 
         // Close file
         file.close();
+    }
+
+    void DiskFileWriter::writeVsCodeJsons(const std::pair<std::string, std::string> &jsonsFiles) const
+    {
+        // Construct file path to .vscode/launch.json
+        std::filesystem::path launchPath = std::filesystem::current_path() / this->outputFolder / ".vscode" / "launch.json";
+
+        // Ensure the target directory exists.
+        ensureDirectoryExists(launchPath);
+
+        // Open the file for writing.
+        std::ofstream launchFile(launchPath);
+        if (!launchFile)
+        {
+            std::cerr << "Error opening file for writing: " << launchPath << std::endl;
+            return;
+        }
+
+        // Write launch file
+        launchFile << jsonsFiles.first;
+
+        // Construct file path to .vscode/tasks.json
+        std::filesystem::path tasksPath = std::filesystem::current_path() / this->outputFolder / ".vscode" / "tasks.json";
+
+        // Ensure the target directory exists.
+        ensureDirectoryExists(tasksPath);
+
+        // Open the file for writing.
+        std::ofstream tasksFile(tasksPath);
+        if (!tasksFile)
+        {
+            std::cerr << "Error opening file for writing: " << tasksPath << std::endl;
+            return;
+        }
+
+        // Write launch file
+        tasksFile << jsonsFiles.second;
     }
 
 } // namespace GeneratedFileWriter

@@ -3,6 +3,7 @@
 #include "BuildToolsGenerator.h"
 #include "ProjectMetadata.h"
 #include "GeneratorUtilities.h"
+#include "testUtility.h"
 
 using namespace GeneratorUtilities;
 using namespace ProjectMetadata;
@@ -40,11 +41,6 @@ TEST(CMakeGeneratorTest, BasicOutput) {
     EXPECT_NE(cmakeFile.find("find_package(Boost REQUIRED)"), std::string::npos);
     // Check that the main binary target linking to libraries is present.
     EXPECT_NE(cmakeFile.find("target_link_libraries(${MAIN_TARGET} PUBLIC CoreLib)"), std::string::npos);
-}
-
-// Helper function to check if a substring exists in the generated output.
-static bool contains(const std::string &output, const std::string &substring) {
-    return output.find(substring) != std::string::npos;
 }
 
 TEST(CMakeGeneratorTest, MinimalProjectWithOneLibrary) {

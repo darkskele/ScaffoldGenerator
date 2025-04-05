@@ -113,3 +113,8 @@ public:
         calls.push_back({"source", filePath, content});
     }
 };
+
+// Helper function to check if a substring exists in the given string.
+static bool contains(const std::string &str, const std::string &substr) {
+    return str.find(substr) != std::string::npos;
+}

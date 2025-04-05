@@ -94,6 +94,18 @@ namespace GeneratedFileWriter
          */
         void writeMain() const;
 
+        /**
+         * @brief Writes VS Code configuration JSON files to disk.
+         *
+         * This function writes the launch.json and tasks.json files to the target .vscode folder
+         * within the output directory. It ensures that the target directories exist, opens each file
+         * for writing, and writes the corresponding JSON content provided in the input pair.
+         *
+         * @param jsonsFiles A pair of strings where the first element is the content for launch.json
+         *                   and the second element is the content for tasks.json.
+         */
+        void writeVsCodeJsons(const std::pair<std::string, std::string> &jsonsFiles) const;
+
     private:
         const std::string outputFolder; //**< Output folder for generated files */
     };
