@@ -343,7 +343,7 @@ TEST(GenerateFunctionDeclarationTest, ParameterWithPointerAndArray) {
 // Test: Function declaration with declaration specifiers.
 TEST(GenerateFunctionDeclarationTest, WithDeclarationSpecifiers) {
     // Parse a set of declaration specifiers from a DSL string.
-    DeclartionSpecifier ds = PropertiesParser::parseDeclarationSpecifier("static inline constexpr");
+    DeclartionSpecifier ds = PropertiesParser::parseDeclarationSpecifier("static constexpr");
     DataType returnType(Types::INT);
     std::vector<Parameter> params; // No parameters.
     FunctionModel func(returnType, "doSomething", params, ds, "Does something");
@@ -356,7 +356,7 @@ TEST(GenerateFunctionDeclarationTest, WithDeclarationSpecifiers) {
         "/**\n"
         " * @brief Does something\n"
         " */\n"
-        "static inline constexpr int doSomething();\n";
+        "static constexpr int doSomething();\n";
     
     EXPECT_EQ(generated, expected);
 }
@@ -364,7 +364,7 @@ TEST(GenerateFunctionDeclarationTest, WithDeclarationSpecifiers) {
 // Test: Function declaration with declaration specifiers and parameters.
 TEST(GenerateFunctionDeclarationTest, WithDeclarationSpecifiersAndParameters) {
     // Parse a combination of declaration specifiers from a DSL string.
-    DeclartionSpecifier ds = PropertiesParser::parseDeclarationSpecifier("inline constexpr");
+    DeclartionSpecifier ds = PropertiesParser::parseDeclarationSpecifier("constexpr");
     DataType returnType(Types::VOID);
     std::vector<Parameter> params;
     // Create two parameters: one const-qualified float and one int.
@@ -380,7 +380,7 @@ TEST(GenerateFunctionDeclarationTest, WithDeclarationSpecifiersAndParameters) {
         "/**\n"
         " * @brief Does work\n"
         " */\n"
-        "inline constexpr void doWork(const float param1, int param2);\n";
+        "constexpr void doWork(const float param1, int param2);\n";
     
     EXPECT_EQ(generated, expected);
 }

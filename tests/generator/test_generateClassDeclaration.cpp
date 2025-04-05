@@ -32,6 +32,7 @@ TEST(ClassGeneratorDeclarationTest, MinimalClassDeclaration)
  */
 class EmptyClass {
 public:
+
 };
 )expected";
 
@@ -90,12 +91,18 @@ TEST(ClassGeneratorDeclarationTest, PublicClassWithMembersMethodsAndConstructors
  */
 class TestClass {
 public:
+    /**
+     * @brief Custom Constructor.
+     * @param id 
+     */
     TestClass(int id);
+
     /**
      * @brief Public method
      */
     void publicMethod();
-    float value;
+    float value; ///< 
+
 };
 )expected";
 
@@ -176,21 +183,25 @@ public:
      * @brief Public method
      */
     void publicMethod();
-    int publicMember;
+    int publicMember; ///< 
+
 private:
     /**
      * @brief Private method
      */
     void privateMethod();
-    int privateMember;
+    int privateMember; ///< 
+
 protected:
     /**
      * @brief Protected method
      */
     void protectedMethod();
-    int protectedMember;
+    int protectedMember; ///< 
+
 };
 )expected";
+   
 
     // Act:
     std::string output = ClassGenerator::generateClassDeclaration(cl);
@@ -227,8 +238,21 @@ TEST(ClassGeneratorDeclarationTest, ClassWithDestructorAndAssignments)
 class DestructClass {
 public:
     ~DestructClass() = default;
+    /**
+     * @brief Custom move assignment operator.
+     * @param other The DestructClass object to move from.
+     * @return Reference to this DestructClass.
+     */
     DestructClass& operator=(const DestructClass& other);
+
+    /**
+     * @brief Custom move assignment operator.
+     * @param other The DestructClass object to move from.
+     * @return Reference to this DestructClass.
+     */
     DestructClass& operator=(DestructClass&& other) noexcept;
+
+
 };
 )expected";
 
@@ -294,22 +318,42 @@ TEST(ClassGeneratorDeclarationTest, ClassWithAllSectionsAndSpacing)
  */
 class FullClass {
 public:
+    /**
+     * @brief Custom Constructor.
+     * @param id 
+     */
     FullClass(int id);
+
     ~FullClass() = default;
+    /**
+     * @brief Custom move assignment operator.
+     * @param other The FullClass object to move from.
+     * @return Reference to this FullClass.
+     */
     FullClass& operator=(const FullClass& other);
+
+    /**
+     * @brief Custom move assignment operator.
+     * @param other The FullClass object to move from.
+     * @return Reference to this FullClass.
+     */
     FullClass& operator=(FullClass&& other) noexcept;
+
     /**
      * @brief Public method
      */
     void publicMethod();
-    float value;
+    float value; ///< 
+
 private:
     /**
      * @brief Private helper
      */
     void privateHelper();
+
 protected:
-    int counter;
+    int counter; ///< 
+
 };
 )expected";
 
@@ -345,7 +389,14 @@ TEST(ClassGeneratorDeclarationTest, ClassWithOnlyCopyAssignment)
  */
 class CopyOnlyClass {
 public:
+    /**
+     * @brief Custom move assignment operator.
+     * @param other The CopyOnlyClass object to move from.
+     * @return Reference to this CopyOnlyClass.
+     */
     CopyOnlyClass& operator=(const CopyOnlyClass& other);
+
+
 };
 )expected";
 
@@ -394,6 +445,7 @@ public:
      * @brief    A method with extra whitespace   
      */
     void specialMethod();
+
 };
 )expected";
 

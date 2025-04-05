@@ -28,6 +28,7 @@ TEST(GenerateMethodDefinitionTest, NoParameters) {
     // Expected output: Declaration with fully qualified name and default method body.
     std::string expected = 
         "int MyClass::doSomething() {\n"
+        "    // TODO: Implement doSomething logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -53,6 +54,7 @@ TEST(GenerateMethodDefinitionTest, WithParameters) {
     // Expected output: Method definition with parameter list.
     std::string expected = 
         "void MyClass::doSomething(int param1, float param2) {\n"
+        "    // TODO: Implement doSomething logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -73,6 +75,7 @@ TEST(GenerateMethodDefinitionTest, ReturnTypeWithConstQualifier) {
     // Expected output: Return type prefixed with "const".
     std::string expected =
         "const int MyClass::doSomething() {\n"
+        "    // TODO: Implement doSomething logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -94,6 +97,7 @@ TEST(GenerateMethodDefinitionTest, ParameterWithConstQualifier) {
     // Expected output: Parameter type includes "const".
     std::string expected =
         "void MyClass::doSomething(const float param1) {\n"
+        "    // TODO: Implement doSomething logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -115,6 +119,7 @@ TEST(GenerateMethodDefinitionTest, ParameterWithConstVolatileQualifiers) {
     // Expected output: Parameter type includes both "const" and "volatile".
     std::string expected =
         "void MyClass::doSomething(const volatile int param1) {\n"
+        "    // TODO: Implement doSomething logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -136,6 +141,7 @@ TEST(GenerateMethodDefinitionTest, ReturnTypeWithPointer) {
     // Expected output: Return type includes a pointer symbol.
     std::string expected =
         "int* MyClass::doPointer() {\n"
+        "    // TODO: Implement doPointer logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -157,6 +163,7 @@ TEST(GenerateMethodDefinitionTest, ReturnTypeWithLValueReference) {
     // Expected output: Return type includes "&".
     std::string expected =
         "int& MyClass::doLValueRef() {\n"
+        "    // TODO: Implement doLValueRef logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -178,6 +185,7 @@ TEST(GenerateMethodDefinitionTest, ReturnTypeWithRValueReference) {
     // Expected output: Return type includes "&&".
     std::string expected =
         "int&& MyClass::doRValueRef() {\n"
+        "    // TODO: Implement doRValueRef logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -199,6 +207,7 @@ TEST(GenerateMethodDefinitionTest, ReturnTypeWithArray) {
     // Expected output: Return type includes array declarator.
     std::string expected =
         "int[10] MyClass::doArray() {\n"
+        "    // TODO: Implement doArray logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -222,6 +231,7 @@ TEST(GenerateMethodDefinitionTest, ParameterWithPointer) {
     // Expected output: Parameter type includes pointer symbol.
     std::string expected =
         "void MyClass::doParamPointer(int* ptr) {\n"
+        "    // TODO: Implement doParamPointer logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -245,6 +255,7 @@ TEST(GenerateMethodDefinitionTest, ParameterWithLValueReference) {
     // Expected output: Parameter type includes "&".
     std::string expected =
         "void MyClass::doParamLValueRef(int& ref) {\n"
+        "    // TODO: Implement doParamLValueRef logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -268,6 +279,7 @@ TEST(GenerateMethodDefinitionTest, ParameterWithRValueReference) {
     // Expected output: Parameter type includes "&&".
     std::string expected =
         "void MyClass::doParamRValueRef(int&& temp) {\n"
+        "    // TODO: Implement doParamRValueRef logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -292,6 +304,7 @@ TEST(GenerateMethodDefinitionTest, ParameterWithPointerAndArray) {
     // Expected output: Parameter type includes both pointer and array declarators.
     std::string expected =
         "void MyClass::doParamPtrArray(int*[5] data) {\n"
+        "    // TODO: Implement doParamPtrArray logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -300,9 +313,9 @@ TEST(GenerateMethodDefinitionTest, ParameterWithPointerAndArray) {
 
 // Test: Method definition with declaration specifiers.
 TEST(GenerateMethodDefinitionTest, WithDeclarationSpecifiers) {
-    // Create a MethodModel with declaration specifiers: static inline constexpr.
+    // Create a MethodModel with declaration specifiers: static constexpr.
     // Parse the specifiers from a DSL string.
-    DeclartionSpecifier ds = PropertiesParser::parseDeclarationSpecifier("static inline constexpr");
+    DeclartionSpecifier ds = PropertiesParser::parseDeclarationSpecifier("static constexpr");
     DataType returnType(Types::INT);
     std::vector<Parameter> params;  // No parameters.
     MethodModel method(returnType, "doSomething", params, ds, "Does something");
@@ -312,7 +325,8 @@ TEST(GenerateMethodDefinitionTest, WithDeclarationSpecifiers) {
     
     // Expected output: Declaration specifiers appear before the return type.
     std::string expected =
-        "static inline constexpr int MyClass::doSomething() {\n"
+        "static constexpr int MyClass::doSomething() {\n"
+        "    // TODO: Implement doSomething logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -321,8 +335,8 @@ TEST(GenerateMethodDefinitionTest, WithDeclarationSpecifiers) {
 
 // Test: Method definition with declaration specifiers and parameters.
 TEST(GenerateMethodDefinitionTest, WithDeclarationSpecifiersAndParameters) {
-    // Create a MethodModel with declaration specifiers: inline constexpr.
-    DeclartionSpecifier ds = PropertiesParser::parseDeclarationSpecifier("inline constexpr");
+    // Create a MethodModel with declaration specifiers: constexpr.
+    DeclartionSpecifier ds = PropertiesParser::parseDeclarationSpecifier("constexpr");
     DataType returnType(Types::VOID);
     std::vector<Parameter> params;
     // Create two parameters: one const-qualified float and one int.
@@ -335,9 +349,31 @@ TEST(GenerateMethodDefinitionTest, WithDeclarationSpecifiersAndParameters) {
     
     // Expected output: Specifiers, return type, fully qualified name, and parameter list in order.
     std::string expected =
-        "inline constexpr void Worker::doWork(const float param1, int param2) {\n"
+        "constexpr void Worker::doWork(const float param1, int param2) {\n"
+        "    // TODO: Implement doWork logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
+    
+    EXPECT_EQ(generated, expected);
+}
+
+// Test: Method definition with inline.
+TEST(GenerateMethodDefinitionTest, InlineWithEmptyDef) {
+    // Create a MethodModel with declaration specifiers: inline.
+    DeclartionSpecifier ds = PropertiesParser::parseDeclarationSpecifier("inline");
+    DataType returnType(Types::VOID);
+    std::vector<Parameter> params;
+    // Create two parameters: one const-qualified float and one int.
+    params.emplace_back(Parameter(DataType(Types::FLOAT, TypeQualifier::CONST), "param1"));
+    params.emplace_back(Parameter(DataType(Types::INT), "param2"));
+    MethodModel method(returnType, "doWork", params, ds, "Does work");
+    
+    std::string className = "Worker";
+    std::string generated = CallableGenerator::generateMethodDefinition(className, method);
+    
+    // Expected output: No cpp definition for inline methods
+    std::string expected =
+        "";
     
     EXPECT_EQ(generated, expected);
 }

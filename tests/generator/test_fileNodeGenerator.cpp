@@ -64,7 +64,7 @@ TEST(FileNodeGeneratorSpecializationsTest, ClassFileNodeGeneratesCorrectContent)
         " * @class TestClass\n"
         " * @brief Test class TestClass\n"
         " */\n"
-        "class TestClass {\npublic:\n};\n";
+        "class TestClass {\npublic:\n\n};\n";
     // And if the source content is empty (or as defined by your generator):
     std::string expectedSource = ""; // or actual generated source if any
 
@@ -122,9 +122,11 @@ TEST(FileNodeGeneratorSpecializationsTest, FunctionFileNodeGeneratesCorrectConte
         "int funcTwo();\n\n";
     std::string expectedSource =
         "int funcOne() {\n"
+        "    // TODO: Implement funcOne logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n\n"
         "int funcTwo() {\n"
+        "    // TODO: Implement funcTwo logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n\n";
 
@@ -175,6 +177,7 @@ TEST(FileNodeGeneratorSpecializationsTest, SingleFunctionVectorGeneratesCorrectC
         "int singleFunc();\n\n";
     std::string expectedSource =
         "int singleFunc() {\n"
+        "    // TODO: Implement singleFunc logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n\n";
     
@@ -220,7 +223,7 @@ TEST(FileNodeGeneratorSpecializationsTest, EmptyModelNameGeneratesCorrectOutput)
         " * @class \n"
         " * @brief Test class with empty name\n"
         " */\n"
-        "class  {\npublic:\n};\n";
+        "class  {\npublic:\n\n};\n";
     EXPECT_EQ(files.headerContent, expectedHeader);
 }
 

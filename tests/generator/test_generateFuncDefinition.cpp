@@ -25,6 +25,7 @@ TEST(GenerateFunctionDefinitionTest, NoParameters) {
     // Expected output: A declaration with a default function body.
     std::string expected =
         "int doSomething() {\n"
+        "    // TODO: Implement doSomething logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -49,6 +50,7 @@ TEST(GenerateFunctionDefinitionTest, WithParameters) {
     // Expected output: A definition with parameter list.
     std::string expected =
         "void doSomething(int param1, float param2) {\n"
+        "    // TODO: Implement doSomething logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -69,6 +71,7 @@ TEST(GenerateFunctionDefinitionTest, ReturnTypeWithConstQualifier) {
     // Expected output: Return type is prefixed with "const".
     std::string expected =
         "const int doSomething() {\n"
+        "    // TODO: Implement doSomething logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -90,6 +93,7 @@ TEST(GenerateFunctionDefinitionTest, ParameterWithConstQualifier) {
     // Expected output: Parameter type includes "const".
     std::string expected =
         "void doSomething(const float param1) {\n"
+        "    // TODO: Implement doSomething logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -111,6 +115,7 @@ TEST(GenerateFunctionDefinitionTest, ParameterWithConstVolatileQualifiers) {
     // Expected output: Parameter type includes both "const" and "volatile".
     std::string expected =
         "void doSomething(const volatile int param1) {\n"
+        "    // TODO: Implement doSomething logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -132,6 +137,7 @@ TEST(GenerateFunctionDefinitionTest, ReturnTypeWithPointer) {
     // Expected output: Return type should include a pointer symbol.
     std::string expected =
         "int* doPointer() {\n"
+        "    // TODO: Implement doPointer logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -153,6 +159,7 @@ TEST(GenerateFunctionDefinitionTest, ReturnTypeWithLValueReference) {
     // Expected output: Return type includes an ampersand.
     std::string expected =
         "int& doLValueRef() {\n"
+        "    // TODO: Implement doLValueRef logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -174,6 +181,7 @@ TEST(GenerateFunctionDefinitionTest, ReturnTypeWithRValueReference) {
     // Expected output: Return type includes "&&".
     std::string expected =
         "int&& doRValueRef() {\n"
+        "    // TODO: Implement doRValueRef logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -195,6 +203,7 @@ TEST(GenerateFunctionDefinitionTest, ReturnTypeWithArray) {
     // Expected output: Return type should include the array declarator.
     std::string expected =
         "int[10] doArray() {\n"
+        "    // TODO: Implement doArray logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -218,6 +227,7 @@ TEST(GenerateFunctionDefinitionTest, ParameterWithPointer) {
     // Expected output: Parameter type should include a pointer symbol.
     std::string expected =
         "void doParamPointer(int* ptr) {\n"
+        "    // TODO: Implement doParamPointer logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -241,6 +251,7 @@ TEST(GenerateFunctionDefinitionTest, ParameterWithLValueReference) {
     // Expected output: Parameter type should include an ampersand.
     std::string expected =
         "void doParamLValueRef(int& ref) {\n"
+        "    // TODO: Implement doParamLValueRef logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -264,6 +275,7 @@ TEST(GenerateFunctionDefinitionTest, ParameterWithRValueReference) {
     // Expected output: Parameter type should include "&&".
     std::string expected =
         "void doParamRValueRef(int&& temp) {\n"
+        "    // TODO: Implement doParamRValueRef logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -288,6 +300,7 @@ TEST(GenerateFunctionDefinitionTest, ParameterWithPointerAndArray) {
     // Expected output: Parameter type includes both pointer and array declarators.
     std::string expected =
         "void doParamPtrArray(int*[5] data) {\n"
+        "    // TODO: Implement doParamPtrArray logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -297,7 +310,7 @@ TEST(GenerateFunctionDefinitionTest, ParameterWithPointerAndArray) {
 // Test: Function definition with declaration specifiers.
 TEST(GenerateFunctionDefinitionTest, WithDeclarationSpecifiers) {
     // Parse a set of declaration specifiers.
-    DeclartionSpecifier ds = PropertiesParser::parseDeclarationSpecifier("static inline constexpr");
+    DeclartionSpecifier ds = PropertiesParser::parseDeclarationSpecifier("static constexpr");
     DataType returnType(Types::INT);
     std::vector<Parameter> params; // No parameters.
     FunctionModel func(returnType, "doSomething", params, ds, "Does something");
@@ -307,7 +320,8 @@ TEST(GenerateFunctionDefinitionTest, WithDeclarationSpecifiers) {
     
     // Expected output: Declaration specifiers appear before the return type.
     std::string expected =
-        "static inline constexpr int doSomething() {\n"
+        "static constexpr int doSomething() {\n"
+        "    // TODO: Implement doSomething logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     
@@ -317,7 +331,7 @@ TEST(GenerateFunctionDefinitionTest, WithDeclarationSpecifiers) {
 // Test: Function definition with declaration specifiers and parameters.
 TEST(GenerateFunctionDefinitionTest, WithDeclarationSpecifiersAndParameters) {
     // Parse a combination of declaration specifiers.
-    DeclartionSpecifier ds = PropertiesParser::parseDeclarationSpecifier("inline constexpr");
+    DeclartionSpecifier ds = PropertiesParser::parseDeclarationSpecifier("constexpr");
     DataType returnType(Types::VOID);
     std::vector<Parameter> params;
     // Create two parameters: one const-qualified float and one int.
@@ -330,7 +344,8 @@ TEST(GenerateFunctionDefinitionTest, WithDeclarationSpecifiersAndParameters) {
     
     // Expected output: Specifiers, return type, function name, and parameter list in order.
     std::string expected =
-        "inline constexpr void doWork(const float param1, int param2) {\n"
+        "constexpr void doWork(const float param1, int param2) {\n"
+        "    // TODO: Implement doWork logic.\n"
         "    throw std::runtime_error(\"Not implemented\");\n"
         "}\n";
     

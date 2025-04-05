@@ -81,9 +81,12 @@ TEST(ClassGeneratorDefinitionTest, PublicClassWithMembersMethodsAndConstructors)
     // Expected output: note that the custom constructor definition preserves the generator’s spacing.
     std::string expected = R"expected(TestClass::TestClass(int id)
 {
+    // TODO: Implement TestClass construtor logic.
+    throw std::runtime_error("Not implemented");
 }
 
 void TestClass::publicMethod() {
+    // TODO: Implement publicMethod logic.
     throw std::runtime_error("Not implemented");
 }
 
@@ -114,12 +117,12 @@ TEST(ClassGeneratorDefinitionTest, ClassWithDestructorAndAssignments)
     );
 
     std::string expected = R"expected(DestructClass& DestructClass::operator=(const DestructClass& other) {
-    // Placeholder implementation: copy assignment operator is not implemented.
+    // TODO: Implement DestructClass copy assignment logic.
     throw std::runtime_error("Not implemented");
 }
 
 DestructClass& DestructClass::operator=(DestructClass&& other) noexcept {
-    // Placeholder implementation: move assignment operator is not implemented.
+    // TODO: Implement DestructClass move assignment logic.
     throw std::runtime_error("Not implemented");
 }
 
@@ -179,14 +182,17 @@ TEST(ClassGeneratorDefinitionTest, ClassWithPrivateAndProtectedSections)
 
     // Note: Our generator does not prepend a return type if declSpec is empty.
     std::string expected = R"expected(void ComplexClass::publicMethod() {
+    // TODO: Implement publicMethod logic.
     throw std::runtime_error("Not implemented");
 }
 
 void ComplexClass::privateMethod() {
+    // TODO: Implement privateMethod logic.
     throw std::runtime_error("Not implemented");
 }
 
 void ComplexClass::protectedMethod() {
+    // TODO: Implement protectedMethod logic.
     throw std::runtime_error("Not implemented");
 }
 
@@ -245,29 +251,29 @@ TEST(ClassGeneratorDefinitionTest, ClassWithAllSectionsAndSpacing)
         true
     );
 
-    std::string expected = R"expected(FullClass::FullClass(int id) : value(), counter()
-{
-}
+    std::string expected =
+    "FullClass::FullClass(int id) : value(), counter()\n"
+    "{\n"
+    "    // TODO: Implement FullClass construtor logic.\n"
+    "    throw std::runtime_error(\"Not implemented\");\n"
+    "}\n\n"
+    "FullClass& FullClass::operator=(const FullClass& other) {\n"
+    "    // TODO: Implement FullClass copy assignment logic.\n"
+    "    throw std::runtime_error(\"Not implemented\");\n"
+    "}\n\n"
+    "FullClass& FullClass::operator=(FullClass&& other) noexcept {\n"
+    "    // TODO: Implement FullClass move assignment logic.\n"
+    "    throw std::runtime_error(\"Not implemented\");\n"
+    "}\n\n"
+    "void FullClass::publicMethod() {\n"
+    "    // TODO: Implement publicMethod logic.\n"
+    "    throw std::runtime_error(\"Not implemented\");\n"
+    "}\n\n"
+    "void FullClass::privateHelper() {\n"
+    "    // TODO: Implement privateHelper logic.\n"
+    "    throw std::runtime_error(\"Not implemented\");\n"
+    "}\n\n";
 
-FullClass& FullClass::operator=(const FullClass& other) {
-    // Placeholder implementation: copy assignment operator is not implemented.
-    throw std::runtime_error("Not implemented");
-}
-
-FullClass& FullClass::operator=(FullClass&& other) noexcept {
-    // Placeholder implementation: move assignment operator is not implemented.
-    throw std::runtime_error("Not implemented");
-}
-
-void FullClass::publicMethod() {
-    throw std::runtime_error("Not implemented");
-}
-
-void FullClass::privateHelper() {
-    throw std::runtime_error("Not implemented");
-}
-
-)expected";
 
     std::string output = ClassGenerator::generateClassDefinition(cl);
     EXPECT_EQ(output, expected);
