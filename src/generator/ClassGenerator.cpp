@@ -31,6 +31,28 @@ namespace
             oss << CallableGenerator::generateMethodDefinition(className, meth) << "\n";
         }
     }
+
+    /**
+     * @brief Formats and writes class member declarations.
+     *
+     * This function iterates over a list of member parameters and writes each declaration
+     * into the provided output stream in the format:
+     * "    <data type> <member name>; ///< " followed by a newline.
+     * An extra newline is appended after processing all members.
+     *
+     * @param members The vector of member parameters to format.
+     * @param oss The output string stream where the member declarations are written.
+     */
+    void classMemberDeclaration(const std::vector<PropertiesModels::Parameter> &members,
+                                std::ostringstream &oss)
+    {
+        // Format list of members
+        for (const auto &mem : members)
+        {
+            oss << std::format("    {} {}; ///< \n", GeneratorUtilities::dataTypeToString(mem.type), mem.name);
+        }
+        oss << "\n";
+    }
 }
 
 namespace ClassGenerator
@@ -72,11 +94,9 @@ namespace ClassGenerator
         {
             oss << CallableGenerator::generateMethodDeclaration(meth);
         }
+
         // Generate declarations for public members.
-        for (const auto &mem : cl.publicMembers)
-        {
-            oss << std::format("    {} {};\n", GeneratorUtilities::dataTypeToString(mem.type), mem.name);
-        }
+        classMemberDeclaration(cl.publicMembers, oss);
 
         // Generate private section if necessary.
         if (!cl.privateMembers.empty() || !cl.privateMethods.empty())
@@ -86,10 +106,8 @@ namespace ClassGenerator
             {
                 oss << CallableGenerator::generateMethodDeclaration(meth);
             }
-            for (const auto &mem : cl.privateMembers)
-            {
-                oss << std::format("    {} {};\n", GeneratorUtilities::dataTypeToString(mem.type), mem.name);
-            }
+
+            classMemberDeclaration(cl.privateMembers, oss);
         }
 
         // Generate protected section if necessary.
@@ -100,10 +118,8 @@ namespace ClassGenerator
             {
                 oss << CallableGenerator::generateMethodDeclaration(meth);
             }
-            for (const auto &mem : cl.protectedMembers)
-            {
-                oss << std::format("    {} {};\n", GeneratorUtilities::dataTypeToString(mem.type), mem.name);
-            }
+
+            classMemberDeclaration(cl.protectedMembers, oss);
         }
 
         // End class declaration.

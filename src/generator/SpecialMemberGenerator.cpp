@@ -4,12 +4,102 @@
 #include <stdexcept>
 #include <sstream>
 
+/**
+ * @brief Internal utility functions for generating Doxygen documentation.
+ *
+ * This anonymous namespace contains helper functions used to generate minimal
+ * Doxygen comment blocks for custom constructors and assignment operators based
+ * on a class's DSL model.
+ */
+namespace
+{
+
+    /**
+     * @brief Generates Doxygen documentation for a non-default constructor.
+     *
+     * This function writes a minimal Doxygen comment block for a constructor into
+     * the provided output stream. It handles custom, copy, and move constructors.
+     * For a custom constructor, parameter documentation is generated for each parameter.
+     * For copy and move constructors, a brief description of the 'other' parameter is added.
+     * No documentation is generated if the constructor is of type DEFAULT.
+     *
+     * @param ctor The constructor model containing the constructor type and its parameters.
+     * @param className The name of the class for which the constructor is being documented.
+     * @param oss The output stream where the generated Doxygen comment will be written.
+     */
+    static void generateCtorDoxygen(const ClassModels::Constructor &ctor,
+                                    const std::string &className,
+                                    std::ostringstream &oss)
+    {
+        // Only write Doxygen for non-default constructors.
+        if (ctor.type != ClassModels::ConstructorType::DEFAULT)
+        {
+            oss << "    /**\n     * @brief Custom ";
+            // Write minimal Doxygen based on constructor type.
+            if (ctor.type == ClassModels::ConstructorType::CUSTOM)
+            {
+                oss << "Constructor.\n";
+                // Generate parameter Doxygen docstrings.
+                for (const auto &param : ctor.parameters)
+                {
+                    oss << "     * @param " << param.name << " \n";
+                }
+            }
+            else if (ctor.type == ClassModels::ConstructorType::COPY)
+            {
+                // Generate minimal copy constructor documentation.
+                oss << "Copy Constructor.\n";
+                oss << "     * @param other The " << className << " object to copy from.\n";
+            }
+            else if (ctor.type == ClassModels::ConstructorType::MOVE)
+            {
+                // Generate minimal move constructor documentation.
+                oss << "Move Constructor.\n";
+                oss << "     * @param other The " << className << " object to move from.\n";
+            }
+            oss << "     */\n";
+        }
+    }
+
+    /**
+     * @brief Generates Doxygen documentation for copy or move assignment operators.
+     *
+     * This function writes a minimal Doxygen comment block for an assignment operator
+     * into the provided output stream. Depending on the value of the 'copy' parameter,
+     * it generates documentation for either a copy assignment or a move assignment operator.
+     *
+     * @param className The name of the class for which the assignment operator is being documented.
+     * @param oss The output stream where the generated Doxygen comment will be written.
+     * @param copy If true, generates documentation for a copy assignment operator; otherwise, for a move assignment operator.
+     */
+    static void generateCopyAndMoveAssingmentDoxygen(const std::string &className,
+                                                     std::ostringstream &oss,
+                                                     const bool copy)
+    {
+        // Decide the assignment type in the Doxygen docstring.
+        std::string assignmentType = " move ";
+        if (copy)
+        {
+            assignmentType = " copy ";
+        }
+        // Write minimal Doxygen documentation based on the assignment type.
+        oss << "    /**\n     * @brief Custom" << assignmentType << "assignment operator.\n";
+        oss << "     * @param other The " << className << " object to" << assignmentType << "from.\n";
+        oss << "     * @return Reference to this " << className << ".\n";
+        oss << "     */\n";
+    }
+
+} // end anonymous namespace
+
 namespace SpecialMemberGenerator
 {
     std::string generateConstructorDeclaration(const std::string &className, const ClassModels::Constructor &ctor)
     {
         // Create an output string stream to build the constructor declaration.
         std::ostringstream oss;
+
+        // Generate constructor docstring
+        generateCtorDoxygen(ctor, className, oss);
 
         // Begin the constructor declaration with the class name and an opening parenthesis.
         oss << "    " << className << "(";
@@ -34,9 +124,6 @@ namespace SpecialMemberGenerator
         {
             // For default constructors, close the declaration with a default specifier.
             oss << ") = default;\n";
-            // Additionally, generate defaulted copy and move constructors.
-            oss << "    " << className << "(const " << className << "&) = default;\n";
-            oss << "    " << className << "(" << className << "&&) = default;\n";
         }
         else
         {
@@ -45,6 +132,7 @@ namespace SpecialMemberGenerator
         }
 
         // Return the complete constructor declaration as a string.
+        oss << "\n";
         return oss.str();
     }
 
@@ -99,7 +187,8 @@ namespace SpecialMemberGenerator
             oss << " : " << initList.str();
 
         // Append an empty body for the constructor definition.
-        oss << "\n{\n}\n";
+        oss << "\n{\n    // TODO: Implement " + className + " construtor logic.\n";
+        oss << "    throw std::runtime_error(\"Not implemented\");\n}\n";
 
         return oss.str();
     }
@@ -124,10 +213,12 @@ namespace SpecialMemberGenerator
     std::string generateMoveAssignmentDeclaration(const std::string &className)
     {
         std::ostringstream oss;
+        // Generate the docstring
+        generateCopyAndMoveAssingmentDoxygen(className, oss, false);
         // Build move assignment operator declaration.
         // This creates a declaration of the form:
         // MyClass& operator=(MyClass&& other) noexcept;
-        oss << "    " << className << "& operator=(" << className << "&& other) noexcept;";
+        oss << "    " << className << "& operator=(" << className << "&& other) noexcept;\n";
         return oss.str();
     }
 
@@ -139,7 +230,7 @@ namespace SpecialMemberGenerator
         // MyClass& MyClass::operator=(MyClass&& other) noexcept {
         oss << className << "& " << className << "::operator=(" << className << "&& other) noexcept {\n";
         // Insert a placeholder body that indicates the method is not yet implemented.
-        oss << "    // Placeholder implementation: move assignment operator is not implemented.\n";
+        oss << "    // TODO: Implement " + className + " move assignment logic.\n";
         oss << "    throw std::runtime_error(\"Not implemented\");\n";
         oss << "}\n";
         return oss.str();
@@ -148,10 +239,12 @@ namespace SpecialMemberGenerator
     std::string generateCopyAssignmentDeclaration(const std::string &className)
     {
         std::ostringstream oss;
+        // Generate the docstring
+        generateCopyAndMoveAssingmentDoxygen(className, oss, false);
         // Build copy assignment operator declaration.
         // This creates a declaration of the form:
         // MyClass& operator=(const MyClass& other);
-        oss << "    " << className << "& operator=(const " << className << "& other);";
+        oss << "    " << className << "& operator=(const " << className << "& other);\n";
         return oss.str();
     }
 
@@ -163,7 +256,7 @@ namespace SpecialMemberGenerator
         // MyClass& MyClass::operator=(const MyClass& other) {
         oss << className << "& " << className << "::operator=(const " << className << "& other) {\n";
         // Insert a placeholder body that indicates the method is not yet implemented.
-        oss << "    // Placeholder implementation: copy assignment operator is not implemented.\n";
+        oss << "    // TODO: Implement " + className + " copy assignment logic.\n";
         oss << "    throw std::runtime_error(\"Not implemented\");\n";
         oss << "}\n";
         return oss.str();

@@ -30,11 +30,27 @@ namespace CallableGenerator
         result += " */\n";
 
         // Construct the free callable declaration.
-        result += std::format("{}{} {}({});\n",
-                              declSpec,
-                              returnTypeStr,
-                              callable.name,
-                              paramList);
+        if (callable.declSpec.isInline)
+        {
+            // Define a default body that signals unimplemented functionality.
+            std::string body = "// TODO: Implement " + callable.name + " logic.\n";
+            body += "    throw std::runtime_error(\"Not implemented\");";
+            result += std::format("{}{} {}({}) {{\n    {}\n}}\n",
+                                  declSpec,
+                                  returnTypeStr,
+                                  callable.name,
+                                  paramList,
+                                  body);
+        }
+        else
+        {
+            result += std::format("{}{} {}({});\n",
+                                  declSpec,
+                                  returnTypeStr,
+                                  callable.name,
+                                  paramList);
+        }
+
         return result;
     }
 
@@ -50,15 +66,22 @@ namespace CallableGenerator
         std::string declSpec = PropertiesGenerator::generateDeclarationSpecifier(callable.declSpec);
 
         // Define a default body that signals unimplemented functionality.
-        std::string body = "throw std::runtime_error(\"Not implemented\");";
+        std::string body = "// TODO: Implement " + callable.name + " logic.\n";
+        body += "    throw std::runtime_error(\"Not implemented\");";
 
         // Construct the free callable definition.
-        std::string definition = std::format("{}{} {}({}) {{\n    {}\n}}\n",
-                                             declSpec,
-                                             returnTypeStr,
-                                             callable.name,
-                                             paramList,
-                                             body);
+        // Inline methods do not get defined in cpp file
+        std::string definition = "";
+        if (!callable.declSpec.isInline)
+        {
+            definition = std::format("{}{} {}({}) {{\n    {}\n}}\n",
+                                     declSpec,
+                                     returnTypeStr,
+                                     callable.name,
+                                     paramList,
+                                     body);
+        }
+
         return definition;
     }
 
@@ -82,18 +105,26 @@ namespace CallableGenerator
         std::string returnTypeStr = GeneratorUtilities::dataTypeToString(method.returnType);
         std::string paramList = PropertiesGenerator::generateParameterList(method.parameters);
         std::string declSpec = PropertiesGenerator::generateDeclarationSpecifier(method.declSpec);
-        std::string body = "throw std::runtime_error(\"Not implemented\");";
+        // Construct body of method with TODO
+        std::string body = "// TODO: Implement " + method.name + " logic.\n";
+        body += "    throw std::runtime_error(\"Not implemented\");";
 
         // Construct the fully qualified method name.
         std::string qualifiedName = className + "::" + method.name;
 
         // Construct the method definition.
-        std::string definition = std::format("{}{} {}({}) {{\n    {}\n}}\n",
-                                             declSpec,
-                                             returnTypeStr,
-                                             qualifiedName,
-                                             paramList,
-                                             body);
+        std::string definition = "";
+        // Inline methods do not get defined in cpp file
+        if (!method.declSpec.isInline)
+        {
+            definition = std::format("{}{} {}({}) {{\n    {}\n}}\n",
+                                     declSpec,
+                                     returnTypeStr,
+                                     qualifiedName,
+                                     paramList,
+                                     body);
+        }
+
         return definition;
     }
 

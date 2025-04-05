@@ -37,7 +37,7 @@ TEST(SpecialMemberGeneratorDefinitionTest, CustomConstructorDefinitionWithMember
     // "MyClass::MyClass(" + PropertiesGenerator::generateParameterList(customParams) + ") : "
     // followed by the initializer list of members separated by commas and then a body.
     std::string paramList = PropertiesGenerator::generateParameterList(customParams);
-    std::string expected = "MyClass::MyClass(" + paramList + ") : a(), b(), c()\n{\n}\n";
+    std::string expected = "MyClass::MyClass(" + paramList + ") : a(), b(), c()\n{\n    // TODO: Implement MyClass construtor logic.\n    throw std::runtime_error(\"Not implemented\");\n}\n";
     EXPECT_EQ(def, expected);
 }
 
@@ -59,7 +59,7 @@ TEST(SpecialMemberGeneratorDefinitionTest, CopyConstructorDefinitionWithMembers)
 
     // Assert:
     // Expected signature for copy constructor plus initializer list for the member "x".
-    std::string expected = "MyClass::MyClass(const MyClass& other) : x()\n{\n}\n";
+    std::string expected = "MyClass::MyClass(const MyClass& other) : x()\n{\n    // TODO: Implement MyClass construtor logic.\n    throw std::runtime_error(\"Not implemented\");\n}\n";
     EXPECT_EQ(def, expected);
 }
 
@@ -81,7 +81,7 @@ TEST(SpecialMemberGeneratorDefinitionTest, MoveConstructorDefinitionWithMembers)
 
     // Assert:
     // Expected signature for move constructor plus initializer list for the member "x".
-    std::string expected = "MyClass::MyClass(MyClass&& other) noexcept : x()\n{\n}\n";
+    std::string expected = "MyClass::MyClass(MyClass&& other) noexcept : x()\n{\n    // TODO: Implement MyClass construtor logic.\n    throw std::runtime_error(\"Not implemented\");\n}\n";
     EXPECT_EQ(def, expected);
 }
 

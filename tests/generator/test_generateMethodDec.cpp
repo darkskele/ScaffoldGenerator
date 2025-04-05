@@ -343,7 +343,7 @@ TEST(GenerateMethodDeclarationTest, ParameterWithPointerAndArray) {
 // Test: Method declaration with declaration specifiers.
 TEST(GenerateMethodDeclarationTest, WithDeclarationSpecifiers) {
     // Parse a set of declaration specifiers from a DSL string.
-    DeclartionSpecifier ds = PropertiesParser::parseDeclarationSpecifier("static inline constexpr");
+    DeclartionSpecifier ds = PropertiesParser::parseDeclarationSpecifier("static constexpr");
     DataType returnType(Types::INT);
     std::vector<Parameter> params; // No parameters.
     MethodModel method(returnType, "doSomething", params, ds, "Does something");
@@ -356,7 +356,7 @@ TEST(GenerateMethodDeclarationTest, WithDeclarationSpecifiers) {
         "    /**\n"
         "     * @brief Does something\n"
         "     */\n"
-        "    static inline constexpr int doSomething();\n";
+        "    static constexpr int doSomething();\n";
     
     EXPECT_EQ(generated, expected);
 }
@@ -377,10 +377,13 @@ TEST(GenerateMethodDeclarationTest, WithDeclarationSpecifiersAndParameters) {
     
     // Expected output: Specifiers, return type, method name, and parameter list are output in order.
     std::string expected =
-        "    /**\n"
-        "     * @brief Does work\n"
-        "     */\n"
-        "    inline constexpr void doWork(const float param1, int param2);\n";
-    
+            "    /**\n"
+            "     * @brief Does work\n"
+            "     */\n"
+            "    inline constexpr void doWork(const float param1, int param2) {\n"
+            "        // TODO: Implement doWork logic.\n"
+            "        throw std::runtime_error(\"Not implemented\");\n"
+            "    }\n";
+            
     EXPECT_EQ(generated, expected);
 }

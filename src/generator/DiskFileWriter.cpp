@@ -81,6 +81,28 @@ namespace
         }
     }
 
+    /**
+     * @brief Writes a basic Doxygen file comment shell to the given file.
+     *
+     * This function writes a minimal Doxygen comment block for a file, including the
+     * file name and an empty @brief tag for the user to fill in. If the file stream is
+     * not valid, it prints an error message to std::cerr.
+     *
+     * @param file The output file stream where the Doxygen comment will be written.
+     * @param fileName The path used to extract the file name for the Doxygen comment.
+     */
+    static void writeFileDoxygen(std::ofstream &file, const std::filesystem::path &fileName)
+    {
+        if (!file)
+        {
+            std::cerr << "Error opening file for writing: " << fileName << std::endl;
+            return;
+        }
+
+        // Write basic file doxygen shell for user to fill in
+        file << "/**\n * @file " << fileName.c_str() << "\n * @brief \n */\n\n";
+    }
+
 } // end anonymous namespace
 
 namespace GeneratedFileWriter
@@ -100,6 +122,13 @@ namespace GeneratedFileWriter
             std::cerr << "Error opening file for writing: " << fullPath << std::endl;
             return;
         }
+
+        // Write file doxygen
+        writeFileDoxygen(file, fullPath.filename());
+
+        // Write header file includes (TODO : Expand these in future features)
+        file << "#pragma once\n\n#include <string>\n#include <stdexcept>\n\n";
+
         // Write the content to the file.
         file << content;
     }
@@ -118,6 +147,10 @@ namespace GeneratedFileWriter
             std::cerr << "Error opening file for writing: " << fullPath << std::endl;
             return;
         }
+        // Write header file includes (TODO : Expand these in future features)
+        std::filesystem::path headerPath = fullPath;
+        headerPath.replace_extension(".h");
+        file << "#include \"" << headerPath.filename().string() << "\"\n\n";
         // Write the content to the file.
         file << content;
     }

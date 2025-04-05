@@ -30,23 +30,29 @@ namespace NamespaceGenerator
             oss << "namespace " << ns.name << " {\n";
         }
 
+        // Generate namespace declaration contents
+        std::ostringstream innerOss;
         // Generate declarations for nested classes.
         for (const auto &cls : ns.classes)
         {
-            oss << ClassGenerator::generateClassDeclaration(cls) << "\n";
+            innerOss << ClassGenerator::generateClassDeclaration(cls) << "\n";
         }
 
         // Generate declarations for free functions.
         for (const auto &fn : ns.functions)
         {
-            oss << CallableGenerator::generateFunctionDeclaration(fn) << "\n";
+            innerOss << CallableGenerator::generateFunctionDeclaration(fn) << "\n";
         }
 
         // Recursively generate declarations for nested namespaces.
         for (const auto &nestedNS : ns.namespaces)
         {
-            oss << generateNamespaceDeclaration(nestedNS) << "\n";
+            innerOss << generateNamespaceDeclaration(nestedNS) << "\n";
         }
+
+        // Indent the inner code
+        std::string indentedInner = GeneratorUtilities::indentCode(innerOss.str());
+        oss << indentedInner;
 
         // Close the namespace.
         oss << "} // namespace " << (ns.name.empty() ? "(anonymous)" : ns.name) << "\n";

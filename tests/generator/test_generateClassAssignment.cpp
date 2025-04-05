@@ -6,7 +6,12 @@
 // Expected output: "MyClass& operator=(MyClass&& other) noexcept;"
 TEST(AssignmentOperatorGeneratorTest, GenerateMoveAssignmentDeclaration) {
     std::string className = "MyClass";
-    std::string expected = "    MyClass& operator=(MyClass&& other) noexcept;";
+    std::string expected =  "    /**\n"
+                            "     * @brief Custom move assignment operator.\n"
+                            "     * @param other The MyClass object to move from.\n"
+                            "     * @return Reference to this MyClass.\n"
+                            "     */\n"
+                            "    MyClass& operator=(MyClass&& other) noexcept;\n";
     
     // Call the generator function.
     std::string output = SpecialMemberGenerator::generateMoveAssignmentDeclaration(className);
@@ -18,13 +23,13 @@ TEST(AssignmentOperatorGeneratorTest, GenerateMoveAssignmentDeclaration) {
 // Test for generating the move assignment definition.
 // Expected output (with newlines and indentation exactly as generated):
 // "MyClass& MyClass::operator=(MyClass&& other) noexcept {\n"
-// "    // Placeholder implementation: move assignment operator is not implemented.\n"
+// "    // TODO: Implement MyClass move assignment logic..\n"
 // "    throw std::runtime_error(\"Not implemented\");\n"
 // "}\n"
 TEST(AssignmentOperatorGeneratorTest, GenerateMoveAssignmentDefinition) {
     std::string className = "MyClass";
     std::string expected = "MyClass& MyClass::operator=(MyClass&& other) noexcept {\n"
-                           "    // Placeholder implementation: move assignment operator is not implemented.\n"
+                           "    // TODO: Implement MyClass move assignment logic.\n"
                            "    throw std::runtime_error(\"Not implemented\");\n"
                            "}\n";
     
@@ -39,7 +44,12 @@ TEST(AssignmentOperatorGeneratorTest, GenerateMoveAssignmentDefinition) {
 // Expected output: "MyClass& operator=(const MyClass& other);"
 TEST(AssignmentOperatorGeneratorTest, GenerateCopyAssignmentDeclaration) {
     std::string className = "MyClass";
-    std::string expected = "    MyClass& operator=(const MyClass& other);";
+    std::string expected =  "    /**\n"
+                            "     * @brief Custom move assignment operator.\n"
+                            "     * @param other The MyClass object to move from.\n"
+                            "     * @return Reference to this MyClass.\n"
+                            "     */\n"
+                            "    MyClass& operator=(const MyClass& other);\n";
     
     // Call the generator function.
     std::string output = SpecialMemberGenerator::generateCopyAssignmentDeclaration(className);
@@ -57,7 +67,7 @@ TEST(AssignmentOperatorGeneratorTest, GenerateCopyAssignmentDeclaration) {
 TEST(AssignmentOperatorGeneratorTest, GenerateCopyAssignmentDefinition) {
     std::string className = "MyClass";
     std::string expected = "MyClass& MyClass::operator=(const MyClass& other) {\n"
-                           "    // Placeholder implementation: copy assignment operator is not implemented.\n"
+                           "    // TODO: Implement MyClass copy assignment logic.\n"
                            "    throw std::runtime_error(\"Not implemented\");\n"
                            "}\n";
     

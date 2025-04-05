@@ -124,7 +124,7 @@ namespace GeneratorUtilities
         case Type::BOOL:
             return quals + "bool" + decl;
         case Type::STRING:
-            return quals + "string" + decl;
+            return quals + "std::string" + decl;
         case Type::CHAR:
             return quals + "char" + decl;
         case Type::AUTO:
