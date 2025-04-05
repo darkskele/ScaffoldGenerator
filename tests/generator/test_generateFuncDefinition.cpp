@@ -320,9 +320,9 @@ TEST(GenerateFunctionDefinitionTest, WithDeclarationSpecifiers) {
     
     // Expected output: Declaration specifiers appear before the return type.
     std::string expected =
-        "static constexpr int doSomething() {\n"
+        "constexpr int doSomething() {\n"
         "    // TODO: Implement doSomething logic.\n"
-        "    throw std::runtime_error(\"Not implemented\");\n"
+        "    return int();\n"
         "}\n";
     
     EXPECT_EQ(generated, expected);
@@ -346,7 +346,7 @@ TEST(GenerateFunctionDefinitionTest, WithDeclarationSpecifiersAndParameters) {
     std::string expected =
         "constexpr void doWork(const float param1, int param2) {\n"
         "    // TODO: Implement doWork logic.\n"
-        "    throw std::runtime_error(\"Not implemented\");\n"
+        "    return;\n"
         "}\n";
     
     EXPECT_EQ(generated, expected);

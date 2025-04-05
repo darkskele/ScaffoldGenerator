@@ -50,10 +50,12 @@ namespace PropertiesGenerator
      * includes all applicable specifiers (e.g., static, inline, constexpr).
      *
      * @param dS A constant reference to the declaration specifier object.
+     * @param def Optional bool for when being called for definition generato. Used in case
+     * of static methods/functions as the static keyword should only be specified in the header.
      * @return A std::string representing the declaration specifiers.
      *
      * @note The returned string is formatted for direct use in a method or function declaration.
      */
-    std::string generateDeclarationSpecifier(const PropertiesModels::DeclartionSpecifier &dS);
+    std::string generateDeclarationSpecifier(const PropertiesModels::DeclartionSpecifier &dS, const bool def = false);
 
 } // namespace PropertiesGenerator

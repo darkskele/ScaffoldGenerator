@@ -61,7 +61,7 @@ TEST(DirectoryTreeBuilderTests, Level1_MinimalProject)
     // Validate metadata
     ASSERT_EQ(metadata.libraries.size(), 1);
 
-    const auto &projLib = metadata.libraries[0];
+    const auto &projLib = metadata.libraries["proj"];
     EXPECT_EQ(projLib.name, "MyProject");
     EXPECT_EQ(projLib.relativePath, "ROOT");
     EXPECT_TRUE(projLib.isProjLevel);
@@ -96,12 +96,12 @@ TEST(DirectoryTreeBuilderTests, Level1_ProjectWithSingleClass)
 
     // Check metadata
     ASSERT_EQ(metadata.libraries.size(), 1);
-    EXPECT_EQ(metadata.libraries[0].name, "CoreProject");
-    EXPECT_EQ(metadata.libraries[0].relativePath, "ROOT");
-    EXPECT_TRUE(metadata.libraries[0].isProjLevel);
-    ASSERT_EQ(metadata.libraries[0].dependencies.size(), 2);
-    EXPECT_EQ(metadata.libraries[0].dependencies[0], "DepA");
-    EXPECT_EQ(metadata.libraries[0].dependencies[1], "DepB");
+    EXPECT_EQ(metadata.libraries["proj"].name, "CoreProject");
+    EXPECT_EQ(metadata.libraries["proj"].relativePath, "ROOT");
+    EXPECT_TRUE(metadata.libraries["proj"].isProjLevel);
+    ASSERT_EQ(metadata.libraries["proj"].dependencies.size(), 2);
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[0], "DepA");
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[1], "DepB");
 }
 
 TEST(DirectoryTreeBuilderTests, Level1_ProjectWithSingleNamespace)
@@ -128,11 +128,11 @@ TEST(DirectoryTreeBuilderTests, Level1_ProjectWithSingleNamespace)
 
     // Check metadata
     ASSERT_EQ(metadata.libraries.size(), 1);
-    EXPECT_EQ(metadata.libraries[0].name, "CoreProject");
-    EXPECT_EQ(metadata.libraries[0].relativePath, "ROOT");
-    EXPECT_TRUE(metadata.libraries[0].isProjLevel);
-    ASSERT_EQ(metadata.libraries[0].dependencies.size(), 1);
-    EXPECT_EQ(metadata.libraries[0].dependencies[0], "DepA");
+    EXPECT_EQ(metadata.libraries["proj"].name, "CoreProject");
+    EXPECT_EQ(metadata.libraries["proj"].relativePath, "ROOT");
+    EXPECT_TRUE(metadata.libraries["proj"].isProjLevel);
+    ASSERT_EQ(metadata.libraries["proj"].dependencies.size(), 1);
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[0], "DepA");
 }
 
 TEST(DirectoryTreeBuilderTests, Level1_ProjectWithSingleFreeFunctionFile)
@@ -159,12 +159,12 @@ TEST(DirectoryTreeBuilderTests, Level1_ProjectWithSingleFreeFunctionFile)
 
     // Check metadata
     ASSERT_EQ(metadata.libraries.size(), 1);
-    EXPECT_EQ(metadata.libraries[0].name, "CoreProject");
-    EXPECT_EQ(metadata.libraries[0].relativePath, "ROOT");
-    EXPECT_TRUE(metadata.libraries[0].isProjLevel);
-    ASSERT_EQ(metadata.libraries[0].dependencies.size(), 2);
-    EXPECT_EQ(metadata.libraries[0].dependencies[0], "DepX");
-    EXPECT_EQ(metadata.libraries[0].dependencies[1], "DepY");
+    EXPECT_EQ(metadata.libraries["proj"].name, "CoreProject");
+    EXPECT_EQ(metadata.libraries["proj"].relativePath, "ROOT");
+    EXPECT_TRUE(metadata.libraries["proj"].isProjLevel);
+    ASSERT_EQ(metadata.libraries["proj"].dependencies.size(), 2);
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[0], "DepX");
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[1], "DepY");
 }
 
 TEST(DirectoryTreeBuilderTests, Level1_ProjectWithMixedFiles)
@@ -226,7 +226,7 @@ TEST(DirectoryTreeBuilderTests, Level1_ProjectWithMixedFiles)
 
     // Validate project metadata
     ASSERT_EQ(metadata.libraries.size(), 1);
-    const auto &projMeta = metadata.libraries[0];
+    const auto &projMeta = metadata.libraries["proj"];
     EXPECT_EQ(projMeta.name, "MixedRoot");
     EXPECT_EQ(projMeta.relativePath, "ROOT");
     EXPECT_TRUE(projMeta.isProjLevel);
@@ -268,12 +268,12 @@ TEST(DirectoryTreeBuilderTests, Level2_FolderWithSingleClass)
 
     // Check project metadata
     EXPECT_EQ(metadata.libraries.size(), 1);
-    EXPECT_EQ(metadata.libraries[0].name, "MyGame");
-    EXPECT_EQ(metadata.libraries[0].relativePath, "ROOT");
-    EXPECT_EQ(metadata.libraries[0].dependencies.size(), 2);
-    EXPECT_EQ(metadata.libraries[0].dependencies[0], "Test1");
-    EXPECT_EQ(metadata.libraries[0].dependencies[1], "Test2");
-    EXPECT_TRUE(metadata.libraries[0].isProjLevel);
+    EXPECT_EQ(metadata.libraries["proj"].name, "MyGame");
+    EXPECT_EQ(metadata.libraries["proj"].relativePath, "ROOT");
+    EXPECT_EQ(metadata.libraries["proj"].dependencies.size(), 2);
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[0], "Test1");
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[1], "Test2");
+    EXPECT_TRUE(metadata.libraries["proj"].isProjLevel);
 }
 
 TEST(DirectoryTreeBuilderTests, Level2_FolderWithSingleNamespace)
@@ -309,12 +309,12 @@ TEST(DirectoryTreeBuilderTests, Level2_FolderWithSingleNamespace)
 
     // Check project metadata
     EXPECT_EQ(metadata.libraries.size(), 1);
-    EXPECT_EQ(metadata.libraries[0].name, "MyGame");
-    EXPECT_EQ(metadata.libraries[0].relativePath, "ROOT");
-    EXPECT_EQ(metadata.libraries[0].dependencies.size(), 2);
-    EXPECT_EQ(metadata.libraries[0].dependencies[0], "Test1");
-    EXPECT_EQ(metadata.libraries[0].dependencies[1], "Test2");
-    EXPECT_TRUE(metadata.libraries[0].isProjLevel);
+    EXPECT_EQ(metadata.libraries["proj"].name, "MyGame");
+    EXPECT_EQ(metadata.libraries["proj"].relativePath, "ROOT");
+    EXPECT_EQ(metadata.libraries["proj"].dependencies.size(), 2);
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[0], "Test1");
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[1], "Test2");
+    EXPECT_TRUE(metadata.libraries["proj"].isProjLevel);
 }
 
 TEST(DirectoryTreeBuilderTests, Level2_FolderWithSingleFreeFuncFile)
@@ -350,12 +350,12 @@ TEST(DirectoryTreeBuilderTests, Level2_FolderWithSingleFreeFuncFile)
 
     // Check project metadata
     EXPECT_EQ(metadata.libraries.size(), 1);
-    EXPECT_EQ(metadata.libraries[0].name, "MyGame");
-    EXPECT_EQ(metadata.libraries[0].relativePath, "ROOT");
-    EXPECT_EQ(metadata.libraries[0].dependencies.size(), 2);
-    EXPECT_EQ(metadata.libraries[0].dependencies[0], "Test1");
-    EXPECT_EQ(metadata.libraries[0].dependencies[1], "Test2");
-    EXPECT_TRUE(metadata.libraries[0].isProjLevel);
+    EXPECT_EQ(metadata.libraries["proj"].name, "MyGame");
+    EXPECT_EQ(metadata.libraries["proj"].relativePath, "ROOT");
+    EXPECT_EQ(metadata.libraries["proj"].dependencies.size(), 2);
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[0], "Test1");
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[1], "Test2");
+    EXPECT_TRUE(metadata.libraries["proj"].isProjLevel);
 }
 
 TEST(DirectoryTreeBuilderTests, Level2_FolderWithMixedFiles)
@@ -424,13 +424,13 @@ TEST(DirectoryTreeBuilderTests, Level2_FolderWithMixedFiles)
 
     // Check project metadata
     EXPECT_EQ(metadata.libraries.size(), 1);
-    EXPECT_EQ(metadata.libraries[0].name, "MyGame");
-    EXPECT_EQ(metadata.libraries[0].relativePath, "ROOT");
-    EXPECT_EQ(metadata.libraries[0].dependencies.size(), 3);
-    EXPECT_EQ(metadata.libraries[0].dependencies[0], "Test1");
-    EXPECT_EQ(metadata.libraries[0].dependencies[1], "Test2");
-    EXPECT_EQ(metadata.libraries[0].dependencies[2], "Test3");
-    EXPECT_TRUE(metadata.libraries[0].isProjLevel);
+    EXPECT_EQ(metadata.libraries["proj"].name, "MyGame");
+    EXPECT_EQ(metadata.libraries["proj"].relativePath, "ROOT");
+    EXPECT_EQ(metadata.libraries["proj"].dependencies.size(), 3);
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[0], "Test1");
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[1], "Test2");
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[2], "Test3");
+    EXPECT_TRUE(metadata.libraries["proj"].isProjLevel);
 }
 
 TEST(DirectoryTreeBuilderTests, Level2_LibraryWithSingleClass)
@@ -466,16 +466,16 @@ TEST(DirectoryTreeBuilderTests, Level2_LibraryWithSingleClass)
 
     // Check project metadata
     EXPECT_EQ(metadata.libraries.size(), 2);
-    EXPECT_EQ(metadata.libraries[0].name, "MyGame");
-    EXPECT_EQ(metadata.libraries[0].relativePath, "ROOT");
-    EXPECT_EQ(metadata.libraries[0].dependencies.size(), 2);
-    EXPECT_EQ(metadata.libraries[0].dependencies[0], "Test1");
-    EXPECT_EQ(metadata.libraries[0].dependencies[1], "Test2");
-    EXPECT_EQ(metadata.libraries[1].name, "CoreLibrary");
-    EXPECT_EQ(metadata.libraries[1].relativePath, "ROOT/CoreLibrary");
-    EXPECT_EQ(metadata.libraries[1].dependencies.size(), 2);
-    EXPECT_EQ(metadata.libraries[1].dependencies[0], "Lib1");
-    EXPECT_EQ(metadata.libraries[1].dependencies[1], "Lib2");
+    EXPECT_EQ(metadata.libraries["proj"].name, "MyGame");
+    EXPECT_EQ(metadata.libraries["proj"].relativePath, "ROOT");
+    EXPECT_EQ(metadata.libraries["proj"].dependencies.size(), 2);
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[0], "Test1");
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[1], "Test2");
+    EXPECT_EQ(metadata.libraries["CoreLibrary"].name, "CoreLibrary");
+    EXPECT_EQ(metadata.libraries["CoreLibrary"].relativePath, "ROOT/CoreLibrary");
+    EXPECT_EQ(metadata.libraries["CoreLibrary"].dependencies.size(), 2);
+    EXPECT_EQ(metadata.libraries["CoreLibrary"].dependencies[0], "Lib1");
+    EXPECT_EQ(metadata.libraries["CoreLibrary"].dependencies[1], "Lib2");
 }
 
 TEST(DirectoryTreeBuilderTests, Level2_LibraryWithSingleNamespace)
@@ -513,20 +513,20 @@ TEST(DirectoryTreeBuilderTests, Level2_LibraryWithSingleNamespace)
     ASSERT_EQ(metadata.libraries.size(), 2);
 
     // Project-level metadata
-    EXPECT_EQ(metadata.libraries[0].name, "MyGame");
-    EXPECT_EQ(metadata.libraries[0].relativePath, "ROOT");
-    EXPECT_TRUE(metadata.libraries[0].isProjLevel);
-    ASSERT_EQ(metadata.libraries[0].dependencies.size(), 2);
-    EXPECT_EQ(metadata.libraries[0].dependencies[0], "Test1");
-    EXPECT_EQ(metadata.libraries[0].dependencies[1], "Test2");
+    EXPECT_EQ(metadata.libraries["proj"].name, "MyGame");
+    EXPECT_EQ(metadata.libraries["proj"].relativePath, "ROOT");
+    EXPECT_TRUE(metadata.libraries["proj"].isProjLevel);
+    ASSERT_EQ(metadata.libraries["proj"].dependencies.size(), 2);
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[0], "Test1");
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[1], "Test2");
 
     // Library metadata
-    EXPECT_EQ(metadata.libraries[1].name, "CoreLibrary");
-    EXPECT_EQ(metadata.libraries[1].relativePath, "ROOT/CoreLibrary");
-    EXPECT_FALSE(metadata.libraries[1].isProjLevel);
-    ASSERT_EQ(metadata.libraries[1].dependencies.size(), 2);
-    EXPECT_EQ(metadata.libraries[1].dependencies[0], "Lib1");
-    EXPECT_EQ(metadata.libraries[1].dependencies[1], "Lib2");
+    EXPECT_EQ(metadata.libraries["CoreLibrary"].name, "CoreLibrary");
+    EXPECT_EQ(metadata.libraries["CoreLibrary"].relativePath, "ROOT/CoreLibrary");
+    EXPECT_FALSE(metadata.libraries["CoreLibrary"].isProjLevel);
+    ASSERT_EQ(metadata.libraries["CoreLibrary"].dependencies.size(), 2);
+    EXPECT_EQ(metadata.libraries["CoreLibrary"].dependencies[0], "Lib1");
+    EXPECT_EQ(metadata.libraries["CoreLibrary"].dependencies[1], "Lib2");
 }
 
 TEST(DirectoryTreeBuilderTests, Level2_LibraryWithSingleFreeFuncFile)
@@ -564,20 +564,20 @@ TEST(DirectoryTreeBuilderTests, Level2_LibraryWithSingleFreeFuncFile)
     ASSERT_EQ(metadata.libraries.size(), 2);
 
     // Project-level metadata
-    EXPECT_EQ(metadata.libraries[0].name, "MyGame");
-    EXPECT_EQ(metadata.libraries[0].relativePath, "ROOT");
-    EXPECT_TRUE(metadata.libraries[0].isProjLevel);
-    ASSERT_EQ(metadata.libraries[0].dependencies.size(), 2);
-    EXPECT_EQ(metadata.libraries[0].dependencies[0], "Test1");
-    EXPECT_EQ(metadata.libraries[0].dependencies[1], "Test2");
+    EXPECT_EQ(metadata.libraries["proj"].name, "MyGame");
+    EXPECT_EQ(metadata.libraries["proj"].relativePath, "ROOT");
+    EXPECT_TRUE(metadata.libraries["proj"].isProjLevel);
+    ASSERT_EQ(metadata.libraries["proj"].dependencies.size(), 2);
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[0], "Test1");
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[1], "Test2");
 
     // Library metadata
-    EXPECT_EQ(metadata.libraries[1].name, "CoreLibrary");
-    EXPECT_EQ(metadata.libraries[1].relativePath, "ROOT/CoreLibrary");
-    EXPECT_FALSE(metadata.libraries[1].isProjLevel);
-    ASSERT_EQ(metadata.libraries[1].dependencies.size(), 2);
-    EXPECT_EQ(metadata.libraries[1].dependencies[0], "Lib1");
-    EXPECT_EQ(metadata.libraries[1].dependencies[1], "Lib2");
+    EXPECT_EQ(metadata.libraries["CoreLibrary"].name, "CoreLibrary");
+    EXPECT_EQ(metadata.libraries["CoreLibrary"].relativePath, "ROOT/CoreLibrary");
+    EXPECT_FALSE(metadata.libraries["CoreLibrary"].isProjLevel);
+    ASSERT_EQ(metadata.libraries["CoreLibrary"].dependencies.size(), 2);
+    EXPECT_EQ(metadata.libraries["CoreLibrary"].dependencies[0], "Lib1");
+    EXPECT_EQ(metadata.libraries["CoreLibrary"].dependencies[1], "Lib2");
 }
 
 TEST(DirectoryTreeBuilderTests, Level2_LibraryWithMixedFiles)
@@ -656,20 +656,20 @@ TEST(DirectoryTreeBuilderTests, Level2_LibraryWithMixedFiles)
     ASSERT_EQ(metadata.libraries.size(), 2);
 
     // Project-level
-    EXPECT_EQ(metadata.libraries[0].name, "MyGame");
-    EXPECT_EQ(metadata.libraries[0].relativePath, "ROOT");
-    EXPECT_TRUE(metadata.libraries[0].isProjLevel);
-    ASSERT_EQ(metadata.libraries[0].dependencies.size(), 2);
-    EXPECT_EQ(metadata.libraries[0].dependencies[0], "Test1");
-    EXPECT_EQ(metadata.libraries[0].dependencies[1], "Test2");
+    EXPECT_EQ(metadata.libraries["proj"].name, "MyGame");
+    EXPECT_EQ(metadata.libraries["proj"].relativePath, "ROOT");
+    EXPECT_TRUE(metadata.libraries["proj"].isProjLevel);
+    ASSERT_EQ(metadata.libraries["proj"].dependencies.size(), 2);
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[0], "Test1");
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[1], "Test2");
 
     // Library-level
-    EXPECT_EQ(metadata.libraries[1].name, "CoreLibrary");
-    EXPECT_EQ(metadata.libraries[1].relativePath, "ROOT/CoreLibrary");
-    EXPECT_FALSE(metadata.libraries[1].isProjLevel);
-    ASSERT_EQ(metadata.libraries[1].dependencies.size(), 2);
-    EXPECT_EQ(metadata.libraries[1].dependencies[0], "Lib1");
-    EXPECT_EQ(metadata.libraries[1].dependencies[1], "Lib2");
+    EXPECT_EQ(metadata.libraries["CoreLibrary"].name, "CoreLibrary");
+    EXPECT_EQ(metadata.libraries["CoreLibrary"].relativePath, "ROOT/CoreLibrary");
+    EXPECT_FALSE(metadata.libraries["CoreLibrary"].isProjLevel);
+    ASSERT_EQ(metadata.libraries["CoreLibrary"].dependencies.size(), 2);
+    EXPECT_EQ(metadata.libraries["CoreLibrary"].dependencies[0], "Lib1");
+    EXPECT_EQ(metadata.libraries["CoreLibrary"].dependencies[1], "Lib2");
 }
 
 TEST(DirectoryTreeBuilderTests, EdgeCase_EmptyProjectWithNullMetadata)
@@ -687,10 +687,10 @@ TEST(DirectoryTreeBuilderTests, EdgeCase_EmptyProjectWithNullMetadata)
     EXPECT_TRUE(root->getFileNodes().empty());
 
     ASSERT_EQ(metadata.libraries.size(), 1);
-    EXPECT_EQ(metadata.libraries[0].name, "EdgeProject");
-    EXPECT_EQ(metadata.libraries[0].relativePath, "ROOT");
-    EXPECT_TRUE(metadata.libraries[0].isProjLevel);
-    EXPECT_TRUE(metadata.libraries[0].dependencies.empty());
+    EXPECT_EQ(metadata.libraries["proj"].name, "EdgeProject");
+    EXPECT_EQ(metadata.libraries["proj"].relativePath, "ROOT");
+    EXPECT_TRUE(metadata.libraries["proj"].isProjLevel);
+    EXPECT_TRUE(metadata.libraries["proj"].dependencies.empty());
 }
 
 TEST(DirectoryTreeBuilderTests, EdgeCase_ProjectWithOnlyDependencies)
@@ -705,12 +705,12 @@ TEST(DirectoryTreeBuilderTests, EdgeCase_ProjectWithOnlyDependencies)
     EXPECT_TRUE(root->getFileNodes().empty());
 
     ASSERT_EQ(metadata.libraries.size(), 1);
-    EXPECT_EQ(metadata.libraries[0].name, "DepOnlyProject");
-    EXPECT_EQ(metadata.libraries[0].relativePath, "ROOT");
-    EXPECT_TRUE(metadata.libraries[0].isProjLevel);
-    ASSERT_EQ(metadata.libraries[0].dependencies.size(), 2);
-    EXPECT_EQ(metadata.libraries[0].dependencies[0], "Dep1");
-    EXPECT_EQ(metadata.libraries[0].dependencies[1], "Dep2");
+    EXPECT_EQ(metadata.libraries["proj"].name, "DepOnlyProject");
+    EXPECT_EQ(metadata.libraries["proj"].relativePath, "ROOT");
+    EXPECT_TRUE(metadata.libraries["proj"].isProjLevel);
+    ASSERT_EQ(metadata.libraries["proj"].dependencies.size(), 2);
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[0], "Dep1");
+    EXPECT_EQ(metadata.libraries["proj"].dependencies[1], "Dep2");
 }
 
 TEST(DirectoryTreeBuilderTests, EdgeCase_ProjectWithEmptyFolder)
@@ -730,8 +730,8 @@ TEST(DirectoryTreeBuilderTests, EdgeCase_ProjectWithEmptyFolder)
     EXPECT_TRUE(sub->getFileNodes().empty());
 
     ASSERT_EQ(metadata.libraries.size(), 1);
-    EXPECT_EQ(metadata.libraries[0].name, "LonelyProject");
-    EXPECT_EQ(metadata.libraries[0].relativePath, "ROOT");
+    EXPECT_EQ(metadata.libraries["proj"].name, "LonelyProject");
+    EXPECT_EQ(metadata.libraries["proj"].relativePath, "ROOT");
 }
 
 TEST(DirectoryTreeBuilderTests, EdgeCase_DeeplyNestedFoldersWithNoFiles)
@@ -758,7 +758,7 @@ TEST(DirectoryTreeBuilderTests, EdgeCase_DeeplyNestedFoldersWithNoFiles)
     EXPECT_TRUE(l3->getFileNodes().empty());
 
     ASSERT_EQ(metadata.libraries.size(), 1);
-    EXPECT_EQ(metadata.libraries[0].name, "DeepProject");
+    EXPECT_EQ(metadata.libraries["proj"].name, "DeepProject");
 }
 
 TEST(DirectoryTreeBuilderTests, EdgeCase_DuplicateClassNamesDifferentScopes)
@@ -785,5 +785,5 @@ TEST(DirectoryTreeBuilderTests, EdgeCase_DuplicateClassNamesDifferentScopes)
     }
 
     ASSERT_EQ(metadata.libraries.size(), 1);
-    EXPECT_EQ(metadata.libraries[0].name, "ScopeProject");
+    EXPECT_EQ(metadata.libraries["proj"].name, "ScopeProject");
 }

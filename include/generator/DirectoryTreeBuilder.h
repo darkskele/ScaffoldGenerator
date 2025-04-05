@@ -38,23 +38,16 @@ namespace DirectoryTreeBuilder
 {
 
     /**
-     * @brief Builds a directory tree from a project model.
+     * @brief Builds the directory tree from a ProjectModel.
      *
-     * This is the public entry point for converting a DSL ProjectModel into a
-     * hierarchical tree of DirectoryNode objects. The resulting structure can
-     * be used for code generation, CMake file creation, etc.
+     * This public function converts a DSL-defined ProjectModel into a DirectoryNode-based directory tree.
+     * It processes all top-level folders, libraries, class files, namespace files, and function files, and
+     * registers the corresponding project metadata. A valid (non-null) pointer to ProjectMetadata must be provided.
      *
-     * Internally, it populates each node with:
-     * - Folder names and relative paths
-     * - Child subdirectories
-     * - File nodes (headers, sources, function files)
-     * - Metadata tracking for each library and project-level dependency
-     *
-     * @param projModel The root DSL project model.
-     * @param projectMeta Pointer to project metadata (must not be null).
-     * @return A shared_ptr to the root DirectoryNode.
-     *
-     * @throws std::invalid_argument if projectMeta is null.
+     * @param projModel The ProjectModel to convert into a directory tree.
+     * @param projectMeta Pointer to the ProjectMetadata registry where metadata is stored.
+     * @return A shared_ptr to the root DirectoryNode representing the top-level project folder.
+     * @throws std::invalid_argument if the projectMeta pointer is null.
      */
     std::shared_ptr<DirectoryTree::DirectoryNode> buildDirectoryTree(const CodeGroupModels::ProjectModel &projModel,
                                                                      ProjectMetadata::ProjMetadata *projectMeta);

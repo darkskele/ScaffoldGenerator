@@ -27,6 +27,7 @@
 #include "DiskFileWriter.h"       // Writes generated files to disk.
 #include "ProjectMetadata.h"      // Holds metadata for the project.
 #include "ParserUtilities.h"      // Provides trim and other utilities for project block.
+#include "BuildToolsGenerator.h"  // Provides generators for CMakeLists, Tasks.json, Launch.json
 
 namespace fs = std::filesystem; ///< Filesystem namespace alias for brevity
 
@@ -197,6 +198,12 @@ int main(int argc, char *argv[])
             throw std::runtime_error("Malformed project block header. Expected: project <projectName>");
         }
 
+        // Remove colon from now if it exists
+        if (projectName.back() == ':')
+        {
+            projectName.pop_back();
+        }
+
         // Remove the project header line from the deque.
         lines.pop_front();
 
@@ -218,6 +225,16 @@ int main(int argc, char *argv[])
         // Traverse the directory tree and generate output files using the disk writer.
         FileGeneration::traverseAndGenerate(rootNode, diskWriter);
         std::cout << "File generation completed successfully." << std::endl;
+
+        // Generate the CMake file
+        std::string cmakeFile = BuildToolGenerator::generateCmakeLists(projectMeta);
+        diskWriter.writeCmakeLists(cmakeFile);
+
+        // Generate main file
+        diskWriter.writeMain();
+
+        // Generate vscode Jsons
+        diskWriter.writeVsCodeJsons(BuildToolGenerator::generateVscodeJSONs(projModel.name));
     }
     catch (const std::exception &ex)
     {

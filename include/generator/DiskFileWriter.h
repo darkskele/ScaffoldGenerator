@@ -74,6 +74,38 @@ namespace GeneratedFileWriter
          */
         void writeSourceFile(const std::string &filePath, const std::string &content) override;
 
+        /**
+         * @brief Writes the provided CMakeLists.txt content to disk.
+         *
+         * This function takes a string containing the contents of a CMakeLists.txt file
+         * and writes it to the appropriate file location. It is typically used as part of
+         * the scaffolder's process for generating build configurations.
+         *
+         * @param cmakeListsTxt The string containing the content to be written to CMakeLists.txt.
+         */
+        void writeCmakeLists(const std::string &cmakeListsTxt) const;
+
+        /**
+         * @brief Writes the main.cpp file.
+         *
+         * This function creates or overwrites the main.cpp file with the necessary content,
+         * including a Doxygen header comment, required includes, and a minimal main function
+         * implementation that prints a "Hello, world!" message.
+         */
+        void writeMain() const;
+
+        /**
+         * @brief Writes VS Code configuration JSON files to disk.
+         *
+         * This function writes the launch.json and tasks.json files to the target .vscode folder
+         * within the output directory. It ensures that the target directories exist, opens each file
+         * for writing, and writes the corresponding JSON content provided in the input pair.
+         *
+         * @param jsonsFiles A pair of strings where the first element is the content for launch.json
+         *                   and the second element is the content for tasks.json.
+         */
+        void writeVsCodeJsons(const std::pair<std::string, std::string> &jsonsFiles) const;
+
     private:
         const std::string outputFolder; //**< Output folder for generated files */
     };

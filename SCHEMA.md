@@ -49,7 +49,7 @@ Each DSL element is declared by a keyword and may have associated properties, de
 
 - **name:** The unique identifier for the element (usually implicit in the block header).
 - **version:** Version information for projects, libraries, or versionable components.
-- **dependency:** A comma-separated list of required libraries or build features (e.g., `Boost`, `cpp20`).
+- **dependency:** A comma-separated list of required libraries or build features (e.g., `Boost::boost`).
 - **parameters:** A comma-separated list (format `name:type`) for functions and methods.
 - **description:** A brief explanation of the element’s purpose.
 - **declaration:** Modifiers for functions or methods (e.g., `static`, `inline`, `constexpr`).
@@ -167,7 +167,7 @@ The following sections provide details for each DSL keyword, ordered by broadnes
   ```
   - project MyProject:
   | version = 1.0.0
-  | dependency = Boost, cpp20
+  | dependency = Boost::boost
   ... (nested content)
   _
   ```
@@ -190,7 +190,7 @@ The following sections provide details for each DSL keyword, ordered by broadnes
   ```
   - library MyLibrary:
   | version = 1.2.3
-  | dependency = cpp20
+  | dependency = Boost::boost
   - folder core:
     - class Logger:
     | description = "Provides logging functionality"

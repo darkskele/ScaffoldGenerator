@@ -325,9 +325,9 @@ TEST(GenerateMethodDefinitionTest, WithDeclarationSpecifiers) {
     
     // Expected output: Declaration specifiers appear before the return type.
     std::string expected =
-        "static constexpr int MyClass::doSomething() {\n"
+        "constexpr int MyClass::doSomething() {\n"
         "    // TODO: Implement doSomething logic.\n"
-        "    throw std::runtime_error(\"Not implemented\");\n"
+        "    return int();\n"
         "}\n";
     
     EXPECT_EQ(generated, expected);
@@ -351,7 +351,7 @@ TEST(GenerateMethodDefinitionTest, WithDeclarationSpecifiersAndParameters) {
     std::string expected =
         "constexpr void Worker::doWork(const float param1, int param2) {\n"
         "    // TODO: Implement doWork logic.\n"
-        "    throw std::runtime_error(\"Not implemented\");\n"
+        "    return;\n"
         "}\n";
     
     EXPECT_EQ(generated, expected);
