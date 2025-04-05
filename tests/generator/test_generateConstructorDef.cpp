@@ -37,7 +37,6 @@ TEST(SpecialMemberGeneratorDefinitionTest, CustomConstructorDefinitionWithMember
     // "MyClass::MyClass(" + PropertiesGenerator::generateParameterList(customParams) + ") : "
     // followed by the initializer list of members separated by commas and then a body.
     std::string paramList = PropertiesGenerator::generateParameterList(customParams);
-    // Here we assume that the generator correctly formats the initializer list without a leading comma.
     std::string expected = "MyClass::MyClass(" + paramList + ") : a(), b(), c()\n{\n}\n";
     EXPECT_EQ(def, expected);
 }

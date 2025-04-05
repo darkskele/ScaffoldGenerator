@@ -1,0 +1,60 @@
+- project MyProject:
+| version = 1.0.0
+| dependency = Boost, cpp20
+
+  - library CoreLib:
+  | version = 1.2.3
+  | dependency = cpp20
+  
+    - folder Utils:
+      - function helperFunction:
+      | declaration = inline constexpr
+      | return = int
+      | parameters = a:int, b:int
+      | description = "Calculates the sum of two integers."
+      _
+
+      - class Logger:
+      | description = "A simple logger class."
+      | constructors = default, copy, move
+      | assignment = copy, move
+
+        - private:
+        | members = int:logLevel, string:logFile
+        _ // end of 
+
+        - public:
+          - method log:
+          | declaration = inline
+          | return = void
+          | parameters = message:string
+          | description = "Logs a message with the current log level."
+          _
+        _
+      _  // End of class Logger
+
+    _  // End of folder Utils
+
+    - namespace MyNamespace:
+    | description = "Contains specialized utility functions."
+
+      - function processData:
+      | declaration = inline
+      | return = bool
+      | parameters = data:string
+      | description = "Processes input data and returns true if successful."
+      _
+    _  // End of namespace MyNamespace
+
+  _  // End of library CoreLib
+
+  - folder App:
+    - function mainFunction:
+    | declaration = inline
+    | return = int
+    | parameters = argc:int, argv:char**
+    | description = "Main function for the application."
+    _
+  _  // End of folder App
+
+_  // End of project MyProject

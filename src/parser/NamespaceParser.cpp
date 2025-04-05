@@ -28,7 +28,7 @@ namespace NamespaceParser
             if (line.empty())
                 continue;
 
-            if (line == "_")
+            if (line.starts_with("_"))
             {
                 // End marker: end of this namespace block.
                 validContentFound = true;

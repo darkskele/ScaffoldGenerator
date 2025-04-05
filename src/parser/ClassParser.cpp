@@ -153,7 +153,7 @@ namespace ClassParser
             if (line.empty())
                 continue;
 
-            if (line == "_")
+            if (line.starts_with("_"))
             {
                 // If we are inside an access specifier, an "_" terminates that section.
                 if (currentAccess != Access::None)

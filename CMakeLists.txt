@@ -77,3 +77,9 @@ target_link_libraries(GeneratorTests PRIVATE
     Threads::Threads
 )
 add_test(NAME GeneratorTests COMMAND GeneratorTests)
+
+# --- Main Scaffolder Executable ---
+# Build the main scaffolder (CLI) executable which uses main.cpp.
+add_executable(scaffolder ${PROJECT_SOURCE_DIR}/src/main.cpp)
+target_include_directories(scaffolder PRIVATE ${INCLUDE_DIR})
+target_link_libraries(scaffolder PRIVATE generator parser models)
