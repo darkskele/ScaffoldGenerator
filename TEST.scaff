@@ -1,0 +1,158 @@
+- project MyProject:
+| version = 1.0.0
+| dependency = Boost::boost
+
+  - library CoreLib:
+  | version = 1.2.3
+  | dependency = Boost::boost
+  
+    - folder Utils:
+      - function helperFunction:
+      | declaration = inline constexpr
+      | return = int
+      | parameters = a:int, b:int
+      | description = "Calculates the sum of two integers."
+      _
+      
+      - class Logger:
+      | description = "A simple logger class."
+      | constructors = default, copy, move
+      | assignment = copy, move
+        - private:
+        | members = logLevel:int, logFile:string
+        _
+        - public:
+          - method log:
+          | declaration = constexpr
+          | return = void
+          | parameters = message:string
+          | description = "Logs a message with the current log level."
+          _
+          - constructor custom:
+          | parameters = level:int, file:string
+          | description = "Initializes Logger with a custom log level and log file."
+          _
+        _
+      _
+      
+      - folder Advanced:
+        - class AdvancedLogger:
+        | description = "An advanced logger with extended features."
+        | constructors = default
+        | assignment = copy, move
+          - private:
+          | members = verbosity:int, format:string
+          _
+          - public:
+            - constructor custom:
+            | parameters = verbosity:int, format:string
+            | description = "Constructs AdvancedLogger with verbosity and format settings."
+            _
+            - method setVerbosity:
+            | return = void
+            | parameters = verbosity:int
+            | description = "Sets the verbosity level."
+            _
+            - method getFormat:
+            | declaration = inline
+            | return = string
+            | description = "Retrieves the current format."
+            _
+          _
+        _
+      _
+      
+    - folder Models:
+      - class DataModel:
+      | description = "Represents a data model with id, name, and value."
+      | constructors = default
+      | assignment = copy
+        - private:
+        | members = id:int, name:string, value:double
+        _
+        - public:
+          - constructor custom:
+          | parameters = id:int, name:string, value:double
+          | description = "Initializes DataModel with id, name, and value."
+          _
+          - method display:
+          | return = double
+          | parameters =
+          | description = "Displays the data model details."
+          _
+        _
+      _
+      
+    - namespace MyNamespace:
+    | description = "Contains specialized utility functions and classes."
+    
+      - function processData:
+      | declaration = static
+      | return = bool
+      | parameters = data:string
+      | description = "Processes input data and returns true if successful."
+      _
+      
+      - class Utility:
+      | description = "Utility class for various helper methods."
+      | constructors = default
+      | assignment = copy, move
+        - private:
+        | members = internalState:int
+        _
+        - public:
+          - constructor custom:
+          | parameters = state:int
+          | description = "Initializes Utility with an internal state."
+          _
+          - method compute:
+          | return = int
+          | parameters = input:int
+          | description = "Computes a value based on the provided input."
+          _
+        _
+      _
+    _
+    
+    - folder Services:
+      - namespace ServiceNamespace:
+      | description = "Contains service-related classes and free functions."
+      
+        - class ServiceManager:
+        | description = "Manages various services."
+        | constructors = default
+        | assignment = copy, move
+          - private:
+          | members = serviceCount:int
+          _
+          - public:
+            - constructor custom:
+            | parameters = count:int
+            | description = "Initializes ServiceManager with a specific service count."
+            _
+            - method addService:
+            | declaration = static
+            | return = int
+            | parameters = serviceName:string
+            | description = "Adds a service by name."
+            _
+            - method removeService:
+            | declaration = constexpr
+            | return = float
+            | parameters = serviceName:string
+            | description = "Removes a service by name."
+            _
+          _
+        _
+        
+        - function queryService:
+        | declaration = inline
+        | return = string
+        | parameters = query:string
+        | description = "Queries a service and returns information as a string."
+        _
+      _
+    _
+    
+  _
+_
