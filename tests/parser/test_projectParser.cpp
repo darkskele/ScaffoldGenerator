@@ -14,7 +14,7 @@ TEST(ProjectParserTest, ParsesEmptyProjectBlock) {
     // DSL: project header with version and dependency lines, then the end marker.
     std::deque<std::string_view> lines = {
         "| version = 1.0.0",
-        "| dependency = Boost, cpp20",
+        "| dependency = Boost, cpp23",
         "_"  // End of project block.
     };
     
@@ -24,7 +24,7 @@ TEST(ProjectParserTest, ParsesEmptyProjectBlock) {
     EXPECT_EQ(proj.version, "1.0.0");
     ASSERT_EQ(proj.dependencies.size(), 2);
     EXPECT_EQ(proj.dependencies[0], "Boost");
-    EXPECT_EQ(proj.dependencies[1], "cpp20");
+    EXPECT_EQ(proj.dependencies[1], "cpp23");
     EXPECT_TRUE(proj.libraries.empty());
     EXPECT_TRUE(proj.subFolders.empty());
     EXPECT_TRUE(proj.classFiles.empty());
@@ -39,7 +39,7 @@ TEST(ProjectParserTest, ParsesProjectWithNestedLibrary) {
         "| dependency = OpenMP",
         "- library LibInProject:",
         "| version = 1.2.3",
-        "| dependency = cpp20",
+        "| dependency = cpp23",
         "_" , // End library block.
         "_"  // End project block.
     };
@@ -56,10 +56,10 @@ TEST(ProjectParserTest, ParsesMixedNestedContentInProject) {
     // A project block with mixed nested content: a nested library, folder, class, namespace, and free function.
     std::deque<std::string_view> lines = {
         "| version = 3.0.0",
-        "| dependency = Boost, cpp20",
+        "| dependency = Boost, cpp23",
         "- library MyLibrary:",
         "| version = 1.0.0",
-        "| dependency = cpp20",
+        "| dependency = cpp23",
         "_" , // End library block.
         "- folder core:",
         "- class CoreClass:",
@@ -131,7 +131,7 @@ TEST(ProjectParserTest, ThrowsOnPropertyAfterPropertySectionInProject) {
     // After the initial property section, property lines are not allowed.
     std::deque<std::string_view> lines = {
         "| version = 1.0.0",
-        "| dependency = cpp20",
+        "| dependency = cpp23",
         "- class SomeClass:",
         "| description = \"A class in project\"",
         "| version = 2.0",  // Invalid property inside nested block.
@@ -148,7 +148,7 @@ TEST(ProjectParserTest, IgnoresTrailingGarbage) {
     // Trailing non-DSL text should be ignored.
     std::deque<std::string_view> lines = {
         "| version = 1.5.0",
-        "| dependency = cpp20",
+        "| dependency = cpp23",
         "- class TrailingClass:",
         "| description = \"A class in project\"",
         "_",
@@ -169,7 +169,7 @@ TEST(ProjectParserTest, ThrowsErrorOnNestedProjectKeyword) {
         "| dependency = Boost",
         "- project NestedProject:",  // This is not allowed.
         "| version = 2.0.0",
-        "| dependency = cpp20",
+        "| dependency = cpp23",
         "_",
         "_"  // End project block.
     };

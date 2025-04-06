@@ -1,6 +1,3 @@
-// This file provides the definitions for the DirectoryNode class declared in DirectoryNode.h.
-// Detailed inline comments explain the functionality of each method.
-
 #include "DirectoryNode.h"
 
 namespace DirectoryTree
@@ -69,7 +66,7 @@ namespace DirectoryTree
     // getSubDirectories Method
     //--------------------------------------------------------------------------
 
-    const std::vector<std::shared_ptr<DirectoryTree::DirectoryNode>> &DirectoryNode::getSubDirectories() const
+    const std::vector<std::shared_ptr<DirectoryNode>> &DirectoryNode::getSubDirectories() const
     {
         return subDirectories;
     }

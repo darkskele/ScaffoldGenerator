@@ -2,6 +2,7 @@
 #include "GeneratorUtilities.h"
 
 #include <format>
+#include <numeric> // for std::accumulate
 
 namespace PropertiesGenerator
 {
@@ -9,24 +10,29 @@ namespace PropertiesGenerator
     // each parameter is represented as "type name". Parameters are separated by a comma and a space.
     std::string generateParameterList(const std::vector<PropertiesModels::Parameter> &params)
     {
-        std::string result; // Final string to accumulate the parameter list
-        bool first = true;  // Flag to avoid inserting a comma before the first parameter
-
-        // Iterate over each parameter in the vector
-        for (const auto &param : params)
+        // Handle edge case: if the vector is empty, return an empty string.
+        if (params.empty())
         {
-            // If not the first parameter, prepend a comma and a space for separation.
-            if (!first)
-            {
-                result += ", ";
-            }
-            first = false;
-
-            // Format the parameter as "type name" using std::format and append to the result.
-            result += std::format("{} {}", GeneratorUtilities::dataTypeToString(param.type), param.name);
+            return "";
         }
 
-        return result;
+        // Create a vector of formatted parameter strings ("type name").
+        std::vector<std::string> formattedParams;
+        formattedParams.reserve(params.size());
+        for (const auto &param : params)
+        {
+            formattedParams.push_back(std::format("{} {}", GeneratorUtilities::dataTypeToString(param.type), param.name));
+        }
+
+        // Use std::accumulate to join the strings with ", " as a separator.
+        return std::accumulate(
+            std::next(formattedParams.begin()),
+            formattedParams.end(),
+            formattedParams.front(),
+            [](const std::string &a, const std::string &b)
+            {
+                return a + ", " + b;
+            });
     }
 
     // This function checks the fields of the provided declaration specifier object and collects each active
@@ -34,29 +40,32 @@ namespace PropertiesGenerator
     // specifiers into a single space-separated string.
     std::string generateDeclarationSpecifier(const PropertiesModels::DeclartionSpecifier &dS, const bool def)
     {
-        std::vector<std::string> specifiers; // Temporary vector to hold each individual specifier
+        std::vector<std::string> specifiers;
 
-        // Check for 'static' specifier and add if applicable.
         if (dS.isStatic && !def)
             specifiers.push_back("static");
-
-        // Check for 'inline' specifier and add if applicable.
         if (dS.isInline)
             specifiers.push_back("inline");
-
-        // Check for 'constexpr' specifier and add if applicable.
         if (dS.isConstexpr)
             specifiers.push_back("constexpr");
 
-        std::string result; // String to accumulate the final result
-
-        // Concatenate each specifier, followed by a space.
-        for (const auto &spec : specifiers)
+        // Edge case: if no specifiers are set, return an empty string.
+        if (specifiers.empty())
         {
-            result += spec + " ";
+            return "";
         }
 
-        return result;
+        // Use std::accumulate to concatenate specifiers with a space separator.
+        std::string concatenated = std::accumulate(
+            std::next(specifiers.begin()),
+            specifiers.end(),
+            specifiers.front(),
+            [](const std::string &a, const std::string &b)
+            {
+                return a + " " + b;
+            });
+
+        return concatenated + " ";
     }
 
 } // namespace PropertiesGenerator

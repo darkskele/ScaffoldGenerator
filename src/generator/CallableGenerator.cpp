@@ -68,7 +68,7 @@ namespace CallableGenerator
         // Define a default body that signals unimplemented functionality.
         std::string body = "// TODO: Implement " + callable.name + " logic.";
         // constexpr methods/functions cannot throw errors
-        if(!declSpec.contains("constexpr"))
+        if (!declSpec.contains("constexpr"))
         {
             body += "\n    throw std::runtime_error(\"Not implemented\");";
         }
@@ -117,7 +117,7 @@ namespace CallableGenerator
         // Construct body of method with TODO
         std::string body = "// TODO: Implement " + method.name + " logic.";
         // constexpr methods/functions cannot throw errors
-        if(!declSpec.contains("constexpr"))
+        if (!declSpec.contains("constexpr"))
         {
             body += "\n    throw std::runtime_error(\"Not implemented\");";
         }

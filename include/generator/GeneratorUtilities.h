@@ -4,7 +4,7 @@
  *
  * This header defines functions to convert various data type constructs, including qualifiers,
  * pointers, references, and custom types, into human-readable string formats. The implementation
- * adheres to modern C++20 best practices for efficiency, clarity, and robust error handling.
+ * adheres to modern C++23 best practices for efficiency, clarity, and robust error handling.
  *
  * @note The functions declared herein are designed to be pure, exception-safe, and suitable for
  *       use in high-performance contexts.
@@ -22,7 +22,7 @@
  *
  * This namespace encapsulates functions that convert various data type constructs—including qualifiers,
  * pointers, references, and custom types—into human-readable string formats. The implementation adheres
- * to modern C++20 best practices, emphasizing efficiency, clarity, and robust error handling.
+ * to modern C++23 best practices, emphasizing efficiency, clarity, and robust error handling.
  *
  * @note The functions declared within are pure, exception-safe, and optimized for high-performance contexts.
  */

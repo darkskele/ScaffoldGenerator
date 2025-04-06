@@ -3,7 +3,7 @@
  * @brief Contains various parser utility functions.
  *
  * This file provides utility functions for common parsing tasks used throughout the scaffolder DSL.
- * It leverages modern C++20 features, such as std::string_view, for zero-copy string manipulation,
+ * It leverages modern C++23 features, such as std::string_view, for zero-copy string manipulation,
  * ensuring both efficiency and clarity in parsing operations.
  *
  * @note The functions defined herein adhere to robust error handling practices and are designed

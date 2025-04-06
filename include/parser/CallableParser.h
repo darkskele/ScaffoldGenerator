@@ -3,7 +3,7 @@
  * @brief Contains pure functions to parse the callable block in a scaff file.
  *
  * This file defines functions that process property lines from a DSL callable block—representing either a method or a free function—
- * and build a corresponding CallableModel. The parser leverages modern C++20 features, such as std::string_view, for efficient string handling,
+ * and build a corresponding CallableModel. The parser leverages modern C++23 features, such as std::string_view, for efficient string handling,
  * and emphasizes robust error handling.
  *
  * @note The parser expects each property line to begin with the '|' character and uses a key-value format separated by '='.

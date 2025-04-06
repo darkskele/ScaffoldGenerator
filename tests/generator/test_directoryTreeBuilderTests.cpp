@@ -41,7 +41,7 @@ TEST(DirectoryTreeBuilderTests, Level1_MinimalProject)
     ProjectModel model("MyProject", "1.0", {}, {});
 
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
 
     // Validate root node
     ASSERT_NE(root, nullptr);
@@ -77,7 +77,7 @@ TEST(DirectoryTreeBuilderTests, Level1_ProjectWithSingleClass)
                        {}, {createDummyClass("Hero")});
 
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
 
     ASSERT_NE(root, nullptr);
     EXPECT_EQ(root->folderName, "ROOT");
@@ -111,7 +111,7 @@ TEST(DirectoryTreeBuilderTests, Level1_ProjectWithSingleNamespace)
                        {}, {}, {createDummyNamespace("EngineSpace")});
 
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
 
     ASSERT_NE(root, nullptr);
     EXPECT_EQ(root->folderName, "ROOT");
@@ -142,7 +142,7 @@ TEST(DirectoryTreeBuilderTests, Level1_ProjectWithSingleFreeFunctionFile)
                        {}, {}, {}, {createDummyFunction("UtilityFunc")});
 
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
 
     ASSERT_NE(root, nullptr);
     EXPECT_EQ(root->folderName, "ROOT");
@@ -180,7 +180,7 @@ TEST(DirectoryTreeBuilderTests, Level1_ProjectWithMixedFiles)
                        {createDummyFunction("UtilFunc")});                    // Free functions
 
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
 
     // Root should be valid
     ASSERT_NE(root, nullptr);
@@ -246,7 +246,7 @@ TEST(DirectoryTreeBuilderTests, Level2_FolderWithSingleClass)
     ProjectModel model("MyGame", "1.0", {"Test1", "Test2"}, {}, {folder});
 
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
 
     ASSERT_NE(root, nullptr);
     EXPECT_EQ(root->folderName, "ROOT");
@@ -287,7 +287,7 @@ TEST(DirectoryTreeBuilderTests, Level2_FolderWithSingleNamespace)
     ProjectModel model("MyGame", "1.1", {"Test1", "Test2"}, {}, {folder});
 
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
 
     ASSERT_NE(root, nullptr);
     EXPECT_EQ(root->folderName, "ROOT");
@@ -328,7 +328,7 @@ TEST(DirectoryTreeBuilderTests, Level2_FolderWithSingleFreeFuncFile)
     ProjectModel model("MyGame", "1.2", {"Test1", "Test2"}, {}, {folder});
 
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
 
     ASSERT_NE(root, nullptr);
     EXPECT_EQ(root->folderName, "ROOT");
@@ -370,7 +370,7 @@ TEST(DirectoryTreeBuilderTests, Level2_FolderWithMixedFiles)
     ProjectModel model("MyGame", "1.2", {"Test1", "Test2", "Test3"}, {}, {folder});
 
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
 
     ASSERT_NE(root, nullptr);
     EXPECT_EQ(root->folderName, "ROOT");
@@ -444,7 +444,7 @@ TEST(DirectoryTreeBuilderTests, Level2_LibraryWithSingleClass)
     ProjectModel model("MyGame", "1.0", {"Test1", "Test2"}, {library});
 
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
 
     ASSERT_NE(root, nullptr);
     EXPECT_EQ(root->folderName, "ROOT");
@@ -489,7 +489,7 @@ TEST(DirectoryTreeBuilderTests, Level2_LibraryWithSingleNamespace)
     ProjectModel model("MyGame", "1.0", {"Test1", "Test2"}, {library});
 
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
 
     ASSERT_NE(root, nullptr);
     EXPECT_EQ(root->folderName, "ROOT");
@@ -540,7 +540,7 @@ TEST(DirectoryTreeBuilderTests, Level2_LibraryWithSingleFreeFuncFile)
     ProjectModel model("MyGame", "1.0", {"Test1", "Test2"}, {library});
 
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
 
     ASSERT_NE(root, nullptr);
     EXPECT_EQ(root->folderName, "ROOT");
@@ -596,7 +596,7 @@ TEST(DirectoryTreeBuilderTests, Level2_LibraryWithMixedFiles)
     ProjectModel model("MyGame", "1.0", {"Test1", "Test2"}, {library});
 
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
 
     ASSERT_NE(root, nullptr);
     EXPECT_EQ(root->folderName, "ROOT");
@@ -678,7 +678,7 @@ TEST(DirectoryTreeBuilderTests, EdgeCase_EmptyProjectWithNullMetadata)
 
     // Pass nullptr for metadata — this should still work for ProjectModel
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
 
     ASSERT_NE(root, nullptr);
     EXPECT_EQ(root->folderName, "ROOT");
@@ -698,7 +698,7 @@ TEST(DirectoryTreeBuilderTests, EdgeCase_ProjectWithOnlyDependencies)
     ProjectModel model("DepOnlyProject", "1.2", {"Dep1", "Dep2"}, {}, {});
 
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
 
     ASSERT_NE(root, nullptr);
     EXPECT_TRUE(root->getSubDirectories().empty());
@@ -720,7 +720,7 @@ TEST(DirectoryTreeBuilderTests, EdgeCase_ProjectWithEmptyFolder)
     ProjectModel model("LonelyProject", "0.9", {}, {}, {emptyFolder});
     ProjMetadata metadata({});
 
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
 
     ASSERT_NE(root, nullptr);
     ASSERT_EQ(root->getSubDirectories().size(), 1);
@@ -743,7 +743,7 @@ TEST(DirectoryTreeBuilderTests, EdgeCase_DeeplyNestedFoldersWithNoFiles)
     ProjectModel model("DeepProject", "1.0", {}, {}, {level1});
     ProjMetadata metadata({});
 
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
 
     ASSERT_NE(root, nullptr);
     auto l1 = root->getSubDirectories()[0];
@@ -771,7 +771,7 @@ TEST(DirectoryTreeBuilderTests, EdgeCase_DuplicateClassNamesDifferentScopes)
     ProjectModel model("ScopeProject", "1.0", {}, {}, {coreA, coreB});
     ProjMetadata metadata({});
 
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
     ASSERT_NE(root, nullptr);
     ASSERT_EQ(root->getSubDirectories().size(), 2);
 

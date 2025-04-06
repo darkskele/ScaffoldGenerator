@@ -22,7 +22,7 @@ TEST(TraverseAndGenerateTests, SingleFileTest)
     ProjectModel model("CoreProject", "1.0", {}, {},
                        {}, {createDummyClass("Hero")});
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
     ASSERT_NE(root, nullptr);
 
     // Create an instance of the stub file writer.
@@ -64,7 +64,7 @@ TEST(TraverseAndGenerateTests, NestedDirectoryTest)
     // Wrap the folder in a minimal project.
     ProjectModel model("MyGame", "1.0", {}, {}, {folder});
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
     ASSERT_NE(root, nullptr);
 
     // Create the test stub writer.
@@ -98,7 +98,7 @@ TEST(TraverseAndGenerateTests, ComplexProjectTest)
                        {createDummyFunction("GlobalUtil")});
 
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
     ASSERT_NE(root, nullptr);
 
     // Create a TestFileWriter stub to capture file write operations.
@@ -165,7 +165,7 @@ TEST(TraverseAndGenerateTests, DeeplyNestedProjectTest)
     // Wrap the folders into a ProjectModel.
     ProjectModel model("DeepProject", "3.0", {"DepA"}, {}, {coreFolder, utilitiesFolder});
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
     ASSERT_NE(root, nullptr);
 
     // Create the stub file writer.
@@ -238,7 +238,7 @@ TEST(TraverseAndGenerateTests, DeepTreeWeightedTest)
     // Wrap the folder in a ProjectModel.
     ProjectModel model("WeightedProject", "1.0", {"W1"}, {}, {level1});
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
     ASSERT_NE(root, nullptr);
 
     // Create our test stub writer.
@@ -347,7 +347,7 @@ TEST(TraverseAndGenerateTests, DeepBigProjectTest)
     // Wrap the deep tree inside a project model.
     ProjectModel model("BigDeepProject", "5.0", {"BigDep"}, {}, {deepRoot});
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
     ASSERT_NE(root, nullptr);
 
     // Create our test stub writer.
@@ -388,7 +388,7 @@ TEST(TraverseAndGenerateEdgeCases, EmptyProjectNoFiles) {
     // Create a project with no classes, namespaces, or free functions.
     ProjectModel model("EmptyProject", "0.1", {}, {}, {});
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
     ASSERT_NE(root, nullptr);
 
     // Ensure the directory tree contains no file nodes.
@@ -412,7 +412,7 @@ TEST(TraverseAndGenerateEdgeCases, EmptyFolders) {
     // Wrap the empty folder into a project model.
     ProjectModel model("FolderProject", "0.5", {}, {}, {emptyFolder});
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
     ASSERT_NE(root, nullptr);
 
     // Check that the folder exists and is empty.
@@ -444,7 +444,7 @@ TEST(TraverseAndGenerateEdgeCases, DuplicateFileNames) {
     // Wrap both folders in a project.
     ProjectModel model("DuplicateProject", "1.0", {}, {}, { folderA, folderB });
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
     ASSERT_NE(root, nullptr);
 
     // There should be two subdirectories each containing one file node.
@@ -475,7 +475,7 @@ TEST(TraverseAndGenerateEdgeCases, ProjectWithOnlyDependencies) {
     // Create a project that has dependencies defined but no DSL objects (no classes, namespaces, or free functions).
     ProjectModel model("DepOnlyProject", "1.2", {"Dep1", "Dep2"}, {}, {});
     ProjMetadata metadata({});
-    auto root = buildDirectoryTree(model, &metadata);
+    auto root = buildDirectoryTree(model, metadata);
     ASSERT_NE(root, nullptr);
 
     // No file nodes should be present.

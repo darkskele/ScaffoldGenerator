@@ -12,7 +12,7 @@ TEST(LibraryParserTest, ParsesEmptyLibraryBlock) {
     // DSL: library header with version and dependency lines, then the end marker.
     std::deque<std::string_view> lines = {
         "| version = 1.0.0",
-        "| dependency = Boost, cpp20",
+        "| dependency = Boost, cpp23",
         "_"  // End of library block.
     };
     
@@ -22,7 +22,7 @@ TEST(LibraryParserTest, ParsesEmptyLibraryBlock) {
     EXPECT_EQ(lib.version, "1.0.0");
     ASSERT_EQ(lib.dependencies.size(), 2);
     EXPECT_EQ(lib.dependencies[0], "Boost");
-    EXPECT_EQ(lib.dependencies[1], "cpp20");
+    EXPECT_EQ(lib.dependencies[1], "cpp23");
     EXPECT_TRUE(lib.subFolders.empty());
     EXPECT_TRUE(lib.classFiles.empty());
     EXPECT_TRUE(lib.namespaceFiles.empty());
@@ -33,7 +33,7 @@ TEST(LibraryParserTest, ParsesLibraryWithNestedClass) {
     // A library block containing a nested class block.
     std::deque<std::string_view> lines = {
         "| version = 2.1.0",
-        "| dependency = cpp20",
+        "| dependency = cpp23",
         "- class MyClass:",
         "| description = \"A class in library\"",
         "_",
@@ -99,7 +99,7 @@ TEST(LibraryParserTest, ParsesLibraryWithNestedFolder) {
     // A library block containing a nested folder block.
     std::deque<std::string_view> lines = {
         "| version = 0.9.0",
-        "| dependency = cpp20, OpenMP",
+        "| dependency = cpp23, OpenMP",
         "- folder SubFolder:",
         "- class SubClass:",
         "| description = \"Class in subfolder\"",
@@ -139,7 +139,7 @@ TEST(LibraryParserTest, ThrowsOnPropertyInLibraryAfterPropertySection) {
     // After the initial property section, property lines are not allowed.
     std::deque<std::string_view> lines = {
         "| version = 1.0.0",
-        "| dependency = cpp20",
+        "| dependency = cpp23",
         "- class SomeClass:",
         "| description = \"A class in library\"",
         "| version = 2.0",  // Invalid property inside nested block.
@@ -156,7 +156,7 @@ TEST(LibraryParserTest, IgnoresTrailingGarbage) {
     // Trailing non-DSL text should be ignored.
     std::deque<std::string_view> lines = {
         "| version = 1.5.0",
-        "| dependency = cpp20",
+        "| dependency = cpp23",
         "- class TrailingClass:",
         "| description = \"A class in library\"",
         "_",
@@ -174,7 +174,7 @@ TEST(LibraryParserTest, ParsesMixedNestedContentInLibrary) {
     // A library block with mixed nested content: free functions, a class, and a nested namespace.
     std::deque<std::string_view> lines = {
         "| version = 2.0.0",
-        "| dependency = Boost, cpp20",
+        "| dependency = Boost, cpp23",
         "- function freeFunc1:",
         "| declaration = inline",
         "| return = int",
@@ -223,7 +223,7 @@ TEST(LibraryParserTest, ThrowsErrorOnNestedLibrary) {
         "| dependency = Boost",
         "- library NestedLib:",
         "| version = 0.1.0",
-        "| dependency = cpp20",
+        "| dependency = cpp23",
         "_",
         "_"  // End library block.
     };

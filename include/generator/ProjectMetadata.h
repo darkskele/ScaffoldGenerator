@@ -72,7 +72,7 @@ namespace ProjectMetadata
          * @param isProjLevel True if this library is at the project level.
          * @param dependencies A vector of dependencies for the library.
          */
-        LibraryMetadata(std::string relativePath, std::string name, bool isProjLevel, std::vector<std::string> dependencies)
+        LibraryMetadata(const std::string relativePath, const std::string name, const bool isProjLevel, const std::vector<std::string> dependencies)
             : relativePath(std::move(relativePath)),
               name(std::move(name)),
               isProjLevel(isProjLevel),

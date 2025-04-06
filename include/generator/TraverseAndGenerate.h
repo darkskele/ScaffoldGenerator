@@ -9,6 +9,7 @@
 #pragma once
 
 #include <memory>
+
 #include "DirectoryNode.h" // Provides the DirectoryTree::DirectoryNode class.
 #include "IFileWriter.h"   // Provides the GeneratedFileWriter::IFileWriter interface.
 

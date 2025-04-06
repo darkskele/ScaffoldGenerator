@@ -3,7 +3,7 @@
  * @brief Contains pure functions to generate callable (free function and method) declarations and definitions.
  *
  * This file defines a set of composable, pure functions that generate callable signatures
- * and bodies for a given DSL keyword scope. The generated code adheres to modern C++20+ best practices,
+ * and bodies for a given DSL keyword scope. The generated code adheres to modern C++23 best practices,
  * emphasizing efficiency, clarity, and robust error handling.
  *
  * The functions declared in this header produce both free function declarations/definitions

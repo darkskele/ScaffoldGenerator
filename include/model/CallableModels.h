@@ -4,7 +4,7 @@
  *
  * This file defines the structures that represent various DSL elements such as methods,
  * classes, libraries, etc. These models are used by the generator to create code from
- * the high-level DSL. The models adhere to modern C++20 practices, emphasizing immutability,
+ * the high-level DSL. The models adhere to modern C++23 practices, emphasizing immutability,
  * efficient resource management, and robust type safety.
  */
 
@@ -59,7 +59,7 @@ namespace CallableModels
         CallableModel(const PropertiesModels::DataType retType, std::string n,
                       std::vector<PropertiesModels::Parameter> params,
                       const PropertiesModels::DeclartionSpecifier &dC,
-                      std::string desc = " ")
+                      std::string desc = "")
             : returnType(retType), name(std::move(n)), parameters(std::move(params)),
               declSpec(std::move(dC)), description(std::move(desc))
         {

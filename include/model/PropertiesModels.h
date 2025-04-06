@@ -4,7 +4,7 @@
  *
  * This file defines the fundamental data types, enumerations, and structures that represent
  * parameters and data types in our DSL. These definitions serve as the building blocks for the
- * scaffolder models and code generator, following modern C++20 best practices for type safety
+ * scaffolder models and code generator, following modern C++23 best practices for type safety
  * and efficiency.
  */
 

@@ -7,6 +7,7 @@
 #include <sstream>
 #include <vector>
 #include <filesystem>
+#include <stdexcept>
 
 /**
  * @namespace
@@ -31,6 +32,8 @@ namespace
      * @param lib The LibraryMetadata object containing dependency information.
      * @param binName The name of the binary (executable or library target) to link the dependencies to.
      * @return A string containing the generated CMake commands for dependency linking.
+     * @throws std::runtime_error if dependencies are not in the right format. It is assumed that dependencies
+     * are CMake style i.e. <Package>::<Target>.
      */
     std::string generateDependencies(const ProjectMetadata::LibraryMetadata &lib, const std::string &binName)
     {
@@ -38,6 +41,11 @@ namespace
 
         for (const auto &dep : lib.dependencies)
         {
+            // Esure dependency is in right format
+            if (!dep.contains("::"))
+            {
+                throw std::runtime_error("Expected CMake style dependency, got " + dep + "!");
+            }
             // Extract the package name from the dependency string, assuming the format "<first>::<second>".
             std::string packageName = dep.substr(0, dep.find("::"));
 
@@ -105,6 +113,7 @@ namespace
      *
      * @param projMeta The project metadata containing library information.
      * @return A string containing the CMake commands for defining the main executable target.
+     * @throws std::runtime_error if project level metadata isn't provided.
      */
     std::string generateMainBinaryTarget(const ProjectMetadata::ProjMetadata &projMeta)
     {
@@ -128,8 +137,7 @@ namespace
 
         if (!mainBinary)
         {
-            std::cerr << "Error: No project-level (main binary) target defined in metadata.\n";
-            return "";
+            throw std::runtime_error("Error: No project-level (main binary) target defined in metadata.\n");
         }
 
         // Generate the CMake code that uses file globbing and filtering.
@@ -184,7 +192,7 @@ namespace BuildToolGenerator
         // Write basic project settings
         cmakeFile << "cmake_minimum_required(VERSION 3.16)\n";
         cmakeFile << "project(MyProject LANGUAGES CXX)\n\n";
-        cmakeFile << "set(CMAKE_CXX_STANDARD 20)\n";
+        cmakeFile << "set(CMAKE_CXX_STANDARD 23)\n";
         cmakeFile << "set(CMAKE_CXX_STANDARD_REQUIRED ON)\n\n";
         cmakeFile << "# Global include directory\n";
         cmakeFile << "include_directories(${CMAKE_SOURCE_DIR}/include)\n\n";
