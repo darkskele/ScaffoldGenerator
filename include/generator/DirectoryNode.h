@@ -11,15 +11,16 @@
  * The directory tree is built on the heap using shared_ptr for node ownership, while
  * each node's parent is held as a weak_ptr to avoid cyclic references.
  *
- * @note This file is part of the code generator and adheres to modern C++20 practices.
+ * @note This file is part of the code generator and adheres to modern C++23 practices.
  */
 
 #pragma once
 
+#include "FileNodeGenerator.h" // Provides IGeneratedFile and GeneratedFiles
+
 #include <memory>
 #include <vector>
 #include <string>
-#include "FileNodeGenerator.h" // Provides IGeneratedFile and GeneratedFiles
 
 /**
  * @namespace DirectoryTree
@@ -37,7 +38,7 @@
  * The DirectoryTree namespace is designed to support efficient file generation and cleanup in large projects,
  * ensuring that file content is streamed to disk and memory is released promptly.
  *
- * @note This namespace leverages modern C++20 smart pointer facilities (e.g., std::shared_ptr, std::unique_ptr,
+ * @note This namespace leverages modern C++23 smart pointer facilities (e.g., std::shared_ptr, std::unique_ptr,
  * and std::weak_ptr) along with std::enable_shared_from_this to safely manage the directory tree hierarchy.
  */
 namespace DirectoryTree

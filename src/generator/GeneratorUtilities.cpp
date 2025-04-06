@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <string>
 #include <sstream>
+#include <format>
 
 /**
  * @namespace
@@ -139,7 +140,7 @@ namespace GeneratorUtilities
                 throw std::runtime_error("Custom type specified without a name!");
             }
         default:
-            throw std::runtime_error("Unknown data type.");
+            throw std::runtime_error(std::format("Unknown data type: {}", static_cast<int>(dt.type)));
         }
     }
 

@@ -361,6 +361,19 @@ In essence, any DSL element that is not nested within another file-level element
 
 ---
 
+## Documentation of DSL Limitations
+
+- **Commenting:**  
+  The DSL does not support comments in arbitrary locations. The only exception is within the scope end markers (i.e., the underscore `_`), which may include commentary if needed. Any attempt to add comments elsewhere in the file will result in a syntax error.
+
+- **Whitespace and Indentation:**  
+  The DSL is designed to be whitespace-agnostic. Variations in spacing, indentation, and newlines are tolerated as long as the required tokens (such as the dash `-`, vertical bar `|`, colon `:`, and underscore `_`) are present in the correct order. In other words, the DSL will correctly parse the file regardless of the amount or style of whitespace, provided that the proper characters appear in the expected positions.
+
+- **Unrecognized Characters:**  
+  The parser strictly enforces the defined syntax. Any characters that are not part of the DSL specification will be rejected, ensuring that only valid tokens are used to structure the file.
+
+---
+
 ## Conclusion
 
 The Scaffolder DSL provides a comprehensive, modular way to define C++ project structures. This schema document outlines every aspect of the DSL—from global settings in the project block to the detailed handling of types, parameters, and declaration specifiers, as well as error conditions and file generation rules. By following this schema, you can create a **.scaff** file that drives automatic, consistent code generation and build configuration for your C++ projects.

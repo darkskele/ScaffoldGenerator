@@ -3,7 +3,8 @@
 
 #include <filesystem>
 #include <fstream>
-#include <iostream>
+#include <functional>
+#include <stdexcept>
 
 /**
  * @brief Internal utility functions for file path manipulation and directory creation.
@@ -12,6 +13,7 @@
  * implementation. These functions are not visible outside this translation unit. They include:
  * - @ref constructFullPath: Constructs a full file path under the generatedOutputs directory.
  * - @ref ensureDirectoryExists: Ensures that the directory for a given file path exists, creating it if necessary.
+ * - @ref writeToFile: Centralizes the file opening, error checking, writing, and closing logic.
  */
 namespace
 {
@@ -47,6 +49,7 @@ namespace
      * If the directory does not exist, it attempts to create all necessary directories.
      *
      * @param fullPath The complete file path for which the parent directory should exist.
+     * @throws std::runtime_error if it fails to create the necessary directories.
      */
     static void ensureDirectoryExists(const std::filesystem::path &fullPath)
     {
@@ -57,30 +60,47 @@ namespace
             std::error_code ec;
             if (!std::filesystem::create_directories(dir, ec))
             {
-                std::cerr << "Error creating directories: " << ec.message() << std::endl;
+                throw std::runtime_error("Error creating directories: " + ec.message());
             }
         }
+    }
+
+    /**
+     * @brief Centralizes file writing logic.
+     *
+     * This helper function ensures that the target directory exists, opens the file for writing,
+     * and then calls the provided lambda to write content to the file. It throws a std::runtime_error
+     * if the file cannot be opened.
+     *
+     * @param fullPath The full path to the file.
+     * @param writer A lambda that takes an std::ofstream reference and writes content to the file.
+     * @throws std::runtime_error if the file cannot be opened.
+     */
+    static void writeToFile(const std::filesystem::path &fullPath, const std::function<void(std::ofstream &)> &writer)
+    {
+        ensureDirectoryExists(fullPath);
+        std::ofstream file(fullPath);
+        if (!file)
+        {
+            throw std::runtime_error("Error opening file for writing: " + fullPath.string());
+        }
+        writer(file);
+        file.close();
     }
 
     /**
      * @brief Writes a basic Doxygen file comment shell to the given file.
      *
      * This function writes a minimal Doxygen comment block for a file, including the
-     * file name and an empty @brief tag for the user to fill in. If the file stream is
-     * not valid, it prints an error message to std::cerr.
+     * file name and an empty @brief tag for the user to fill in.
      *
      * @param file The output file stream where the Doxygen comment will be written.
      * @param fileName The path used to extract the file name for the Doxygen comment.
+     * @throws std::runtime_error if the file stream is not valid.
      */
     static void writeFileDoxygen(std::ofstream &file, const std::filesystem::path &fileName)
     {
-        if (!file)
-        {
-            std::cerr << "Error opening file for writing: " << fileName << std::endl;
-            return;
-        }
-
-        // Write basic file doxygen shell for user to fill in
+        // Since writeToFile already guarantees the file stream is valid, we can write directly.
         file << "/**\n * @file " << fileName.c_str() << "\n * @brief \n */\n\n";
     }
 
@@ -93,153 +113,88 @@ namespace GeneratedFileWriter
     {
         // Construct full path for the header file under <outputFolder>/include/.
         std::filesystem::path fullPath = constructFullPath(this->outputFolder, "include", filePath, ".h");
-        // Ensure the target directory exists.
-        ensureDirectoryExists(fullPath);
 
-        // Open the file for writing.
-        std::ofstream file(fullPath);
-        if (!file)
-        {
-            std::cerr << "Error opening file for writing: " << fullPath << std::endl;
-            return;
-        }
-
-        // Write file doxygen
-        writeFileDoxygen(file, fullPath.filename());
-
-        // Write header file includes (TODO : Expand these in future features)
-        file << "#pragma once\n\n#include <string>\n#include <stdexcept>\n\n";
-
-        // Write the content to the file.
-        file << content;
-
-        // Close file
-        file.close();
+        writeToFile(fullPath, [&fullPath, &content](std::ofstream &file)
+                    {
+            // Write file doxygen.
+            writeFileDoxygen(file, fullPath.filename());
+            // Write header file includes (TODO: Expand these in future features).
+            file << "#pragma once\n\n#include <string>\n#include <stdexcept>\n\n";
+            // Write the content to the file.
+            file << content; });
     }
 
     void DiskFileWriter::writeSourceFile(const std::string &filePath, const std::string &content)
     {
         // Construct full path for the source file under <outputFolder>/src/.
         std::filesystem::path fullPath = constructFullPath(this->outputFolder, "src", filePath, ".cpp");
-        // Ensure the target directory exists.
-        ensureDirectoryExists(fullPath);
 
-        // Open the file for writing.
-        std::ofstream file(fullPath);
-        if (!file)
-        {
-            std::cerr << "Error opening file for writing: " << fullPath << std::endl;
-            return;
-        }
-        // Write header file includes (TODO : Expand these in future features)
-        std::filesystem::path headerPath = fullPath;
-        headerPath.replace_extension(".h");
-        file << "#include \"" << headerPath.filename().string() << "\"\n\n";
-        // Write the content to the file.
-        file << content;
-
-        // Close file
-        file.close();
+        writeToFile(fullPath, [&fullPath, &content](std::ofstream &file)
+                    {
+            // Write header file includes (TODO: Expand these in future features).
+            std::filesystem::path headerPath = fullPath;
+            headerPath.replace_extension(".h");
+            file << "#include \"" << headerPath.filename().string() << "\"\n\n";
+            // Write the content to the file.
+            file << content; });
     }
 
     void DiskFileWriter::writeCmakeLists(const std::string &cmakeListsTxt) const
     {
-        // Construct full path for the CmakeLists.txt at root
+        // Construct full path for the CMakeLists.txt at root.
         std::filesystem::path fullPath = std::filesystem::current_path() / this->outputFolder / "CMakeLists.txt";
-        // Ensure the target directory exists.
-        ensureDirectoryExists(fullPath);
 
-        // Open the file for writing.
-        std::ofstream file(fullPath);
-        if (!file)
-        {
-            std::cerr << "Error opening file for writing: " << fullPath << std::endl;
-            return;
-        }
-
-        // Write the content to the file.
-        file << cmakeListsTxt;
-
-        // Close file
-        file.close();
+        writeToFile(fullPath, [&cmakeListsTxt](std::ofstream &file)
+                    {
+            // Write the content to the file.
+            file << cmakeListsTxt; });
     }
 
     void DiskFileWriter::writeMain() const
     {
-        // Construct file path to src/main.cpp
+        // Construct file path to src/main.cpp.
         std::filesystem::path fullPath = std::filesystem::current_path() / this->outputFolder / "src" / "main.cpp";
 
-        // Ensure the target directory exists.
-        ensureDirectoryExists(fullPath);
-
-        // Open the file for writing.
-        std::ofstream file(fullPath);
-        if (!file)
-        {
-            std::cerr << "Error opening file for writing: " << fullPath << std::endl;
-            return;
-        }
-
-        // Barebones main.cpp
-        // Write the Doxygen file header
-        file << "/**\n";
-        file << " * @file main.cpp\n";
-        file << " * @brief Main point of entry for the scaffolded project.\n";
-        file << " */\n\n";
-        file << "#include <iostream>\n\n";
-        file << "/**\n";
-        file << " * @brief Main.\n";
-        file << " * @param argc Number of command line arguments.\n";
-        file << " * @param argv Array of command line argument strings.\n";
-        file << " * @return int Returns 0 on success, or 1 on error.\n";
-        file << " */\n";
-
-        // Write the main.cpp and print a hello world message
-        file << "int main(int argc, char *argv[])\n";
-        file << "{\n";
-        file << "    std::cout << \"Hello, world!\" << std::endl;\n";
-        file << "    return 0;\n";
-        file << "}\n";
-
-        // Close file
-        file.close();
+        writeToFile(fullPath, [](std::ofstream &file)
+                    {
+            // Barebones main.cpp.
+            // Write the Doxygen file header.
+            file << "/**\n";
+            file << " * @file main.cpp\n";
+            file << " * @brief Main point of entry for the scaffolded project.\n";
+            file << " */\n\n";
+            file << "#include <iostream>\n\n";
+            file << "/**\n";
+            file << " * @brief Main.\n";
+            file << " * @param argc Number of command line arguments.\n";
+            file << " * @param argv Array of command line argument strings.\n";
+            file << " * @return int Returns 0 on success, or 1 on error.\n";
+            file << " */\n";
+            // Write the main.cpp content and print a hello world message.
+            file << "int main(int argc, char *argv[])\n";
+            file << "{\n";
+            file << "    std::cout << \"Hello, world!\" << std::endl;\n";
+            file << "    return 0;\n";
+            file << "}\n"; });
     }
 
     void DiskFileWriter::writeVsCodeJsons(const std::pair<std::string, std::string> &jsonsFiles) const
     {
-        // Construct file path to .vscode/launch.json
+        // Construct file path to .vscode/launch.json.
         std::filesystem::path launchPath = std::filesystem::current_path() / this->outputFolder / ".vscode" / "launch.json";
 
-        // Ensure the target directory exists.
-        ensureDirectoryExists(launchPath);
+        writeToFile(launchPath, [&jsonsFiles](std::ofstream &launchFile)
+                    {
+            // Write launch file.
+            launchFile << jsonsFiles.first; });
 
-        // Open the file for writing.
-        std::ofstream launchFile(launchPath);
-        if (!launchFile)
-        {
-            std::cerr << "Error opening file for writing: " << launchPath << std::endl;
-            return;
-        }
-
-        // Write launch file
-        launchFile << jsonsFiles.first;
-
-        // Construct file path to .vscode/tasks.json
+        // Construct file path to .vscode/tasks.json.
         std::filesystem::path tasksPath = std::filesystem::current_path() / this->outputFolder / ".vscode" / "tasks.json";
 
-        // Ensure the target directory exists.
-        ensureDirectoryExists(tasksPath);
-
-        // Open the file for writing.
-        std::ofstream tasksFile(tasksPath);
-        if (!tasksFile)
-        {
-            std::cerr << "Error opening file for writing: " << tasksPath << std::endl;
-            return;
-        }
-
-        // Write launch file
-        tasksFile << jsonsFiles.second;
+        writeToFile(tasksPath, [&jsonsFiles](std::ofstream &tasksFile)
+                    {
+            // Write tasks file.
+            tasksFile << jsonsFiles.second; });
     }
 
 } // namespace GeneratedFileWriter

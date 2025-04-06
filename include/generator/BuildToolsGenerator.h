@@ -47,7 +47,8 @@ namespace BuildToolGenerator
      * and one for build tasks (tasks.json). The generated JSON uses the provided projectName
      * to customize target names, build directories, and prelaunch tasks.
      *
-     * @param projectName The name of the project.
+     * @param projectName The name of the project. It is assumed that the first of the pair is the launch content
+     * whereas the second is assumed to be the tasks.
      * @return A pair of strings, where the first is the launch.json content and the second is the tasks.json content.
      */
     std::pair<std::string, std::string> generateVscodeJSONs(const std::string &projectName);

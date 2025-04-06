@@ -7,7 +7,7 @@
  * The generated file paths are built using a unified base path. At the time of writing to disk,
  * the caller can prepend "include/" for header files and "src/" for source files.
  *
- * @note This library is part of the code generator and emphasizes modern C++20 practices.
+ * @note This library is part of the code generator and emphasizes modern C++23 practices.
  */
 
 #pragma once

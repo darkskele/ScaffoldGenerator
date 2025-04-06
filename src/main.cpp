@@ -216,7 +216,7 @@ int main(int argc, char *argv[])
 
         // Build the directory tree from the project model.
         std::shared_ptr<DirectoryTree::DirectoryNode> rootNode =
-            DirectoryTreeBuilder::buildDirectoryTree(projModel, &projectMeta);
+            DirectoryTreeBuilder::buildDirectoryTree(projModel, projectMeta);
         std::cout << "Directory tree built successfully." << std::endl;
 
         // Create an instance of DiskFileWriter for file generation.

@@ -3,7 +3,7 @@
  * @brief Contains pure functions to generate keyword properties.
  *
  * This file defines a set of composable, pure functions designed to generate string representations
- * of keyword properties from a DSL file. The functions herein leverage modern C++20 features such as
+ * of keyword properties from a DSL file. The functions herein leverage modern C++23 features such as
  * std::format for type-safe string formatting, ensuring clarity, efficiency, and robust error handling.
  *
  * The primary functionalities provided include:
@@ -26,7 +26,7 @@
  * @brief Encapsulates pure functions that generate string representations for scope properties.
  *
  * This namespace provides functionality to translate DSL-defined properties into C++ code-friendly strings.
- * The implementations are designed to be efficient and maintainable while leveraging C++20 features.
+ * The implementations are designed to be efficient and maintainable while leveraging C++23 features.
  */
 namespace PropertiesGenerator
 {

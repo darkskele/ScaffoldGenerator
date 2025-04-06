@@ -1,9 +1,3 @@
-// This file provides the definitions for functions declared in DirectoryTreeBuilder.h.
-// It converts DSL models (FolderModel, LibraryModel, ProjectModel) into a tree of DirectoryNode objects.
-// The public function buildDirectoryTree() accepts any DirectoryBaseModel and internally calls the
-// appropriate overload based on the actual type. When processing a ProjectModel, a non-null ProjectMetadata
-// pointer is required.
-
 #include "DirectoryTreeBuilder.h"
 
 #include <stdexcept>
@@ -31,10 +25,6 @@ namespace
      * @param libName The name of the library to which this folder belongs. Use "proj" for project-level folders.
      * @param metadata Reference to the ProjectMetadata where library metadata is registered.
      * @return A shared_ptr to the DirectoryNode representing the folder.
-     *
-     * @todo Process folder.classFiles, folder.namespaceFiles, and folder.functionFile.
-     *       For each element, create an appropriate FileNode using FileNodeGenerator,
-     *       and add it to node->fileNodes via node->addFileNode().
      */
     std::shared_ptr<DirectoryTree::DirectoryNode> buildTreeImpl(const CodeGroupModels::FolderModel &folder,
                                                                 const std::string &parentPath,
@@ -190,16 +180,10 @@ namespace
 namespace DirectoryTreeBuilder
 {
     std::shared_ptr<DirectoryTree::DirectoryNode> buildDirectoryTree(const CodeGroupModels::ProjectModel &projModel,
-                                                                     ProjectMetadata::ProjMetadata *projectMeta)
+                                                                     ProjectMetadata::ProjMetadata &projectMeta)
     {
-        // Check for null project metadata pointer.
-        if (projectMeta == nullptr)
-        {
-            throw std::invalid_argument("Project metadata pointer cannot be null for ProjectModel.");
-        }
-
         // Recursively build and return the directory tree.
-        return buildTreeImpl(projModel, *projectMeta);
+        return buildTreeImpl(projModel, projectMeta);
     }
 
 } // namespace DirectoryTreeBuilder

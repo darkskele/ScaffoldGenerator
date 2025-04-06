@@ -4,7 +4,7 @@
  *
  * This file defines a set of composable, pure functions that parse properties within a keyword
  * scope from a scaff file. The functions efficiently process string_views to extract type information,
- * qualifiers, declarators, parameters, and declaration specifiers using modern C++20 practices.
+ * qualifiers, declarators, parameters, and declaration specifiers using modern C++23 practices.
  *
  * @note The parser functions are designed to be exception-safe and to handle malformed input robustly.
  */

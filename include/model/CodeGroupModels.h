@@ -4,8 +4,8 @@
  *
  * This file defines the structures that represent various DSL elements such as namespaces,
  * folders, libraries, and projects. These models are used by the generator to create code from
- * the high-level DSL. The models adhere to modern C++20 practices, emphasizing immutability,
- * efficient resource management, and robust type safety.
+ * the high-level DSL. The models adhere to modern C++23 practices, emphasizing efficient resource 
+ * management, and robust type safety.
  */
 
 #pragma once
@@ -125,7 +125,7 @@ namespace CodeGroupModels
     {
         /// The version of the library.
         std::string version;
-        /// A vector of dependencies (e.g., other libraries or build features such as Boost, C++20).
+        /// A vector of dependencies (e.g., other libraries or build features such as Boost).
         std::vector<std::string> dependencies;
 
         /**

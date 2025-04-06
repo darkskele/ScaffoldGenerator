@@ -17,6 +17,7 @@
 #pragma once
 
 #include <memory>
+
 #include "DirectoryNode.h"
 #include "CodeGroupModels.h"
 #include "ProjectMetadata.h"
@@ -45,11 +46,11 @@ namespace DirectoryTreeBuilder
      * registers the corresponding project metadata. A valid (non-null) pointer to ProjectMetadata must be provided.
      *
      * @param projModel The ProjectModel to convert into a directory tree.
-     * @param projectMeta Pointer to the ProjectMetadata registry where metadata is stored.
+     * @param projectMeta Reference to the ProjectMetadata registry where metadata is stored.
      * @return A shared_ptr to the root DirectoryNode representing the top-level project folder.
      * @throws std::invalid_argument if the projectMeta pointer is null.
      */
     std::shared_ptr<DirectoryTree::DirectoryNode> buildDirectoryTree(const CodeGroupModels::ProjectModel &projModel,
-                                                                     ProjectMetadata::ProjMetadata *projectMeta);
+                                                                     ProjectMetadata::ProjMetadata &projectMeta);
 
 } // namespace DirectoryTreeBuilder

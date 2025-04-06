@@ -3,8 +3,7 @@
  * @brief Declares the DiskFileWriter class for writing files to disk.
  *
  * This header file defines the DiskFileWriter class that implements the IFileWriter interface.
- * DiskFileWriter writes header and source files into a <outputFolder> directory,
- * cleaning the "ROOT/" prefix from file paths and creating necessary directories.
+ * DiskFileWriter writes header and source files into a <outputFolder> directory.
  */
 
 #pragma once

@@ -64,8 +64,8 @@ TEST(CMakeGeneratorTest, MinimalProjectWithOneLibrary) {
     
     // Check that the project is defined.
     EXPECT_TRUE(contains(cmakeFile, "project(MyProject"));
-    // Check that the C++ standard is set to 20.
-    EXPECT_TRUE(contains(cmakeFile, "set(CMAKE_CXX_STANDARD 20)"));
+    // Check that the C++ standard is set to 23.
+    EXPECT_TRUE(contains(cmakeFile, "set(CMAKE_CXX_STANDARD 23)"));
     
     // Verify that CoreLib target is generated.
     EXPECT_TRUE(contains(cmakeFile, "add_library(CoreLib"));
@@ -111,7 +111,7 @@ TEST(CMakeGeneratorTest, MultipleLibrariesAndDependencies) {
     
     // Project settings check.
     EXPECT_TRUE(contains(cmakeFile, "project(MyProject"));
-    EXPECT_TRUE(contains(cmakeFile, "set(CMAKE_CXX_STANDARD 20)"));
+    EXPECT_TRUE(contains(cmakeFile, "set(CMAKE_CXX_STANDARD 23)"));
     
     // Check that LibA target is generated and has its include directories.
     EXPECT_TRUE(contains(cmakeFile, "add_library(LibA"));
